@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function Navbar() {
   const { scrollY } = useScroll();
@@ -33,9 +34,13 @@ export default function Navbar() {
           )}
         >
           <Link href="/" className="text-xl font-bold tracking-tighter text-white flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <span className="text-white font-bold">O</span>
-            </div>
+            <Image
+              src="/orylo-big-logo.png"
+              alt="Orylo Logo"
+              width={100}
+              height={100}
+              className="rounded-lg flex items-center justify-center w-6 h-6"
+            />
             Orylo
           </Link>
 

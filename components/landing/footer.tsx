@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Github, Twitter, Linkedin } from "lucide-react";
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -13,9 +14,13 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
           <div className="col-span-1 md:col-span-1">
             <Link href="/" className="text-2xl font-bold tracking-tighter mb-6 text-white flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">O</span>
-              </div>
+              <Image
+                src="/orylo-big-logo.png"
+                alt="Orylo Logo"
+                width={100}
+                height={100}
+                className="rounded-lg flex items-center justify-center w-6 h-6"
+              />
               Orylo
             </Link>
             <p className="text-zinc-400 text-sm leading-relaxed mb-8 max-w-xs">
