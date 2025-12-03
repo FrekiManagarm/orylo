@@ -33,9 +33,9 @@ export default function Navbar() {
               : "bg-transparent border-transparent"
           )}
         >
-          <Link href="/" className="text-xl font-bold tracking-tighter text-white flex items-center gap-2">
+          <Link href="/" className="text-xl font-bold tracking-tighter text-white flex items-center gap-3">
             <Image
-              src="/orylo-big-logo.png"
+              src="/orylo-logo.png"
               alt="Orylo Logo"
               width={100}
               height={100}

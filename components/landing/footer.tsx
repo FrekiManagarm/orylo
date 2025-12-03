@@ -15,7 +15,7 @@ export default function Footer() {
           <div className="col-span-1 md:col-span-1">
             <Link href="/" className="text-2xl font-bold tracking-tighter mb-6 text-white flex items-center gap-2">
               <Image
-                src="/orylo-big-logo.png"
+                src="/orylo-logo.png"
                 alt="Orylo Logo"
                 width={100}
                 height={100}
