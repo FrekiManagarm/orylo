@@ -68,9 +68,9 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-5xl md:text-8xl font-bold tracking-tight mb-8 text-white"
           >
-            Integrate Stripe Connect <br />
+            Detect fraud <br />
             <span className="bg-clip-text text-transparent bg-linear-to-b from-white to-white/40">
-              in minutes not weeks
+              before it costs you
             </span>
           </motion.h1>
 
@@ -80,9 +80,9 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-xl text-zinc-400 mb-12 max-w-2xl leading-relaxed"
           >
-            Orylo is the complete solution for integrating Stripe Connect:
-            TypeScript SDK, Analytics Dashboard, and UI Components. Launch your
-            platform in days, not weeks.
+            Orylo analyzes every Stripe transaction with AI. Block 80% of fraud,
+            reduce chargebacks, and protect your account. 
+            Setup in 5 minutes, zero code.
           </motion.p>
 
           <motion.div
@@ -96,8 +96,8 @@ export default function Hero() {
               size="lg"
               className="rounded-full px-8 py-7 text-lg bg-white text-black hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-xl shadow-white/10"
             >
-              <Link href="#features">
-                Get Started
+              <Link href="#pricing">
+                Start for free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -108,7 +108,7 @@ export default function Hero() {
               size="lg"
               className="rounded-full px-8 py-7 text-lg bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white backdrop-blur-md transition-all duration-300"
             >
-              <Link href="#demo">View Demo</Link>
+              <Link href="#features">Explore features</Link>
             </Button>
           </motion.div>
 
@@ -116,15 +116,19 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex items-center gap-8 text-sm text-zinc-500"
+            className="flex flex-wrap items-center justify-center gap-6 md:gap-8 text-sm text-zinc-500"
           >
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-indigo-500" />
-              <span>No credit card required</span>
+              <span>One-click Stripe connection</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-indigo-500" />
-              <span>14-day free trial</span>
+              <span>Free plan available</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-indigo-500" />
+              <span>Zero code required</span>
             </div>
           </motion.div>
         </div>
@@ -147,7 +151,7 @@ export default function Hero() {
                 <div className="text-center">
                   <BarChart3 className="w-16 h-16 text-white/20 mx-auto mb-4" />
                   <span className="text-zinc-500 font-medium">
-                    Dashboard Preview Mockup
+                    Orylo Dashboard
                   </span>
                 </div>
               </div>

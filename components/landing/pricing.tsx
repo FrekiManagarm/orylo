@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, Star, Zap, Shield, Gift, TrendingUp, Crown, X } from "lucide-react";
+import { Check, Zap, Gift, TrendingUp, Crown, X } from "lucide-react";
 import { useState } from "react";
 import {
   Card,
@@ -20,132 +20,104 @@ const plans = [
   {
     name: "FREE",
     price: "0",
-    description: "Parfait pour commencer et tester.",
+    description: "Perfect to get started and test.",
     limits: [
-      "100 transactions analysées/mois",
-      "Historique 7 jours",
-      "0 règles personnalisées",
-      "1 agent IA basique",
-      "Pas d'accès API",
-      "Pas de webhooks",
-      "Support email standard",
+      "100 analyzed transactions/mo",
+      "7-day history",
+      "0 custom rules",
+      "1 basic AI agent",
+      "No API access",
+      "No webhooks",
+      "Standard email support",
     ],
     features: [
-      "Score de risque basique",
-      "Dashboard simple",
-      "Blocage automatique si score > 90",
-      "Alertes email",
+      "Basic risk score",
+      "Simple dashboard",
+      "Auto-block if score > 90",
+      "Email alerts",
     ],
-    cta: "Commencer gratuitement",
+    cta: "Start for free",
     popular: false,
     icon: Gift,
   },
   {
     name: "STARTER",
     price: "99",
-    description: "Pour les projets en développement.",
+    description: "For growing projects.",
     limits: [
-      "1 000 transactions/mois",
-      "Historique 30 jours",
-      "3 règles personnalisées",
-      "2 agents IA (basic + geo)",
-      "Pas d'accès API",
-      "Pas de webhooks",
-      "Support email prioritaire",
+      "1,000 transactions/mo",
+      "30-day history",
+      "3 custom rules",
+      "2 AI agents (basic + geo)",
+      "No API access",
+      "No webhooks",
+      "Priority email support",
     ],
     features: [
-      "Tout de Free +",
-      "Analyse IA avancée (GPT-4)",
-      "Détection géographique (IP vs carte)",
-      "Blocage automatique configurable",
-      "Alertes email détaillées",
-      "Export CSV basique",
+      "Everything in Free +",
+      "Advanced AI analysis (GPT-4)",
+      "Geo detection (IP vs card)",
+      "Configurable auto-block",
+      "Detailed email alerts",
+      "Basic CSV export",
     ],
-    cta: "Démarrer l'essai",
+    cta: "Start trial",
     popular: false,
     icon: Zap,
   },
   {
     name: "GROWTH",
     price: "299",
-    description: "Pour les entreprises en croissance.",
+    description: "For scaling businesses.",
     limits: [
-      "10 000 transactions/mois",
-      "Historique 6 mois",
-      "Règles personnalisées illimitées",
-      "4 agents IA (basic + geo + behavior + identity)",
-      "Accès API",
-      "Webhooks sortants",
-      "Support prioritaire (< 24h)",
+      "10,000 transactions/mo",
+      "6-month history",
+      "Unlimited custom rules",
+      "4 AI agents (basic + geo + behavior + identity)",
+      "API access",
+      "Outbound webhooks",
+      "Priority support (< 24h)",
     ],
     features: [
-      "Tout de Starter +",
-      "Multi-agents IA spécialisés",
-      "Analyse géographique",
-      "Analyse comportementale (vélocité, patterns)",
-      "Vérification identité (email, adresse)",
-      "Alertes Slack/Discord",
-      "Export CSV/PDF avancé",
-      "Règles conditionnelles complexes",
-      "Mode \"Shadow\" (analyse sans bloquer)",
+      "Everything in Starter +",
+      "Multi-agent AI specialists",
+      "Geographic analysis",
+      "Behavioral analysis (velocity, patterns)",
+      "Identity verification (email, address)",
+      "Slack/Discord alerts",
+      "Advanced CSV/PDF export",
+      "Complex conditional rules",
+      '"Shadow" mode (analyze without blocking)',
     ],
-    cta: "Commencer maintenant",
+    cta: "Get started",
     popular: true,
     icon: TrendingUp,
   },
   {
-    name: "BUSINESS",
-    price: "799",
-    description: "Pour les plateformes à grande échelle.",
-    limits: [
-      "50 000 transactions/mois",
-      "Historique illimité",
-      "Règles illimitées",
-      "Agent IA personnalisé à votre business",
-      "Accès API complet",
-      "Webhooks bidirectionnels",
-      "Support prioritaire (< 2h)",
-      "SLA 99.9%",
-    ],
-    features: [
-      "Tout de Growth +",
-      "Agent IA entraîné sur vos données",
-      "Intégration dédiée (onboarding personnalisé)",
-      "Appels stratégie mensuels",
-      "Tableau de bord avancé avec analytics",
-      "Whitelisting/Blacklisting automatique",
-      "Tests A/B de règles",
-      "Rapports personnalisés",
-    ],
-    cta: "Contacter les ventes",
-    popular: false,
-    icon: Shield,
-  },
-  {
     name: "ENTERPRISE",
     price: "Custom",
-    description: "Solution sur-mesure pour grandes entreprises.",
+    description: "Custom solution for large companies.",
     limits: [
-      "Transactions illimitées",
-      "Historique illimité",
-      "Tout illimité",
-      "Agents IA sur-mesure + ML custom",
-      "Infrastructure dédiée possible",
-      "Support 24/7",
-      "SLA 99.99%",
-      "Account manager dédié",
+      "Unlimited transactions",
+      "Unlimited history",
+      "Everything unlimited",
+      "Custom AI agents + ML",
+      "Dedicated infrastructure available",
+      "24/7 support",
+      "99.99% SLA",
+      "Dedicated account manager",
     ],
     features: [
-      "Tout de Business +",
-      "Modèles ML entraînés spécifiquement pour vous",
-      "Infrastructure dédiée (si nécessaire)",
-      "Conformité sur-mesure (audit, certifications)",
-      "Intégrations custom avec vos systèmes",
-      "Contract annuel avec engagement",
-      "Consulting stratégique inclus",
-      "Accès anticipé aux nouvelles features",
+      "Everything in Growth +",
+      "ML models trained on your data",
+      "Dedicated infrastructure (if needed)",
+      "Custom compliance (audit, certifications)",
+      "Custom integrations with your systems",
+      "Annual contract with commitment",
+      "Strategic consulting included",
+      "Early access to new features",
     ],
-    cta: "Contacter les ventes",
+    cta: "Contact sales",
     popular: false,
     icon: Crown,
   },
@@ -169,7 +141,7 @@ export default function Pricing() {
             transition={{ duration: 0.5 }}
             className="text-4xl md:text-5xl font-bold mb-6 text-white"
           >
-            Tarification simple et transparente
+            Simple, transparent pricing
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -178,7 +150,7 @@ export default function Pricing() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-lg text-zinc-400 mb-10"
           >
-            Aucun frais caché. Annulez à tout moment. Commencez gratuitement.
+            No hidden fees. Cancel anytime. Start for free.
           </motion.p>
 
           <div className="flex items-center justify-center gap-4 p-1.5 bg-white/5 rounded-full border border-white/10 w-fit mx-auto backdrop-blur-sm">
@@ -188,7 +160,7 @@ export default function Pricing() {
                 !isAnnual ? "bg-zinc-800 text-white" : "text-zinc-400",
               )}
             >
-              Mensuel
+              Monthly
             </span>
             <Switch
               checked={isAnnual}
@@ -201,7 +173,7 @@ export default function Pricing() {
                 isAnnual ? "bg-zinc-800 text-white" : "text-zinc-400",
               )}
             >
-              Annuel{" "}
+              Annual{" "}
               <span className="text-[10px] font-bold bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full border border-green-500/20">
                 -20%
               </span>
@@ -209,7 +181,7 @@ export default function Pricing() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
           {plans.map((plan, index) => (
             <motion.div
               key={index}
@@ -231,7 +203,7 @@ export default function Pricing() {
                   <div className="absolute inset-x-0 -top-px h-px bg-linear-to-r from-transparent via-indigo-500 to-transparent" />
                 )}
 
-                <CardHeader className="pb-4 pt-6 px-6">
+                <CardHeader className="pb-6 pt-8 px-8">
                   <div className="flex justify-between items-start mb-4">
                     <div
                       className={cn(
@@ -245,11 +217,11 @@ export default function Pricing() {
                         variant="secondary"
                         className="bg-indigo-500/20 text-indigo-300 border-indigo-500/20 text-xs px-2 py-0.5"
                       >
-                        Plus populaire
+                        Most popular
                       </Badge>
                     )}
                   </div>
-                  <CardTitle className="text-xl font-bold text-white mb-1">
+                  <CardTitle className="text-2xl font-bold text-white mb-2">
                     {plan.name}
                   </CardTitle>
                   <CardDescription className="text-zinc-400 text-sm min-h-[40px]">
@@ -257,54 +229,68 @@ export default function Pricing() {
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="flex-1 px-6 pb-6 overflow-y-auto max-h-[600px]">
-                  <div className="mb-6 pb-6 border-b border-white/5">
+                <CardContent className="flex-1 px-8 pb-6 overflow-y-auto">
+                  <div className="mb-8 pb-8 border-b border-white/5">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-bold text-white tracking-tight">
+                      <span className="text-5xl font-bold text-white tracking-tight">
                         {plan.price === "Custom"
-                          ? "Sur-mesure"
+                          ? "Custom"
                           : plan.price === "0"
-                            ? "Gratuit"
-                            : `€${isAnnual ? plan.price : Math.round(Number(plan.price) * 1.2)}`}
+                          ? "Free"
+                          : `$${
+                              isAnnual
+                                ? plan.price
+                                : Math.round(Number(plan.price) * 1.2)
+                            }`}
                       </span>
                       {plan.price !== "Custom" && plan.price !== "0" && (
                         <span className="text-zinc-500 font-medium text-base">
-                          /mois
+                          /mo
                         </span>
                       )}
                     </div>
-                    {isAnnual && plan.price !== "Custom" && plan.price !== "0" && (
-                      <div className="text-xs text-zinc-500 mt-1.5 font-medium">
-                        Facturé annuellement
-                      </div>
-                    )}
+                    {isAnnual &&
+                      plan.price !== "Custom" &&
+                      plan.price !== "0" && (
+                        <div className="text-xs text-zinc-500 mt-1.5 font-medium">
+                          Billed annually
+                        </div>
+                      )}
                   </div>
                   {plan.limits && plan.limits.length > 0 && (
-                    <div className="mb-6">
-                      <h4 className="text-xs font-semibold text-zinc-400 mb-3 uppercase tracking-wide">
-                        Limites
+                    <div>
+                      <h4 className="text-sm font-semibold text-zinc-400 mb-4 uppercase tracking-wide">
+                        Limits
                       </h4>
-                      <ul className="space-y-2.5">
+                      <ul className="space-y-3">
                         {plan.limits.map((limit, i) => {
-                          const isUnavailable = limit.toLowerCase().includes("pas d'") || limit.toLowerCase().includes("pas de");
+                          const isUnavailable = limit
+                            .toLowerCase()
+                            .includes("no ");
                           return (
                             <li key={i} className="flex items-start gap-2.5">
-                              <div className={cn(
-                                "mt-0.5 h-4 w-4 rounded-full flex items-center justify-center shrink-0",
-                                isUnavailable 
-                                  ? "bg-red-500/10 border border-red-500/20" 
-                                  : "bg-white/10"
-                              )}>
+                              <div
+                                className={cn(
+                                  "mt-0.5 h-4 w-4 rounded-full flex items-center justify-center shrink-0",
+                                  isUnavailable
+                                    ? "bg-red-500/10 border border-red-500/20"
+                                    : "bg-white/10",
+                                )}
+                              >
                                 {isUnavailable ? (
                                   <X className="h-2.5 w-2.5 text-red-400" />
                                 ) : (
                                   <Check className="h-2.5 w-2.5 text-white" />
                                 )}
                               </div>
-                              <span className={cn(
-                                "text-xs leading-relaxed",
-                                isUnavailable ? "text-zinc-500 line-through" : "text-zinc-300"
-                              )}>
+                              <span
+                                className={cn(
+                                  "text-sm leading-relaxed",
+                                  isUnavailable
+                                    ? "text-zinc-500 line-through"
+                                    : "text-zinc-300",
+                                )}
+                              >
                                 {limit}
                               </span>
                             </li>
@@ -313,28 +299,9 @@ export default function Pricing() {
                       </ul>
                     </div>
                   )}
-                  {plan.features && plan.features.length > 0 && (
-                    <div>
-                      <h4 className="text-xs font-semibold text-zinc-400 mb-3 uppercase tracking-wide">
-                        Features
-                      </h4>
-                      <ul className="space-y-2.5">
-                        {plan.features.map((feature, i) => (
-                          <li key={i} className="flex items-start gap-2.5">
-                            <div className="mt-0.5 h-4 w-4 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center shrink-0">
-                              <Check className="h-2.5 w-2.5 text-green-400" />
-                            </div>
-                            <span className="text-zinc-300 text-xs leading-relaxed">
-                              {feature}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
                 </CardContent>
 
-                <CardFooter className="px-6 pb-6 pt-0">
+                <CardFooter className="px-8 pb-8 pt-6">
                   <Button
                     className={cn(
                       "w-full h-10 rounded-lg text-sm font-semibold transition-all duration-300",

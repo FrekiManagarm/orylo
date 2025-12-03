@@ -2,74 +2,102 @@
 
 import { motion } from "framer-motion";
 import {
+  DollarSign,
+  Zap,
+  Brain,
   BarChart3,
-  Code2,
-  Globe2,
-  Layers,
-  ShieldCheck,
-  Zap
+  Target,
+  ArrowRight,
+  TrendingDown,
+  Clock,
+  Sparkles,
 } from "lucide-react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 
 const features = [
   {
-    title: "Global Payments",
-    description: "Accept payments from 135+ countries. Local currency support included.",
-    icon: Globe2,
-    className: "md:col-span-2",
+    id: "chargebacks",
+    title: "Save on chargebacks",
+    description:
+      "No more lost Stripe fees, no more disputes, no more at-risk accounts.",
+    icon: DollarSign,
+    stat: "80%",
+    statLabel: "fraud blocked",
+    gradient: "from-indigo-500 to-violet-500",
+    bgGradient: "from-indigo-500/20 via-indigo-500/5 to-transparent",
+    shadowColor: "shadow-indigo-500/20",
   },
   {
-    title: "Real-time Analytics",
-    description: "Track revenue, churn, and growth instantly.",
-    icon: BarChart3,
-    className: "md:col-span-1",
-  },
-  {
-    title: "Developer First",
-    description: "Type-safe SDKs and great docs.",
-    icon: Code2,
-    className: "md:col-span-1",
-  },
-  {
-    title: "Enterprise Security",
-    description: "SOC2 Type II, GDPR, and bank-grade encryption.",
-    icon: ShieldCheck,
-    className: "md:col-span-2",
-  },
-  {
-    title: "Instant Payouts",
-    description: "Get paid faster to your bank account.",
+    id: "setup",
+    title: "Live in 5 minutes",
+    description:
+      "One-click Stripe connection, zero code. AI automatically analyzes all your transactions.",
     icon: Zap,
-    className: "md:col-span-1",
+    stat: "5",
+    statLabel: "min to get started",
+    gradient: "from-violet-500 to-purple-500",
+    bgGradient: "from-violet-500/20 via-violet-500/5 to-transparent",
+    shadowColor: "shadow-violet-500/20",
   },
   {
-    title: "Custom UI",
-    description: "Pre-built components for your flow.",
-    icon: Layers,
-    className: "md:col-span-2",
-  }
+    id: "explainable",
+    title: "AI that explains its decisions",
+    description:
+      "Every block is justified with clear reasons. No more black box decisions.",
+    icon: Brain,
+    stat: "100%",
+    statLabel: "transparent",
+    gradient: "from-purple-500 to-fuchsia-500",
+    bgGradient: "from-purple-500/20 via-purple-500/5 to-transparent",
+    shadowColor: "shadow-purple-500/20",
+    example: '"IP in Russia, French card, amount 5× above average"',
+  },
+  {
+    id: "dashboard",
+    title: "Smart dashboard",
+    description:
+      "Real-time view, configurable alerts, automatic reports. Track your ROI.",
+    icon: BarChart3,
+    stat: "24/7",
+    statLabel: "monitoring",
+    gradient: "from-indigo-400 to-cyan-500",
+    bgGradient: "from-indigo-400/20 via-indigo-400/5 to-transparent",
+    shadowColor: "shadow-indigo-400/20",
+  },
+  {
+    id: "custom",
+    title: "Adapts to your business",
+    description:
+      "Custom rules, adjustable thresholds, whitelist loyal customers.",
+    icon: Target,
+    stat: "∞",
+    statLabel: "custom rules",
+    gradient: "from-violet-400 to-indigo-500",
+    bgGradient: "from-violet-400/20 via-violet-400/5 to-transparent",
+    shadowColor: "shadow-violet-400/20",
+  },
 ];
 
 export default function Features() {
   return (
     <section id="features" className="py-32 relative overflow-hidden bg-black">
-      {/* Ambient Background - Subtle */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none" />
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-transparent to-transparent" />
+      <div className="absolute top-1/2 left-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-[128px] -translate-y-1/2" />
+      <div className="absolute top-1/2 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-[128px] -translate-y-1/2" />
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center max-w-3xl mx-auto mb-24">
+        {/* Header */}
+        <div className="text-center max-w-4xl mx-auto mb-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-flex items-center justify-center px-4 py-1.5 mb-6 rounded-full border border-white/5 bg-white/5 backdrop-blur-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full border border-indigo-500/20 bg-indigo-500/10"
           >
-            <span className="text-sm font-medium text-zinc-400">Features</span>
+            <Sparkles className="w-4 h-4 text-indigo-400" />
+            <span className="text-sm font-medium text-indigo-400">
+              Why Orylo?
+            </span>
           </motion.div>
 
           <motion.h2
@@ -77,10 +105,13 @@ export default function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-4xl md:text-5xl font-semibold mb-6 text-white tracking-tight"
+            className="text-4xl md:text-6xl font-bold mb-6 text-white tracking-tight"
           >
-            Powerful features for <br />
-            <span className="text-zinc-500">modern marketplaces</span>
+            Stop fraud.
+            <br />
+            <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
+              Keep your revenue.
+            </span>
           </motion.h2>
 
           <motion.p
@@ -88,41 +119,274 @@ export default function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-lg text-zinc-400 max-w-xl mx-auto leading-relaxed"
+            className="text-xl text-zinc-400 max-w-2xl mx-auto"
           >
-            Everything you need to build, scale, and manage your platform. Designed for simplicity and performance.
+            Smart protection that installs in a few clicks and saves you
+            thousands in chargebacks.
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {features.map((feature, index) => (
+        {/* Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
+          {/* Feature 1 - Large */}
             <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={cn("group h-full", feature.className)}
-            >
-              <Card className="h-full bg-zinc-900/20 border-white/5 backdrop-blur-md hover:bg-zinc-900/40 hover:border-white/10 transition-all duration-500 overflow-hidden rounded-3xl">
-                <CardHeader className="p-8 h-full flex flex-col justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-white/10 transition-all duration-500">
-                    <feature.icon className="h-5 w-5 text-zinc-300 group-hover:text-white transition-colors" />
+            transition={{ duration: 0.5 }}
+            className="lg:col-span-2 group"
+          >
+            <div className="relative h-full min-h-[320px] rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-indigo-500/30 transition-all duration-500">
+              <div
+                className={`absolute inset-0 bg-gradient-to-br ${features[0].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+              />
+
+              <div className="relative z-10 h-full flex flex-col justify-between">
+                <div>
+                  <div
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${features[0].gradient} mb-6 shadow-lg shadow-indigo-500/20`}
+                  >
+                    <DollarSign className="w-7 h-7 text-white" />
                   </div>
 
-                  <div>
-                    <CardTitle className="text-xl font-medium text-white mb-3">
-                      {feature.title}
-                    </CardTitle>
-                    <p className="text-zinc-400 leading-relaxed text-sm">
-                      {feature.description}
-                    </p>
+                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                    {features[0].title}
+                  </h3>
+                  <p className="text-zinc-400 text-lg max-w-md">
+                    {features[0].description}
+                  </p>
+                </div>
+
+                <div className="flex items-end justify-between mt-8">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20">
+                      <TrendingDown className="w-4 h-4 text-indigo-400" />
+                      <span className="text-indigo-400 font-medium text-sm">
+                        Chargebacks
+                      </span>
+                    </div>
                   </div>
-                </CardHeader>
-              </Card>
+
+                  <div className="text-right">
+                    <div
+                      className={`text-5xl md:text-6xl font-black bg-gradient-to-r ${features[0].gradient} bg-clip-text text-transparent`}
+                    >
+                      {features[0].stat}
+                    </div>
+                    <div className="text-zinc-500 text-sm font-medium">
+                      {features[0].statLabel}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Feature 2 - Small */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="group"
+          >
+            <div className="relative h-full min-h-[320px] rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-violet-500/30 transition-all duration-500">
+              <div
+                className={`absolute inset-0 bg-gradient-to-br ${features[1].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+              />
+
+              <div className="relative z-10 h-full flex flex-col justify-between">
+                  <div>
+                  <div
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${features[1].gradient} mb-6 shadow-lg shadow-violet-500/20`}
+                  >
+                    <Zap className="w-7 h-7 text-white" />
+                  </div>
+
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    {features[1].title}
+                  </h3>
+                  <p className="text-zinc-400 text-sm">
+                    {features[1].description}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 mt-6">
+                  <Clock className="w-5 h-5 text-violet-400" />
+                  <span
+                    className={`text-3xl font-black bg-gradient-to-r ${features[1].gradient} bg-clip-text text-transparent`}
+                  >
+                    {features[1].stat}
+                  </span>
+                  <span className="text-zinc-500 text-sm">
+                    {features[1].statLabel}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Feature 3 - Full width */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="lg:col-span-3 group"
+          >
+            <div className="relative h-full min-h-[280px] rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-purple-500/30 transition-all duration-500">
+              <div
+                className={`absolute inset-0 bg-gradient-to-br ${features[2].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+              />
+
+              <div className="relative z-10 h-full flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+                <div className="flex-1">
+                  <div
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${features[2].gradient} mb-6 shadow-lg shadow-purple-500/20`}
+                  >
+                    <Brain className="w-7 h-7 text-white" />
+                  </div>
+
+                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                    {features[2].title}
+                  </h3>
+                  <p className="text-zinc-400 text-lg max-w-xl">
+                    {features[2].description}
+                  </p>
+                </div>
+
+                {/* Example explanation */}
+                <div className="flex-shrink-0 md:max-w-sm">
+                  <div className="rounded-2xl bg-black/50 border border-purple-500/10 p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                      <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">
+                        Transaction blocked
+                      </span>
+                    </div>
+                    <p className="text-white font-mono text-sm leading-relaxed">
+                      {features[2].example}
+                    </p>
+                    <div className="flex items-center gap-2 mt-4 pt-4 border-t border-white/5">
+                      <div
+                        className={`text-xs font-bold bg-gradient-to-r ${features[2].gradient} bg-clip-text text-transparent`}
+                      >
+                        Risk score: 94/100
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Feature 4 - Medium */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="lg:col-span-2 group"
+          >
+            <div className="relative h-full min-h-[280px] rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-indigo-400/30 transition-all duration-500">
+              <div
+                className={`absolute inset-0 bg-gradient-to-br ${features[3].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+              />
+
+              <div className="relative z-10 h-full flex flex-col justify-between">
+                <div>
+                  <div
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${features[3].gradient} mb-6 shadow-lg shadow-indigo-400/20`}
+                  >
+                    <BarChart3 className="w-7 h-7 text-white" />
+                  </div>
+
+                  <h3 className="text-2xl font-bold text-white mb-3">
+                    {features[3].title}
+                  </h3>
+                  <p className="text-zinc-400 text-lg max-w-md">
+                    {features[3].description}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-6 mt-6">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-indigo-500" />
+                    <span className="text-zinc-400 text-sm">Real-time</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-violet-500" />
+                    <span className="text-zinc-400 text-sm">Alerts</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-purple-500" />
+                    <span className="text-zinc-400 text-sm">Reports</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Feature 5 - Small */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="group"
+          >
+            <div className="relative h-full min-h-[280px] rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-violet-400/30 transition-all duration-500">
+              <div
+                className={`absolute inset-0 bg-gradient-to-br ${features[4].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+              />
+
+              <div className="relative z-10 h-full flex flex-col justify-between">
+                <div>
+                  <div
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${features[4].gradient} mb-6 shadow-lg shadow-violet-400/20`}
+                  >
+                    <Target className="w-7 h-7 text-white" />
+                  </div>
+
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    {features[4].title}
+                  </h3>
+                  <p className="text-zinc-400 text-sm">
+                    {features[4].description}
+                  </p>
+                </div>
+
+                <div className="mt-6">
+                  <div
+                    className={`text-4xl font-black bg-gradient-to-r ${features[4].gradient} bg-clip-text text-transparent`}
+                  >
+                    {features[4].stat}
+                  </div>
+                  <div className="text-zinc-500 text-sm">
+                    {features[4].statLabel}
+                  </div>
+                </div>
+              </div>
+            </div>
             </motion.div>
-          ))}
         </div>
+
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="text-center mt-16"
+        >
+          <a
+            href="#pricing"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black font-semibold hover:bg-zinc-200 transition-colors group"
+          >
+            View pricing
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </a>
+        </motion.div>
       </div>
     </section>
   );

@@ -23,15 +23,15 @@ export default function Cta() {
           </div>
 
           <h2 className="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tight max-w-4xl mx-auto">
-            Ready to launch your <br />
+            Ready to protect your <br />
             <span className="bg-clip-text text-transparent bg-linear-to-r from-indigo-400 to-purple-400">
-              marketplace today?
+              business from fraud?
             </span>
           </h2>
 
           <p className="text-lg md:text-xl text-zinc-400 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Join thousands of developers and founders building the future of commerce with Orylo.
-            Start your 14-day free trial today.
+            Join hundreds of businesses already saving thousands on chargebacks with Orylo.
+            Start for free today.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

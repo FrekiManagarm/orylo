@@ -19,7 +19,7 @@ export default function Footer() {
               Orylo
             </Link>
             <p className="text-zinc-400 text-sm leading-relaxed mb-8 max-w-xs">
-              The complete solution for building modern marketplaces. Scale your business with confidence.
+              AI-powered fraud detection for Stripe. Protect your business and save on chargebacks.
             </p>
             <div className="flex items-center gap-4">
               {[Twitter, Github, Linkedin].map((Icon, i) => (
