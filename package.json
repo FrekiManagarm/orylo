@@ -7,7 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "dev:mastra": "mastra dev --dir lib/mastra"
+    "dev:mastra": "mastra dev --dir lib/mastra",
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:pull": "drizzle-kit pull"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.77",
