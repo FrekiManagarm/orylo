@@ -1,169 +1,31 @@
-"use client";
+import { SignUpForm } from "@/components/auth/sign-up-form";
+import { Metadata } from "next";
 
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { toast } from "sonner";
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://orylo.app";
 
-import { signUp } from "@/lib/auth/auth.client";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Loader2 } from "lucide-react";
-
-const signUpSchema = z.object({
-  name: z.string().min(2, {
-    message: "Le nom doit contenir au moins 2 caractères.",
-  }),
-  email: z.string().email({
-    message: "Veuillez entrer une adresse email valide.",
-  }),
-  password: z.string().min(8, {
-    message: "Le mot de passe doit contenir au moins 8 caractères.",
-  }),
-});
+export const metadata: Metadata = {
+  title: "Sign Up",
+  description:
+    "Create your Orylo account and start protecting your Stripe transactions with AI-powered fraud detection.",
+  alternates: {
+    canonical: "/sign-up",
+  },
+  openGraph: {
+    title: "Sign Up | Orylo",
+    description:
+      "Create your Orylo account and start protecting your Stripe transactions with AI-powered fraud detection.",
+    url: `${baseUrl}/sign-up`,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+};
 
 export default function SignUpPage() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const form = useForm<z.infer<typeof signUpSchema>>({
-    resolver: zodResolver(signUpSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-    },
-  });
-
-  async function onSubmit(values: z.infer<typeof signUpSchema>) {
-    setIsLoading(true);
-    try {
-      const { error } = await signUp.email({
-        email: values.email,
-        password: values.password,
-        name: values.name,
-        callbackURL: "/dashboard",
-      });
-
-      if (error) {
-        toast.error("Erreur d'inscription", {
-          description: error.message || "Une erreur est survenue lors de l'inscription.",
-        });
-      } else {
-        toast.success("Compte créé avec succès !");
-        router.push("/dashboard");
-      }
-    } catch (err) {
-      toast.error("Une erreur est survenue", {
-        description: "Veuillez réessayer plus tard.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  return (
-    <Card className="w-full border-white/10 bg-zinc-900/50 backdrop-blur-xl shadow-xl">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center text-white">
-          Créer un compte
-        </CardTitle>
-        <CardDescription className="text-center text-zinc-400">
-          Commencez votre expérience Orylo dès aujourd'hui
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-zinc-300">Nom complet</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="John Doe" 
-                      className="bg-zinc-900/50 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-zinc-300">Email</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="m@example.com" 
-                      className="bg-zinc-900/50 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-zinc-300">Mot de passe</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="password" 
-                      placeholder="••••••••" 
-                      className="bg-zinc-900/50 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full bg-white text-black hover:bg-zinc-200" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              S'inscrire
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-      <CardFooter className="flex justify-center">
-        <p className="text-sm text-zinc-400">
-          Vous avez déjà un compte ?{" "}
-          <Link
-            href="/sign-in"
-            className="font-medium text-indigo-400 hover:text-indigo-300 hover:underline"
-          >
-            Se connecter
-          </Link>
-        </p>
-      </CardFooter>
-    </Card>
-  );
+  return <SignUpForm />;
 }
