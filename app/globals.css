@@ -46,97 +46,100 @@
 :root {
   --radius: 0.75rem;
 
-  /* Light Mode - Fintech Clean */
-  --background: oklch(1 0 0); /* Pure white */
-  --foreground: oklch(0.15 0 0); /* Deep charcoal */
+  /* Light Mode - Clean & Crisp */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0); /* Zinc 900 */
 
-  --card: oklch(0.99 0 0);
-  --card-foreground: oklch(0.15 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
 
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0 0);
+  --popover-foreground: oklch(0.145 0 0);
 
-  /* Primary - Fintech Purple (Stripe-inspired) */
-  --primary: hsl(246, 100%, 62%); /* Rich purple */
-  --primary-foreground: hsl(0 0% 100%);
+  /* Brand - Indigo 500 based */
+  --primary: oklch(0.59 0.23 277); /* Indigo 500 */
+  --primary-foreground: oklch(1 0 0);
 
-  /* Secondary - Cyan moderne (fintech) */
-  --secondary: hsl(182, 92%, 53%); /* Cyan moderne */
-  --secondary-foreground: hsl(0 0% 100%);
+  --secondary: oklch(0.97 0 0); /* Zinc 100 */
+  --secondary-foreground: oklch(0.205 0 0); /* Zinc 900 */
 
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: hsl(0 0% 45.1%);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0); /* Zinc 500 */
 
-  /* Accent - Electric Blue (paiements) */
-  --accent: oklch(0.95 0.01 240);
-  --accent-foreground: oklch(0.15 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
 
-  --destructive: oklch(0.55 0.24 25);
+  --destructive: oklch(0.577 0.245 27); /* Red 500 */
+  --destructive-foreground: oklch(1 0 0);
 
-  --border: oklch(0.9 0 0);
-  --input: oklch(0.9 0 0);
-  --ring: oklch(0.55 0.22 280);
+  --border: oklch(0.922 0 0); /* Zinc 200 */
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.59 0.23 277);
 
-  /* Charts - Fintech palette */
-  --chart-1: oklch(0.55 0.22 280); /* Purple */
-  --chart-2: oklch(0.58 0.15 200); /* Cyan */
-  --chart-3: oklch(0.65 0.2 340); /* Pink */
-  --chart-4: oklch(0.6 0.18 160); /* Mint */
-  --chart-5: oklch(0.7 0.15 60); /* Gold */
+  /* Charts */
+  --chart-1: oklch(0.59 0.23 277); /* Indigo */
+  --chart-2: oklch(0.58 0.23 270); /* Violet */
+  --chart-3: oklch(0.54 0.23 295); /* Purple */
+  --chart-4: oklch(0.60 0.18 180); /* Cyan/Teal */
+  --chart-5: oklch(0.70 0.15 50);  /* Orange/Gold */
 
   /* Sidebar */
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.15 0 0);
-  --sidebar-primary: oklch(0.55 0.22 280);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.96 0 0);
-  --sidebar-accent-foreground: oklch(0.15 0 0);
-  --sidebar-border: oklch(0.92 0 0);
-  --sidebar-ring: oklch(0.55 0.22 280);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.59 0.23 277);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.59 0.23 277);
 }
 
 .dark {
-  --background: oklch(0.08 0 0);
-  --foreground: oklch(0.98 0 0);
+  /* Dark Mode - Orylo Theme (Black & Zinc) */
+  --background: oklch(0 0 0); /* Pure Black */
+  --foreground: oklch(0.985 0 0); /* Zinc 50 */
 
-  --card: oklch(0.12 0 0);
-  --card-foreground: oklch(0.98 0 0);
+  --card: oklch(0.141 0.005 285.8); /* Zinc 900 */
+  --card-foreground: oklch(0.985 0 0);
 
-  --popover: oklch(0.12 0 0);
-  --popover-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.141 0.005 285.8); /* Zinc 900 */
+  --popover-foreground: oklch(0.985 0 0);
 
-  --primary: hsl(246, 100%, 62%);
-  --primary-foreground: hsl(0, 0%, 100%);
+  --primary: oklch(0.59 0.23 277); /* Indigo 500 */
+  --primary-foreground: oklch(1 0 0);
 
-  --secondary: hsl(182, 92%, 53%);
-  --secondary-foreground: hsl(0, 0%, 100%);
+  --secondary: oklch(0.21 0 0); /* Zinc 800 */
+  --secondary-foreground: oklch(0.985 0 0);
 
-  --muted: oklch(0.18 0 0);
-  --muted-foreground: hsl(0 0% 63.9%);
+  --muted: oklch(0.21 0 0);
+  --muted-foreground: oklch(0.708 0 0); /* Zinc 400 */
 
-  --accent: oklch(0.2 0 0);
-  --accent-foreground: oklch(0.98 0 0);
+  --accent: oklch(0.21 0 0);
+  --accent-foreground: oklch(0.985 0 0);
 
-  --destructive: oklch(0.65 0.22 25);
+  --destructive: oklch(0.577 0.245 27); /* Red 500/Rose 500 approx */
+  --destructive-foreground: oklch(1 0 0);
 
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.65 0.25 285);
+  --border: oklch(1 0 0 / 0.1); /* White 10% */
+  --input: oklch(1 0 0 / 0.1);
+  --ring: oklch(0.59 0.23 277);
 
-  --chart-1: oklch(0.65 0.25 285); /* Purple glow */
-  --chart-2: oklch(0.7 0.18 195); /* Cyan glow */
-  --chart-3: oklch(0.75 0.2 335); /* Pink glow */
-  --chart-4: oklch(0.7 0.16 155); /* Mint glow */
-  --chart-5: oklch(0.8 0.15 65); /* Gold glow */
+  /* Charts - Matching Neon Theme */
+  --chart-1: oklch(0.59 0.23 277); /* Indigo */
+  --chart-2: oklch(0.58 0.23 270); /* Violet */
+  --chart-3: oklch(0.54 0.23 295); /* Purple */
+  --chart-4: oklch(0.60 0.18 180); /* Cyan */
+  --chart-5: oklch(0.65 0.20 330); /* Pink */
 
-  --sidebar: oklch(0.1 0 0);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.65 0.25 285);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.18 0 0);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.65 0.25 285);
+  /* Sidebar - Dark */
+  --sidebar: oklch(0.141 0.005 285.8); /* Zinc 900 */
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.59 0.23 277);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.21 0 0); /* Zinc 800 */
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 0.1);
+  --sidebar-ring: oklch(0.59 0.23 277);
 }
 
 @layer base {

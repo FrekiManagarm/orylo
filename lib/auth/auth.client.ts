@@ -16,4 +16,6 @@ export const {
   signOut,
   resetPassword,
   requestPasswordReset,
+  useActiveOrganization,
+  organization,
 } = authClient;
