@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { organization, twoFactor } from "better-auth/plugins";
 import { db } from "../db";
+import { autumn } from "autumn-js/better-auth";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -10,8 +11,8 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  plugins: [
-    organization(),
-    twoFactor()
-  ],
+  plugins: [autumn(), organization(), twoFactor()],
 });
+
+export type AuthSession = typeof auth.$Infer.Session;
+export type AuthOrganization = typeof auth.$Infer.Organization;

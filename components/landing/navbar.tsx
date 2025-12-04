@@ -21,7 +21,7 @@ export default function Navbar() {
     <motion.header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled ? "py-4" : "py-6"
+        isScrolled ? "py-4" : "py-6",
       )}
     >
       <div className="container mx-auto px-4">
@@ -30,10 +30,13 @@ export default function Navbar() {
             "mx-auto max-w-5xl rounded-full border transition-all duration-300 px-6 py-3 flex items-center justify-between backdrop-blur-xl",
             isScrolled
               ? "bg-zinc-900/70 border-white/10 shadow-lg shadow-black/20"
-              : "bg-transparent border-transparent"
+              : "bg-transparent border-transparent",
           )}
         >
-          <Link href="/" className="text-xl font-bold tracking-tighter text-white flex items-center gap-3">
+          <Link
+            href="/"
+            className="text-xl font-bold tracking-tighter text-white flex items-center gap-3"
+          >
             <Image
               src="/orylo-logo.png"
               alt="Orylo Logo"
@@ -64,7 +67,7 @@ export default function Navbar() {
 
           <div className="flex items-center gap-4">
             <Link
-              href="/login"
+              href="/sign-in"
               className="text-sm font-medium text-zinc-400 hover:text-white transition-colors hidden sm:block"
             >
               Log in
@@ -73,13 +76,11 @@ export default function Navbar() {
               asChild
               className="rounded-full bg-white text-black hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-lg shadow-white/10"
             >
-              <Link href="/signup">
-                Get Started
-              </Link>
+              <Link href="/sign-up">Get Started</Link>
             </Button>
           </div>
         </nav>
       </div>
     </motion.header>
-  )
+  );
 }
