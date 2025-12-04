@@ -1,10 +1,10 @@
 import { InferSelectModel, relations } from "drizzle-orm";
 import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
-import { session } from "./session";
-import { account } from "./account";
-import { member } from "./member";
-import { invitation } from "./invitation";
-import { twoFactor } from "./twoFactor";
+import { Session, session } from "./session";
+import { Account, account } from "./account";
+import { Member, member } from "./member";
+import { Invitation, invitation } from "./invitation";
+import { TwoFactor, twoFactor } from "./twoFactor";
 import { createSelectSchema } from "drizzle-zod";
 
 export const user = pgTable("user", {
