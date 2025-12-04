@@ -1,6 +1,6 @@
 {
   "name": "orylo-front",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -78,6 +78,7 @@
     "lucide-react": "^0.555.0",
     "next": "16.0.7",
     "next-themes": "^0.4.6",
+    "nuqs": "^2.8.2",
     "react": "19.2.1",
     "react-day-picker": "^9.11.3",
     "react-dom": "19.2.1",
