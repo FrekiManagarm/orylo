@@ -40,6 +40,11 @@ export function proMenuList(pathname: string): Group[] {
           active: pathname === `/dashboard`,
           icon: LayoutGrid,
         },
+      ],
+    },
+    {
+      groupLabel: "Services",
+      menus: [
         {
           href: `/dashboard/transactions`,
           label: "Transactions",

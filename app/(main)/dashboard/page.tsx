@@ -8,7 +8,6 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   AlertTriangle,
-  MoreHorizontal,
   Download,
   Settings,
   Plus,
@@ -35,20 +34,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Line,
   LineChart,
   CartesianGrid,
   XAxis,
-  ResponsiveContainer,
   YAxis,
-  Tooltip,
 } from "recharts";
 import {
   ChartConfig,
@@ -204,7 +194,7 @@ const DashboardHome = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black p-6 space-y-8 relative overflow-hidden">
+    <div className="bg-black space-y-8 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-indigo-900/20 via-transparent to-transparent pointer-events-none" />
       <div className="absolute top-0 left-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-[128px] -translate-y-1/2 pointer-events-none" />
@@ -224,24 +214,6 @@ const DashboardHome = () => {
           {currentDate}
         </div>
       </div>
-
-      {/* Usage Alert */}
-      {usagePercentage > 80 && (
-        <Alert className="relative z-10 bg-orange-500/10 border-orange-500/20 text-orange-200">
-          <AlertTriangle className="h-4 w-4 text-orange-400!" />
-          <AlertTitle className="text-orange-400">Usage Alert</AlertTitle>
-          <AlertDescription className="flex items-center justify-between w-full">
-            <span>You've used {usagePercentage}% of your monthly quota.</span>
-            <Button
-              variant="outline"
-              size="sm"
-              className="ml-4 border-orange-500/30 text-orange-400 hover:bg-orange-500/10 hover:text-orange-300 bg-transparent"
-            >
-              Upgrade plan
-            </Button>
-          </AlertDescription>
-        </Alert>
-      )}
 
       {/* Stats Grid */}
       <div className="relative z-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">

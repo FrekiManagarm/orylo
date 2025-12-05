@@ -28,14 +28,16 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
 
   return (
     <SidebarProvider defaultOpen={sidebarOpen}>
-      <DashboardSidebar
-        session={session!}
-        organizations={organizations! as Organization[]}
-      />
-      <SidebarInset>
-        <DashboardHeader />
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
-      </SidebarInset>
+      <div className="flex w-screen h-screen">
+        <DashboardSidebar
+          session={session!}
+          organizations={organizations! as Organization[]}
+        />
+        <SidebarInset>
+          <DashboardHeader />
+          <div className="w-full overflow-y-auto p-4 mb-4">{children}</div>
+        </SidebarInset>
+      </div>
     </SidebarProvider>
   );
 };

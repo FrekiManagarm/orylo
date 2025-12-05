@@ -1,7 +1,12 @@
 "use client";
 
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
+import { useMemo, Fragment } from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { PanelLeft } from "lucide-react";
+import { useSidebar } from "@/components/ui/sidebar";
+import { breadcrumbProList } from "@/lib/config/breadcrumb-list";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,52 +15,85 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { usePathname } from "next/navigation";
-import React from "react";
+import { Separator } from "@/components/ui/separator";
 
 export function DashboardHeader() {
+  const { toggleSidebar } = useSidebar();
   const pathname = usePathname();
-  const segments = pathname.split("/").filter(Boolean);
+
+  const breadcrumb = breadcrumbProList();
+
+  const trail = useMemo(() => {
+    const items: { title: string; href: string }[] = [];
+    for (const item of breadcrumb) {
+      if (pathname.startsWith(item.href)) {
+        items.push({ title: item.title, href: item.href });
+        if (
+          Array.isArray(
+            (item as { items: { title: string; href: string }[] }).items,
+          ) &&
+          (item as { items: { title: string; href: string }[] }).items.length >
+          0
+        ) {
+          let deepest = null as null | { title: string; href: string };
+          for (const sub of (
+            item as { items: { title: string; href: string }[] }
+          ).items as {
+            title: string;
+            href: string;
+          }[]) {
+            if (pathname.startsWith(sub.href)) {
+              if (!deepest || sub.href.length > deepest.href.length) {
+                deepest = { title: sub.title, href: sub.href };
+              }
+            }
+          }
+          if (deepest) items.push(deepest);
+        }
+      }
+    }
+    if (items.length === 0 && breadcrumb[0]) {
+      items.push({
+        title: breadcrumb[0].title as string,
+        href: breadcrumb[0].href as string,
+      });
+    }
+    return items;
+  }, [breadcrumb, pathname]);
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-      <div className="flex items-center gap-2 px-4">
-        <SidebarTrigger className="-ml-1" />
-        <Separator orientation="vertical" className="mr-2 h-4" />
+    <div className="flex flex-row justify-between items-center h-16 px-4 py-4">
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          className="h-10 w-10 rounded-xl bg-card border-border transition-all duration-300 hover:shadow-md p-0 m-0"
+          onClick={toggleSidebar}
+        >
+          <PanelLeft size={24} />
+        </Button>
+        <Separator orientation="vertical" className="mx-2 h-4 bg-border" />
         <Breadcrumb>
           <BreadcrumbList>
-            <BreadcrumbItem className="hidden md:block">
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-            </BreadcrumbItem>
-            {segments.length > 1 && (
-              <BreadcrumbSeparator className="hidden md:block" />
-            )}
-            {segments.slice(1).map((segment, index) => {
-              const isLast = index === segments.slice(1).length - 1;
-              const href = `/dashboard/${segments.slice(1, index + 2).join("/")}`;
-
+            {trail.map((crumb, index) => {
+              const isLast = index === trail.length - 1;
               return (
-                <React.Fragment key={segment}>
+                <Fragment key={crumb.href}>
                   <BreadcrumbItem>
                     {isLast ? (
-                      <BreadcrumbPage className="capitalize">
-                        {segment}
-                      </BreadcrumbPage>
+                      <BreadcrumbPage>{crumb.title}</BreadcrumbPage>
                     ) : (
-                      <BreadcrumbLink href={href} className="capitalize">
-                        {segment}
+                      <BreadcrumbLink asChild>
+                        <Link href={crumb.href}>{crumb.title}</Link>
                       </BreadcrumbLink>
                     )}
                   </BreadcrumbItem>
-                  {!isLast && (
-                    <BreadcrumbSeparator className="hidden md:block" />
-                  )}
-                </React.Fragment>
+                  {!isLast ? <BreadcrumbSeparator /> : null}
+                </Fragment>
               );
             })}
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-    </header>
+    </div>
   );
 }
