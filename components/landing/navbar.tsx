@@ -52,7 +52,7 @@ export default function Navbar() {
               { label: "Features", href: "/#features" },
               { label: "Pricing", href: "/#pricing" },
               { label: "About", href: "/about" },
-              { label: "Blog", href: "#" },
+              { label: "Blog", href: "/blog" },
             ].map((item) => (
               <Link
                 key={item.label}
