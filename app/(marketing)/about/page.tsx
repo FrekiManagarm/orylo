@@ -4,16 +4,16 @@ import { Metadata } from "next";
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://orylo.app";
 
 export const metadata: Metadata = {
-  title: "About Us",
+  title: "About Us | Fraud Shield by Orylo",
   description:
-    "Learn about Orylo's mission to secure the digital economy. We use AI-powered technology to help businesses grow without fearing fraud.",
+    "Enterprise fraud protection for Stripe merchants without enterprise prices. Transparent AI decisions, 5-minute setup, from €99/month.",
   alternates: {
     canonical: "/about",
   },
   openGraph: {
-    title: "About Us | Orylo",
+    title: "About Us | Fraud Shield by Orylo",
     description:
-      "Learn about Orylo's mission to secure the digital economy. We use AI-powered technology to help businesses grow without fearing fraud.",
+      "Enterprise fraud protection for Stripe merchants without enterprise prices. Transparent AI decisions, 5-minute setup, from €99/month.",
     url: `${baseUrl}/about`,
   },
 };

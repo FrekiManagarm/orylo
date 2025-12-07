@@ -96,7 +96,7 @@ export default function Features() {
           >
             <Sparkles className="w-4 h-4 text-indigo-400" />
             <span className="text-sm font-medium text-indigo-400">
-              Why Orylo?
+              Why Fraud Shield?
             </span>
           </motion.div>
 
@@ -107,10 +107,10 @@ export default function Features() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-4xl md:text-6xl font-bold mb-6 text-white tracking-tight"
           >
-            Stop fraud.
+            Enterprise protection.
             <br />
             <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
-              Keep your revenue.
+              SMB pricing.
             </span>
           </motion.h2>
 
@@ -121,18 +121,18 @@ export default function Features() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-xl text-zinc-400 max-w-2xl mx-auto"
           >
-            Smart protection that installs in a few clicks and saves you
-            thousands in chargebacks.
+            GPT-4 powered fraud detection that explains every decision.
+            Setup in 5 minutes via OAuth. From €99/month.
           </motion.p>
         </div>
 
         {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
           {/* Feature 1 - Large */}
-            <motion.div
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.5 }}
             className="lg:col-span-2 group"
           >
@@ -196,7 +196,7 @@ export default function Features() {
               />
 
               <div className="relative z-10 h-full flex flex-col justify-between">
-                  <div>
+                <div>
                   <div
                     className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${features[1].gradient} mb-6 shadow-lg shadow-violet-500/20`}
                   >
@@ -368,7 +368,7 @@ export default function Features() {
                 </div>
               </div>
             </div>
-            </motion.div>
+          </motion.div>
         </div>
 
         {/* CTA */}

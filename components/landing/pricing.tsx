@@ -17,15 +17,43 @@ import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
+// Prix par transaction dégressifs (en euros)
+// Plus le volume augmente, plus le prix par transaction diminue
+// Compétitif avec Stripe Radar (€0.05/tx) mais avec plus de valeur
+const pricePerTransaction = {
+  starter: {
+    1000: 0.049,   // €0.049/tx = €49/mois pour 1k (compétitif avec Radar)
+    5000: 0.019,   // €0.019/tx = €95/mois pour 5k (-61% vs 1k)
+    10000: 0.014,  // €0.014/tx = €140/mois pour 10k (-71% vs 1k)
+    50000: 0.008,  // €0.008/tx = €400/mois pour 50k (-84% vs 1k)
+    100000: 0.006, // €0.006/tx = €600/mois pour 100k (-88% vs 1k)
+    500000: 0.004, // €0.004/tx = €2000/mois pour 500k (-92% vs 1k)
+    1000000: 0.003, // €0.003/tx = €3000/mois pour 1M+ (-94% vs 1k)
+  },
+  growth: {
+    1000: 0.099,   // €0.099/tx = €99/mois pour 1k
+    5000: 0.039,   // €0.039/tx = €195/mois pour 5k (-61% vs 1k)
+    10000: 0.029,  // €0.029/tx = €290/mois pour 10k (-71% vs 1k)
+    50000: 0.016,  // €0.016/tx = €800/mois pour 50k (-84% vs 1k)
+    100000: 0.012, // €0.012/tx = €1200/mois pour 100k (-88% vs 1k)
+    500000: 0.008, // €0.008/tx = €4000/mois pour 500k (-92% vs 1k)
+    1000000: 0.006, // €0.006/tx = €6000/mois pour 1M+ (-94% vs 1k)
+  },
+};
+
 const pricingTiers = [
-  { limit: 10000, label: "10k", starter: 99, growth: 199 },
-  { limit: 50000, label: "50k", starter: 199, growth: 299 },
-  { limit: 100000, label: "100k", starter: 299, growth: 499 },
-  { limit: 500000, label: "500k", starter: 499, growth: 899 },
-  { limit: 1000000, label: "1M", starter: 899, growth: 1499 },
-  { limit: 5000000, label: "5M", starter: 1499, growth: 2999 },
-  { limit: 10000000, label: "10M+", starter: 2499, growth: 4999 },
-];
+  { limit: 1000, label: "1k" },
+  { limit: 5000, label: "5k" },
+  { limit: 10000, label: "10k" },
+  { limit: 50000, label: "50k" },
+  { limit: 100000, label: "100k" },
+  { limit: 500000, label: "500k" },
+  { limit: 1000000, label: "1M+" },
+].map((tier) => ({
+  ...tier,
+  starter: Math.round(tier.limit * pricePerTransaction.starter[tier.limit as keyof typeof pricePerTransaction.starter]),
+  growth: Math.round(tier.limit * pricePerTransaction.growth[tier.limit as keyof typeof pricePerTransaction.growth]),
+}));
 
 export default function Pricing() {
   const [isAnnual, setIsAnnual] = useState(true);
@@ -33,10 +61,15 @@ export default function Pricing() {
 
   const currentTier = pricingTiers[tierIndex];
 
+  const getPricePerTransaction = (planType: "starter" | "growth") => {
+    return pricePerTransaction[planType][currentTier.limit as keyof typeof pricePerTransaction.starter];
+  };
+
   const paidPlans = [
     {
       name: "STARTER",
       price: currentTier.starter,
+      pricePerTx: getPricePerTransaction("starter"),
       description: "For growing projects.",
       limits: [
         `${currentTier.label} transactions/mo`,
@@ -54,6 +87,7 @@ export default function Pricing() {
     {
       name: "GROWTH",
       price: currentTier.growth,
+      pricePerTx: getPricePerTransaction("growth"),
       description: "For scaling businesses.",
       limits: [
         `${currentTier.label} transactions/mo`,
@@ -107,8 +141,8 @@ export default function Pricing() {
               className="mb-2 h-4"
             />
             <div className="flex justify-between text-zinc-500 text-[10px] font-medium uppercase tracking-wider">
-              <span>10k</span>
-              <span>10M+</span>
+              <span>1k</span>
+              <span>1M+</span>
             </div>
           </div>
 
@@ -189,13 +223,16 @@ export default function Pricing() {
                   <div className="mb-5 pb-5 border-b border-white/5">
                     <div className="flex items-baseline gap-1">
                       <span className="text-3xl font-bold text-white tracking-tight">
-                        ${isAnnual
+                        €{isAnnual
                           ? plan.price
                           : Math.round(Number(plan.price) * 1.2)}
                       </span>
                       <span className="text-zinc-500 font-medium text-sm">
                         /mo
                       </span>
+                    </div>
+                    <div className="text-[10px] text-zinc-400 mt-1.5 font-medium">
+                      €{plan.pricePerTx.toFixed(4)} per transaction
                     </div>
                     {isAnnual && (
                       <div className="text-[10px] text-zinc-500 mt-1 font-medium">

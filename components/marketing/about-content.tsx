@@ -15,21 +15,21 @@ const stats = [
 const values = [
   {
     icon: Shield,
-    title: "Security First",
+    title: "Total Transparency",
     description:
-      "Protecting your data and transactions is our absolute priority.",
+      "Every decision explained in plain language. No black boxes, no opaque scores.",
   },
   {
     icon: Zap,
-    title: "Continuous Innovation",
+    title: "Instant Setup",
     description:
-      "We use the latest AI advancements to stay one step ahead of fraud.",
+      "5-minute OAuth connection. Enterprise protection without enterprise complexity.",
   },
   {
     icon: Users,
-    title: "Customer Centric",
+    title: "Built for SMBs",
     description:
-      "Our success is measured by the peace of mind we bring to our clients.",
+      "€99-799/month pricing with GPT-4 powered technology. No €5K minimums.",
   },
 ];
 
@@ -54,7 +54,7 @@ export function AboutContent() {
               transition={{ duration: 0.5 }}
               className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight"
             >
-              Securing the Digital Economy
+              Fraud Detection That Makes Sense
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -62,8 +62,8 @@ export function AboutContent() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-xl text-zinc-400 leading-relaxed max-w-2xl mx-auto"
             >
-              Orylo was born from a simple mission: to enable businesses to grow
-              without fearing fraud.
+              We believe Stripe merchants deserve enterprise-grade fraud protection
+              without enterprise prices or complexity.
             </motion.p>
           </div>
 
@@ -100,20 +100,19 @@ export function AboutContent() {
               </h2>
               <div className="space-y-6 text-zinc-400 text-lg">
                 <p>
-                  Online fraud is a plague costing businesses billions every
-                  year. At Orylo, we believe technology shouldn't be a source of
-                  worry, but a driver for growth.
+                  <strong className="text-white">For Stripe merchants processing €10K-500K/month</strong> who
+                  lose 1-3% of revenue to fraud and chargebacks but can&apos;t justify
+                  €2K+/month enterprise solutions.
                 </p>
                 <p>
-                  We have developed proprietary technology based on artificial
-                  intelligence that analyzes thousands of data points in
-                  real-time to detect suspicious behaviors before they become
-                  problems.
+                  <strong className="text-white">Fraud Shield by Orylo</strong> blocks fraudulent transactions
+                  in real-time while explaining every decision in plain language —
+                  not opaque probability scores.
                 </p>
                 <p>
-                  Our team of cybersecurity and data science experts works
-                  tirelessly to refine our models and protect our clients
-                  against emerging threats.
+                  <strong className="text-white">Unlike Stripe Radar or enterprise solutions,</strong> we deploy
+                  in 5 minutes via OAuth and use GPT-4 multi-agent analysis to provide
+                  transparent, auditable fraud decisions at SMB-friendly pricing.
                 </p>
               </div>
             </motion.div>
