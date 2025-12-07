@@ -1,7 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, Zap, Gift, TrendingUp, X, ArrowRight } from "lucide-react";
+import {
+  Check,
+  Zap,
+  Gift,
+  TrendingUp,
+  X,
+  ArrowRight,
+} from "lucide-react";
 import { useState } from "react";
 import {
   Card,
