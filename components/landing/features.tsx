@@ -81,7 +81,7 @@ export default function Features() {
   return (
     <section id="features" className="py-32 relative overflow-hidden bg-black">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top, var(--tw-gradient-stops))] from-indigo-900/20 via-transparent to-transparent" />
       <div className="absolute top-1/2 left-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-[128px] -translate-y-1/2" />
       <div className="absolute top-1/2 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-[128px] -translate-y-1/2" />
 
@@ -109,7 +109,7 @@ export default function Features() {
           >
             Enterprise protection.
             <br />
-            <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
               SMB pricing.
             </span>
           </motion.h2>
@@ -121,8 +121,8 @@ export default function Features() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-xl text-zinc-400 max-w-2xl mx-auto"
           >
-            GPT-4 powered fraud detection that explains every decision.
-            Setup in 5 minutes via OAuth. From €99/month.
+            AI fraud detection that explains every decision.
+            Set up in 5 minutes via OAuth. From €99/month.
           </motion.p>
         </div>
 
@@ -138,13 +138,13 @@ export default function Features() {
           >
             <div className="relative h-full min-h-[320px] rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-indigo-500/30 transition-all duration-500">
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${features[0].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                className={`absolute inset-0 bg-linear-to-br ${features[0].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
               />
 
               <div className="relative z-10 h-full flex flex-col justify-between">
                 <div>
                   <div
-                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${features[0].gradient} mb-6 shadow-lg shadow-indigo-500/20`}
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[0].gradient} mb-6 shadow-lg shadow-indigo-500/20`}
                   >
                     <DollarSign className="w-7 h-7 text-white" />
                   </div>
@@ -169,7 +169,7 @@ export default function Features() {
 
                   <div className="text-right">
                     <div
-                      className={`text-5xl md:text-6xl font-black bg-gradient-to-r ${features[0].gradient} bg-clip-text text-transparent`}
+                      className={`text-5xl md:text-6xl font-black bg-linear-to-r ${features[0].gradient} bg-clip-text text-transparent`}
                     >
                       {features[0].stat}
                     </div>
@@ -192,13 +192,13 @@ export default function Features() {
           >
             <div className="relative h-full min-h-[320px] rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-violet-500/30 transition-all duration-500">
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${features[1].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                className={`absolute inset-0 bg-linear-to-br ${features[1].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
               />
 
               <div className="relative z-10 h-full flex flex-col justify-between">
                 <div>
                   <div
-                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${features[1].gradient} mb-6 shadow-lg shadow-violet-500/20`}
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[1].gradient} mb-6 shadow-lg shadow-violet-500/20`}
                   >
                     <Zap className="w-7 h-7 text-white" />
                   </div>
@@ -214,7 +214,7 @@ export default function Features() {
                 <div className="flex items-center gap-2 mt-6">
                   <Clock className="w-5 h-5 text-violet-400" />
                   <span
-                    className={`text-3xl font-black bg-gradient-to-r ${features[1].gradient} bg-clip-text text-transparent`}
+                    className={`text-3xl font-black bg-linear-to-r ${features[1].gradient} bg-clip-text text-transparent`}
                   >
                     {features[1].stat}
                   </span>
@@ -236,13 +236,13 @@ export default function Features() {
           >
             <div className="relative h-full min-h-[280px] rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-purple-500/30 transition-all duration-500">
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${features[2].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                className={`absolute inset-0 bg-linear-to-br ${features[2].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
               />
 
               <div className="relative z-10 h-full flex flex-col md:flex-row md:items-center md:justify-between gap-8">
                 <div className="flex-1">
                   <div
-                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${features[2].gradient} mb-6 shadow-lg shadow-purple-500/20`}
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[2].gradient} mb-6 shadow-lg shadow-purple-500/20`}
                   >
                     <Brain className="w-7 h-7 text-white" />
                   </div>
@@ -256,7 +256,7 @@ export default function Features() {
                 </div>
 
                 {/* Example explanation */}
-                <div className="flex-shrink-0 md:max-w-sm">
+                <div className="shrink-0 md:max-w-sm">
                   <div className="rounded-2xl bg-black/50 border border-purple-500/10 p-6">
                     <div className="flex items-center gap-2 mb-3">
                       <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
@@ -269,7 +269,7 @@ export default function Features() {
                     </p>
                     <div className="flex items-center gap-2 mt-4 pt-4 border-t border-white/5">
                       <div
-                        className={`text-xs font-bold bg-gradient-to-r ${features[2].gradient} bg-clip-text text-transparent`}
+                        className={`text-xs font-bold bg-linear-to-r ${features[2].gradient} bg-clip-text text-transparent`}
                       >
                         Risk score: 94/100
                       </div>
@@ -290,13 +290,13 @@ export default function Features() {
           >
             <div className="relative h-full min-h-[280px] rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-indigo-400/30 transition-all duration-500">
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${features[3].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                className={`absolute inset-0 bg-linear-to-br ${features[3].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
               />
 
               <div className="relative z-10 h-full flex flex-col justify-between">
                 <div>
                   <div
-                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${features[3].gradient} mb-6 shadow-lg shadow-indigo-400/20`}
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[3].gradient} mb-6 shadow-lg shadow-indigo-400/20`}
                   >
                     <BarChart3 className="w-7 h-7 text-white" />
                   </div>
@@ -337,13 +337,13 @@ export default function Features() {
           >
             <div className="relative h-full min-h-[280px] rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-violet-400/30 transition-all duration-500">
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${features[4].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                className={`absolute inset-0 bg-linear-to-br ${features[4].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
               />
 
               <div className="relative z-10 h-full flex flex-col justify-between">
                 <div>
                   <div
-                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${features[4].gradient} mb-6 shadow-lg shadow-violet-400/20`}
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[4].gradient} mb-6 shadow-lg shadow-violet-400/20`}
                   >
                     <Target className="w-7 h-7 text-white" />
                   </div>
@@ -358,7 +358,7 @@ export default function Features() {
 
                 <div className="mt-6">
                   <div
-                    className={`text-4xl font-black bg-gradient-to-r ${features[4].gradient} bg-clip-text text-transparent`}
+                    className={`text-4xl font-black bg-linear-to-r ${features[4].gradient} bg-clip-text text-transparent`}
                   >
                     {features[4].stat}
                   </div>
