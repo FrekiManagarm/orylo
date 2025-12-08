@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import React from "react";
+import { HeroDashboardAnimation } from "@/components/landing/hero-dashboard-animation";
 
 export default function Hero() {
   const mouseX = useMotionValue(0);
@@ -127,7 +128,7 @@ export default function Hero() {
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-indigo-500" />
-              <span>From €99/month</span>
+              <span>Start FREE • Scale from €99/month</span>
             </div>
           </motion.div>
         </div>
@@ -144,17 +145,8 @@ export default function Hero() {
           }}
           className="mt-20 relative perspective-1000"
         >
-          <div className="relative mx-auto max-w-6xl rounded-2xl border border-white/10 bg-zinc-900/50 p-2 backdrop-blur-sm shadow-2xl shadow-indigo-500/10">
-            <div className="rounded-xl overflow-hidden bg-black aspect-video relative border border-white/5">
-              <div className="absolute inset-0 bg-linear-to-br from-zinc-900/50 to-black flex items-center justify-center">
-                <div className="text-center">
-                  <BarChart3 className="w-16 h-16 text-white/20 mx-auto mb-4" />
-                  <span className="text-zinc-500 font-medium">
-                    Orylo Dashboard
-                  </span>
-                </div>
-              </div>
-            </div>
+          <div className="relative mx-auto max-w-6xl rounded-2xl border border-white/10 bg-zinc-900/50 p-2 backdrop-blur-sm shadow-2xl shadow-indigo-500/10 h-[500px]">
+            <HeroDashboardAnimation />
           </div>
 
           {/* Glow effect behind dashboard */}

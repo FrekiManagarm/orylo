@@ -340,28 +340,19 @@ export default function Pricing() {
         >
           <div className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="flex items-start gap-4">
+              <div className="flex items-center gap-4">
                 <div className="p-2 rounded-lg bg-white/10 text-white hidden md:block">
                   <Gift className="w-5 h-5" />
                 </div>
                 <div className="text-center md:text-left">
-                  <h3 className="text-lg font-bold text-white mb-1">
-                    Just getting started?
+                  <h3 className="text-lg font-bold text-white">
+                    New to Fraud Detection?
                   </h3>
                   <p className="text-sm text-zinc-400 mb-3 max-w-md">
-                    Try our Free plan with 1000 transactions/mo, 7-day history,
-                    and basic risk scoring. Perfect for testing.
+                    Start FREE with 1,000 transactions/month.
+                    <br />
+                    No credit card. No commitment. Just protection.
                   </p>
-                  <div className="flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-2">
-                    <div className="flex items-center gap-1.5">
-                      <Check className="w-3 h-3 text-zinc-500" />
-                      <span className="text-xs text-zinc-400">No credit card</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Check className="w-3 h-3 text-zinc-500" />
-                      <span className="text-xs text-zinc-400">Basic features</span>
-                    </div>
-                  </div>
                 </div>
               </div>
               <Button
