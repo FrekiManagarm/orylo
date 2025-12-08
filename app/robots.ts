@@ -15,6 +15,8 @@ export default function robots(): MetadataRoute.Robots {
           "/cgu",
           "/contact",
           "/privacy",
+          "/blog",
+          "/blog/*",
         ],
         disallow: [
           "/dashboard/",

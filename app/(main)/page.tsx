@@ -1,5 +1,6 @@
 import Cta from "@/components/landing/cta";
 import Features from "@/components/landing/features";
+import RoiCalculator from "@/components/landing/roi-calculator";
 import Footer from "@/components/landing/footer";
 import Hero from "@/components/landing/hero";
 import Navbar from "@/components/landing/navbar";
@@ -9,22 +10,22 @@ import { Metadata } from "next";
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://orylo.app";
 
 export const metadata: Metadata = {
-  title: "Orylo - AI-Powered Fraud Detection for Stripe",
+  title: "Fraud Shield by Orylo - Stop Fraud. Understand Why.",
   description:
-    "Protect your Stripe transactions with AI. Orylo analyzes behaviors in real-time to detect fraud before it becomes a problem.",
+    "AI fraud detection that explains every decision. Enterprise protection for Stripe merchants in 5 minutes, not 5 months. From €99/month.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Orylo - AI-Powered Fraud Detection for Stripe",
+    title: "Fraud Shield by Orylo - Stop Fraud. Understand Why.",
     description:
-      "Protect your Stripe transactions with AI. Orylo analyzes behaviors in real-time to detect fraud before it becomes a problem.",
+      "AI fraud detection that explains every decision. Enterprise protection for Stripe merchants in 5 minutes, not 5 months. From €99/month.",
     url: baseUrl,
   },
   twitter: {
-    title: "Orylo - AI-Powered Fraud Detection for Stripe",
+    title: "Fraud Shield by Orylo - Stop Fraud. Understand Why.",
     description:
-      "Protect your Stripe transactions with AI. Orylo analyzes behaviors in real-time to detect fraud before it becomes a problem.",
+      "AI fraud detection that explains every decision. Enterprise protection for Stripe merchants in 5 minutes, not 5 months. From €99/month.",
   },
 };
 
@@ -36,6 +37,7 @@ export default function Home() {
       <main>
         <Hero />
         <Features />
+        <RoiCalculator />
         <Pricing />
         <Cta />
       </main>

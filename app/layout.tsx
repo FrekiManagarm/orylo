@@ -24,6 +24,24 @@ export const metadata: Metadata = {
   },
   description:
     "Protect your Stripe transactions with AI. Orylo analyzes behaviors in real-time to detect fraud before it becomes a problem.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "32x32" },
+      {
+        url: "/favicon.ico",
+        sizes: "32x32",
+        type: "image/png",
+      },
+      {
+        url: "/favicon.ico",
+        sizes: "16x16",
+        type: "image/png",
+      },
+    ],
+    apple: [
+      { url: "/favicon.ico", sizes: "32x32" },
+    ],
+  },
   keywords: [
     "fraud detection",
     "Stripe",

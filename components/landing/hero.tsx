@@ -68,9 +68,9 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-5xl md:text-8xl font-bold tracking-tight mb-8 text-white"
           >
-            Detect fraud <br />
+            Stop fraud. <br />
             <span className="bg-clip-text text-transparent bg-linear-to-b from-white to-white/40">
-              before it costs you
+              Understand why.
             </span>
           </motion.h1>
 
@@ -80,9 +80,8 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-xl text-zinc-400 mb-12 max-w-2xl leading-relaxed"
           >
-            Orylo analyzes every Stripe transaction with AI. Block 80% of fraud,
-            reduce chargebacks, and protect your account. 
-            Setup in 5 minutes, zero code.
+            AI-powered protection for Stripe merchants.
+            Every decision explained. Setup in 5 minutes, not 5 months.
           </motion.p>
 
           <motion.div
@@ -120,15 +119,15 @@ export default function Hero() {
           >
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-indigo-500" />
-              <span>One-click Stripe connection</span>
+              <span>5-minute Stripe OAuth setup</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-indigo-500" />
-              <span>Free plan available</span>
+              <span>Transparent AI decisions</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-indigo-500" />
-              <span>Zero code required</span>
+              <span>From €99/month</span>
             </div>
           </motion.div>
         </div>
