@@ -18,6 +18,7 @@ export const organization = pgTable("organization", {
   logo: text("logo"),
   createdAt: timestamp("created_at").notNull(),
   metadata: text("metadata"),
+  phoneNumber: text("phone_number"),
   smsNotifications: boolean("sms_notifications").default(false).notNull(),
   emailNotifications: boolean("email_notifications").default(false).notNull(),
 });
