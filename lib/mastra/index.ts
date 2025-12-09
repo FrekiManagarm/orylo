@@ -2,13 +2,12 @@ import { Mastra } from "@mastra/core/mastra";
 import { LibSQLStore } from "@mastra/libsql";
 import { PinoLogger } from "@mastra/loggers";
 import { createFraudAnalyzer } from "./agents/fraud-analyzer";
-import { openai } from "@ai-sdk/openai";
 
 // Create fraud analyzer agent with default OpenAI model
 const fraudAnalyzer = createFraudAnalyzer({
   provider: "openai",
   model: "gpt-4o",
-  temperature: 0.1,
+  temperature: 0.3,
 });
 
 export const mastra = new Mastra({

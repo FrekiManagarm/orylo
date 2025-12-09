@@ -5,6 +5,7 @@ import {
   FileText,
   Link as LinkIcon,
   Shield,
+  AlertCircle,
 } from "lucide-react";
 
 export type Submenu = {
@@ -52,22 +53,28 @@ export function proMenuList(pathname: string): Group[] {
           icon: FileText,
         },
         {
-          href: `/dashboard/connect`,
-          label: "Connect",
-          active: pathname === `/dashboard/connect`,
-          icon: LinkIcon,
-        },
-        {
           href: `/dashboard/rules`,
           label: "Rules",
           active: pathname === `/dashboard/rules`,
           icon: Shield,
+        },
+        {
+          href: `/dashboard/alerts`,
+          label: "Alerts",
+          active: pathname === `/dashboard/alerts`,
+          icon: AlertCircle,
         },
       ],
     },
     {
       groupLabel: "Autre",
       menus: [
+        {
+          href: `/dashboard/connect`,
+          label: "Connect",
+          active: pathname === `/dashboard/connect`,
+          icon: LinkIcon,
+        },
         {
           href: `/dashboard/settings`,
           label: "Settings",
