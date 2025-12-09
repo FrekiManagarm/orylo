@@ -355,13 +355,13 @@ const DashboardHome = () => {
         {/* Usage & Quick Actions Column - 4 columns */}
         <div className="col-span-12 md:col-span-4 space-y-6">
           {/* Usage Card */}
-          <Card className="border-white/5 backdrop-blur-xl relative overflow-hidden bg-gradient-to-br from-indigo-500/10 via-zinc-900/50 to-zinc-900/50">
+          <Card className="border-white/5 backdrop-blur-xl relative overflow-hidden bg-linear-to-br from-indigo-500/10 via-zinc-900/50 to-zinc-900/50">
             <div className="absolute top-0 right-0 p-4 opacity-10">
               <Activity className="w-24 h-24 text-indigo-500" />
             </div>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-white">API Usage</CardTitle>
+                <CardTitle className="text-white">Transactions usage</CardTitle>
                 <Badge
                   variant="secondary"
                   className="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"

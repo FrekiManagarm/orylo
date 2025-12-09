@@ -78,7 +78,7 @@ const AlertsPage = () => {
   };
 
   return (
-    <div className="bg-black min-h-screen space-y-8 p-8 md:p-12 relative overflow-hidden">
+    <div className="bg-black min-h-screen space-y-8 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-indigo-900/20 via-zinc-900/0 to-zinc-900/0 pointer-events-none" />
 
