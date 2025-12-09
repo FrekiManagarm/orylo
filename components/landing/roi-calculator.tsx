@@ -204,29 +204,41 @@ export default function RoiCalculator() {
               </div>
 
               {/* Savings Card - Highlighted */}
-              <div className="flex-1 rounded-3xl border border-indigo-500/30 bg-zinc-900/80 backdrop-blur-xl p-8 relative overflow-hidden flex flex-col justify-center">
-                <div className="absolute inset-0 bg-linear-to-br from-indigo-500/20 via-purple-500/10 to-transparent" />
+              <div className="flex-1 rounded-3xl border border-indigo-500/30 bg-zinc-900/80 backdrop-blur-xl p-8 relative overflow-hidden flex flex-col justify-center shadow-2xl shadow-indigo-500/10">
+                <div className="absolute inset-0 bg-linear-to-br from-indigo-500/20 via-purple-500/10 to-transparent opacity-50" />
+
+                {/* Glow effect behind the number */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-indigo-500/20 rounded-full blur-[64px] pointer-events-none" />
 
                 <div className="relative z-10 text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 mb-6">
-                    <TrendingUp className="w-6 h-6" />
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-500/20 text-indigo-300 mb-6 shadow-inner shadow-indigo-500/20 border border-indigo-500/20">
+                    <TrendingUp className="w-7 h-7" />
                   </div>
 
-                  <h3 className="text-zinc-400 font-medium mb-4">Potential savings with Orylo</h3>
-                  <div className="text-5xl md:text-6xl font-black text-white tracking-tight mb-2">
+                  <h3 className="text-zinc-300 font-medium mb-4 text-lg">Potential savings with Orylo</h3>
+                  <div className="text-5xl md:text-7xl font-black text-white tracking-tight mb-3 drop-shadow-lg">
                     {formatCurrency(savings)}
                   </div>
-                  <p className="text-indigo-300 text-sm font-medium bg-indigo-500/10 inline-block px-3 py-1 rounded-full border border-indigo-500/20">
+                  <p className="text-indigo-300 text-sm font-semibold bg-indigo-500/10 inline-block px-4 py-1.5 rounded-full border border-indigo-500/20 shadow-sm shadow-indigo-500/10">
                     per month
                   </p>
 
-                  <div className="mt-8 pt-8 border-t border-white/5">
-                    <div className="text-zinc-500 text-sm mb-4">
+                  <div className="mt-10 pt-8 border-t border-white/10">
+                    <div className="text-zinc-400 text-sm mb-5 font-medium">
                       Starting at just €99/month
                     </div>
-                    <a href="#pricing" className="inline-flex items-center justify-center w-full gap-2 px-6 py-3 rounded-xl bg-white text-black font-semibold hover:bg-zinc-200 transition-colors">
-                      Start now
-                      <ArrowRight className="w-4 h-4" />
+                    <a
+                      href="#pricing"
+                      className="group relative inline-flex flex-col items-center justify-center w-full gap-1.5 px-6 py-4 rounded-xl bg-linear-to-r from-indigo-600 to-purple-600 text-white font-bold transition-all shadow-lg shadow-indigo-500/25 hover:shadow-2xl hover:shadow-indigo-500/50 hover:-translate-y-1 overflow-hidden"
+                    >
+                      <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                      <span className="relative z-10 text-xl tracking-tight">
+                        Save {formatCurrency(savings * 12)}/year
+                      </span>
+                      <span className="relative z-10 inline-flex items-center gap-2 text-sm font-medium text-white/90">
+                        Start Free Trial
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                      </span>
                     </a>
                   </div>
                 </div>

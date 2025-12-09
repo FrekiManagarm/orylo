@@ -27,29 +27,27 @@ import { cn } from "@/lib/utils";
 // Prix par transaction dégressifs (en euros)
 // Plus le volume augmente, plus le prix par transaction diminue
 // Compétitif avec Stripe Radar (€0.05/tx) mais avec plus de valeur
+// Ratio Starter/Growth maintenu à ~2x pour cohérence
 const pricePerTransaction = {
   starter: {
-    1000: 0.049,   // €0.049/tx = €49/mois pour 1k (compétitif avec Radar)
-    5000: 0.019,   // €0.019/tx = €95/mois pour 5k (-61% vs 1k)
-    10000: 0.014,  // €0.014/tx = €140/mois pour 10k (-71% vs 1k)
-    50000: 0.008,  // €0.008/tx = €400/mois pour 50k (-84% vs 1k)
-    100000: 0.006, // €0.006/tx = €600/mois pour 100k (-88% vs 1k)
-    500000: 0.004, // €0.004/tx = €2000/mois pour 500k (-92% vs 1k)
-    1000000: 0.003, // €0.003/tx = €3000/mois pour 1M+ (-94% vs 1k)
+    5000: 0.0198,   // €0.0198/tx = €99/mois pour 5k
+    10000: 0.014,   // €0.014/tx = €140/mois pour 10k (-29% vs 5k)
+    50000: 0.008,   // €0.008/tx = €400/mois pour 50k (-60% vs 5k)
+    100000: 0.006,  // €0.006/tx = €600/mois pour 100k (-70% vs 5k)
+    500000: 0.004,  // €0.004/tx = €2000/mois pour 500k (-80% vs 5k)
+    1000000: 0.003, // €0.003/tx = €3000/mois pour 1M+ (-85% vs 5k)
   },
   growth: {
-    1000: 0.099,   // €0.099/tx = €99/mois pour 1k
-    5000: 0.039,   // €0.039/tx = €195/mois pour 5k (-61% vs 1k)
-    10000: 0.029,  // €0.029/tx = €290/mois pour 10k (-71% vs 1k)
-    50000: 0.016,  // €0.016/tx = €800/mois pour 50k (-84% vs 1k)
-    100000: 0.012, // €0.012/tx = €1200/mois pour 100k (-88% vs 1k)
-    500000: 0.008, // €0.008/tx = €4000/mois pour 500k (-92% vs 1k)
-    1000000: 0.006, // €0.006/tx = €6000/mois pour 1M+ (-94% vs 1k)
+    5000: 0.0398,   // €0.0398/tx = €199/mois pour 5k
+    10000: 0.028,   // €0.028/tx = €280/mois pour 10k (-30% vs 5k)
+    50000: 0.016,   // €0.016/tx = €800/mois pour 50k (-60% vs 5k)
+    100000: 0.012,  // €0.012/tx = €1200/mois pour 100k (-70% vs 5k)
+    500000: 0.008,  // €0.008/tx = €4000/mois pour 500k (-80% vs 5k)
+    1000000: 0.006, // €0.006/tx = €6000/mois pour 1M+ (-85% vs 5k)
   },
 };
 
 const pricingTiers = [
-  { limit: 1000, label: "1k" },
   { limit: 5000, label: "5k" },
   { limit: 10000, label: "10k" },
   { limit: 50000, label: "50k" },
@@ -72,6 +70,15 @@ export default function Pricing() {
     return pricePerTransaction[planType][currentTier.limit as keyof typeof pricePerTransaction.starter];
   };
 
+  // Détermine le "Best Value" selon le volume
+  // Pour les petits volumes (< 50k), Starter offre le meilleur rapport qualité/prix
+  // Pour les gros volumes (>= 50k), Growth devient plus intéressant avec ses fonctionnalités avancées
+  const getBestValuePlan = () => {
+    return currentTier.limit >= 50000 ? "growth" : "starter";
+  };
+
+  const bestValuePlan = getBestValuePlan();
+
   const paidPlans = [
     {
       name: "STARTER",
@@ -82,7 +89,7 @@ export default function Pricing() {
         `${currentTier.label} transactions/mo`,
         "30-day history",
         "3 custom rules",
-        "2 AI agents (basic + geo)",
+        "Basic AI agents (basic + geo)",
         "No API access",
         "No webhooks",
         "Priority email support",
@@ -90,17 +97,18 @@ export default function Pricing() {
       cta: "Start trial",
       popular: false,
       icon: Zap,
+      planType: "starter" as const,
     },
     {
       name: "GROWTH",
       price: currentTier.growth,
       pricePerTx: getPricePerTransaction("growth"),
-      description: "For scaling businesses.",
+      description: "For scaling businesses with advanced AI.",
       limits: [
         `${currentTier.label} transactions/mo`,
         "6-month history",
         "Unlimited custom rules",
-        "4 AI agents (basic + geo + behavior + identity)",
+        "Advanced AI agents (behavior + identity analysis)",
         "API access",
         "Outbound webhooks",
         "Priority support (< 24h)",
@@ -108,6 +116,7 @@ export default function Pricing() {
       cta: "Get started",
       popular: true,
       icon: TrendingUp,
+      planType: "growth" as const,
     },
   ];
 
@@ -148,7 +157,7 @@ export default function Pricing() {
               className="mb-2 h-4"
             />
             <div className="flex justify-between text-zinc-500 text-[10px] font-medium uppercase tracking-wider">
-              <span>1k</span>
+              <span>5k</span>
               <span>1M+</span>
             </div>
           </div>
@@ -175,7 +184,7 @@ export default function Pricing() {
             >
               Annual{" "}
               <span className="text-[9px] font-bold bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded-full border border-green-500/20">
-                -20%
+                -33%
               </span>
             </span>
           </div>
@@ -209,14 +218,24 @@ export default function Pricing() {
                     <div className="p-1.5 rounded-md bg-white/5 border border-white/10 text-white">
                       <plan.icon className="w-4 h-4" />
                     </div>
-                    {plan.popular && (
-                      <Badge
-                        variant="secondary"
-                        className="bg-indigo-500/20 text-indigo-300 border-indigo-500/20 text-[10px] px-1.5 py-0.5 h-5"
-                      >
-                        Most popular
-                      </Badge>
-                    )}
+                    <div className="flex flex-col items-end gap-1.5">
+                      {plan.planType === bestValuePlan && (
+                        <Badge
+                          variant="secondary"
+                          className="bg-green-500/20 text-green-300 border-green-500/20 text-[10px] px-1.5 py-0.5 h-5"
+                        >
+                          Best Value
+                        </Badge>
+                      )}
+                      {plan.popular && (
+                        <Badge
+                          variant="secondary"
+                          className="bg-indigo-500/20 text-indigo-300 border-indigo-500/20 text-[10px] px-1.5 py-0.5 h-5"
+                        >
+                          Most popular
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                   <CardTitle className="text-lg font-bold text-white mb-1">
                     {plan.name}
@@ -232,14 +251,16 @@ export default function Pricing() {
                       <span className="text-3xl font-bold text-white tracking-tight">
                         €{isAnnual
                           ? plan.price
-                          : Math.round(Number(plan.price) * 1.2)}
+                          : Math.round(Number(plan.price) / 0.67)}
                       </span>
                       <span className="text-zinc-500 font-medium text-sm">
                         /mo
                       </span>
                     </div>
                     <div className="text-[10px] text-zinc-400 mt-1.5 font-medium">
-                      €{plan.pricePerTx.toFixed(4)} per transaction
+                      €{(isAnnual
+                        ? plan.pricePerTx
+                        : plan.pricePerTx / 0.67).toFixed(4)} per transaction
                     </div>
                     {isAnnual && (
                       <div className="text-[10px] text-zinc-500 mt-1 font-medium">
@@ -319,28 +340,19 @@ export default function Pricing() {
         >
           <div className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="flex items-start gap-4">
+              <div className="flex items-center gap-4">
                 <div className="p-2 rounded-lg bg-white/10 text-white hidden md:block">
                   <Gift className="w-5 h-5" />
                 </div>
                 <div className="text-center md:text-left">
-                  <h3 className="text-lg font-bold text-white mb-1">
-                    Just getting started?
+                  <h3 className="text-lg font-bold text-white">
+                    New to Fraud Detection?
                   </h3>
                   <p className="text-sm text-zinc-400 mb-3 max-w-md">
-                    Try our Free plan with 100 transactions/mo, 7-day history,
-                    and basic risk scoring. Perfect for testing.
+                    Start FREE with 1,000 transactions/month.
+                    <br />
+                    No credit card. No commitment. Just protection.
                   </p>
-                  <div className="flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-2">
-                    <div className="flex items-center gap-1.5">
-                      <Check className="w-3 h-3 text-zinc-500" />
-                      <span className="text-xs text-zinc-400">No credit card</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Check className="w-3 h-3 text-zinc-500" />
-                      <span className="text-xs text-zinc-400">Basic features</span>
-                    </div>
-                  </div>
                 </div>
               </div>
               <Button
