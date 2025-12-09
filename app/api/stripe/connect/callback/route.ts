@@ -1,0 +1,166 @@
+import { NextRequest, NextResponse } from "next/server";
+import { jwtVerify } from "jose";
+import Stripe from "stripe";
+import { db } from "@/lib/db";
+import { stripeConnections } from "@/lib/schemas/stripeConnections";
+import { settings } from "@/lib/schemas/settings";
+import { encrypt } from "@/lib/stripe/encryption";
+import { setupWebhooks } from "@/lib/stripe/webhooks-setup";
+import { eq } from "drizzle-orm";
+
+export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const code = searchParams.get("code");
+  const state = searchParams.get("state");
+  const error = searchParams.get("error");
+  const errorDescription = searchParams.get("error_description");
+
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://app.orylo.com";
+
+  // Handle OAuth errors
+  if (error) {
+    console.error(`❌ Stripe OAuth error: ${error} - ${errorDescription}`);
+    return NextResponse.redirect(
+      `${baseUrl}/dashboard?error=stripe_connection_failed&reason=${error}`,
+    );
+  }
+
+  if (!code || !state) {
+    return NextResponse.redirect(
+      `${baseUrl}/dashboard?error=stripe_connection_failed&reason=missing_params`,
+    );
+  }
+
+  try {
+    // Verify and decode state JWT
+    const secret = new TextEncoder().encode(
+      process.env.STRIPE_CONNECT_STATE_SECRET || process.env.BETTER_AUTH_SECRET,
+    );
+
+    const { payload } = await jwtVerify(state, secret);
+
+    const organizationId = payload.organizationId as string;
+    const userId = payload.userId as string;
+
+    if (!organizationId || !userId) {
+      throw new Error("Invalid state token");
+    }
+
+    console.log(
+      `🔄 Processing Stripe OAuth callback for org ${organizationId}`,
+    );
+
+    // Exchange authorization code for access token
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: "2024-12-18.acacia",
+    });
+
+    const response = await stripe.oauth.token({
+      grant_type: "authorization_code",
+      code,
+    });
+
+    console.log(
+      `✅ Received Stripe tokens for account ${response.stripe_user_id}`,
+    );
+
+    // Encrypt sensitive tokens
+    const encryptedAccessToken = encrypt(response.access_token);
+    const encryptedRefreshToken = response.refresh_token
+      ? encrypt(response.refresh_token)
+      : null;
+
+    // Check if connection already exists
+    const existingConnection = await db.query.stripeConnections.findFirst({
+      where: eq(stripeConnections.organizationId, organizationId),
+    });
+
+    let connectionId: string;
+
+    if (existingConnection) {
+      // Update existing connection
+      await db
+        .update(stripeConnections)
+        .set({
+          stripeAccountId: response.stripe_user_id,
+          accessToken: encryptedAccessToken,
+          refreshToken: encryptedRefreshToken,
+          scope: response.scope,
+          isActive: true,
+          lastSyncAt: new Date(),
+        })
+        .where(eq(stripeConnections.id, existingConnection.id));
+
+      connectionId = existingConnection.id;
+      console.log(
+        `✅ Updated existing Stripe connection ${connectionId} for org ${organizationId}`,
+      );
+    } else {
+      // Create new connection
+      const [newConnection] = await db
+        .insert(stripeConnections)
+        .values({
+          organizationId,
+          stripeAccountId: response.stripe_user_id,
+          accessToken: encryptedAccessToken,
+          refreshToken: encryptedRefreshToken,
+          scope: response.scope,
+          isActive: true,
+        })
+        .returning();
+
+      connectionId = newConnection.id;
+      console.log(
+        `✅ Created new Stripe connection ${connectionId} for org ${organizationId}`,
+      );
+    }
+
+    // Setup webhooks on the connected account
+    const webhookResult = await setupWebhooks(
+      response.stripe_user_id,
+      response.access_token,
+      organizationId,
+    );
+
+    if (webhookResult) {
+      console.log(
+        `✅ Webhooks configured for account ${response.stripe_user_id}`,
+      );
+    } else {
+      console.warn(
+        `⚠️ Failed to setup webhooks for account ${response.stripe_user_id}`,
+      );
+    }
+
+    // Create default settings if they don't exist
+    const existingSettings = await db.query.settings.findFirst({
+      where: eq(settings.organizationId, organizationId),
+    });
+
+    if (!existingSettings) {
+      await db.insert(settings).values({
+        organizationId,
+        blockThreshold: 80,
+        reviewThreshold: 60,
+        require3DSScore: 70,
+        emailAlerts: true,
+        autoBlock: true,
+        shadowMode: false,
+      });
+
+      console.log(`✅ Created default settings for org ${organizationId}`);
+    }
+
+    // Redirect to dashboard with success message
+    return NextResponse.redirect(
+      `${baseUrl}/dashboard?success=stripe_connected`,
+    );
+  } catch (error) {
+    console.error("❌ Error processing Stripe OAuth callback:", error);
+
+    return NextResponse.redirect(
+      `${baseUrl}/dashboard?error=stripe_connection_failed&reason=server_error`,
+    );
+  }
+}
+
