@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   const error = searchParams.get("error");
   const errorDescription = searchParams.get("error_description");
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://app.orylo.com";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://orylo.app";
 
   // Handle OAuth errors
   if (error) {
@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
 
     // Exchange authorization code for access token
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2024-12-18.acacia",
+      apiVersion: "2025-11-17.clover",
     });
 
     const response = await stripe.oauth.token({
@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
     );
 
     // Encrypt sensitive tokens
-    const encryptedAccessToken = encrypt(response.access_token);
+    const encryptedAccessToken = encrypt(response.access_token!);
     const encryptedRefreshToken = response.refresh_token
       ? encrypt(response.refresh_token)
       : null;
@@ -100,11 +100,11 @@ export async function GET(req: NextRequest) {
       const [newConnection] = await db
         .insert(stripeConnections)
         .values({
-          organizationId,
-          stripeAccountId: response.stripe_user_id,
+          organizationId: organizationId as string,
+          stripeAccountId: response.stripe_user_id!,
           accessToken: encryptedAccessToken,
           refreshToken: encryptedRefreshToken,
-          scope: response.scope,
+          scope: response.scope!,
           isActive: true,
         })
         .returning();
@@ -117,8 +117,8 @@ export async function GET(req: NextRequest) {
 
     // Setup webhooks on the connected account
     const webhookResult = await setupWebhooks(
-      response.stripe_user_id,
-      response.access_token,
+      response.stripe_user_id!,
+      response.access_token!,
       organizationId,
     );
 
@@ -163,4 +163,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
