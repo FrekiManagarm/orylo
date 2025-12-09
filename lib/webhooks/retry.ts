@@ -30,7 +30,7 @@ export async function retryFailedWebhooks() {
       };
 
       if (log.eventType === "payment_intent.created") {
-        await handlePaymentIntentCreated(event as any, client);
+        // await handlePaymentIntentCreated(event as any, client);
       }
     } catch (error) {}
   }

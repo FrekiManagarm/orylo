@@ -52,7 +52,7 @@ export const getIPGeolocationTool = createTool({
         isProxy: false,
         isDatacenter: false,
         isSuspicious: false,
-        riskLevel: "low",
+        riskLevel: "low" as const,
         signals: { private_ip: true },
       };
     }
@@ -121,11 +121,13 @@ export const getIPGeolocationTool = createTool({
       return {
         country: "Unknown",
         countryCode: "XX",
+        city: undefined,
+        region: undefined,
         isVPN: false,
         isProxy: false,
         isDatacenter: false,
         isSuspicious: false,
-        riskLevel: "low",
+        riskLevel: "low" as const,
         signals: { error: true },
       };
     }

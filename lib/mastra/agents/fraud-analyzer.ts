@@ -211,12 +211,12 @@ function parseAIResponse(
   }
 
   // Extract reasoning
-  const reasoningMatch = text.match(/REASONING[:\s]+(.+?)(?=\n[A-Z_]+:|$)/is);
+  const reasoningMatch = text.match(/REASONING[:\s]+(.+?)(?=\n[A-Z_]+:|$)/);
   const reasoning =
     reasoningMatch?.[1]?.trim() || "AI analysis completed - review recommended";
 
   // Extract key signals
-  const signalsMatch = text.match(/KEY[_\s]SIGNALS[:\s]+(.+?)$/is);
+  const signalsMatch = text.match(/KEY[_\s]SIGNALS[:\s]+(.+?)$/);
   if (signalsMatch) {
     signals.keySignals = signalsMatch[1].trim();
   }
@@ -228,4 +228,3 @@ function parseAIResponse(
     signals,
   };
 }
-

@@ -47,7 +47,7 @@ export async function getStripeClient(
 
     // Return authenticated Stripe client
     return new Stripe(accessToken, {
-      apiVersion: "2024-12-18.acacia",
+      apiVersion: "2025-11-17.clover",
     });
   } catch (error) {
     console.error(
@@ -96,7 +96,7 @@ export async function refreshAccessToken(
 
     // Exchange refresh token for new access token
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2024-12-18.acacia",
+      apiVersion: "2025-11-17.clover",
     });
 
     const response = await stripe.oauth.token({
@@ -108,7 +108,7 @@ export async function refreshAccessToken(
     await db
       .update(stripeConnections)
       .set({
-        accessToken: encrypt(response.access_token),
+        accessToken: encrypt(response.access_token!),
         lastSyncAt: new Date(),
       })
       .where(eq(stripeConnections.id, connectionId));
@@ -140,7 +140,7 @@ export async function disconnectStripeAccount(
     }
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2024-12-18.acacia",
+      apiVersion: "2025-11-17.clover",
     });
 
     // Deauthorize the account
@@ -158,7 +158,7 @@ export async function disconnectStripeAccount(
     if (connection.webhookEndpointId) {
       try {
         const accountStripe = new Stripe(decrypt(connection.accessToken), {
-          apiVersion: "2024-12-18.acacia",
+          apiVersion: "2025-11-17.clover",
         });
 
         await accountStripe.webhookEndpoints.del(connection.webhookEndpointId);
