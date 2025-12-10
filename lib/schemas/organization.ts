@@ -18,11 +18,11 @@ export const organization = pgTable("organization", {
   logo: text("logo"),
   createdAt: timestamp("created_at").notNull(),
   metadata: text("metadata"),
-  phoneNumber: text("phone_number"),
-  smsNotifications: boolean("sms_notifications").default(false).notNull(),
-  emailNotifications: boolean("email_notifications").default(false).notNull(),
-  trialEndsAt: timestamp("trial_ends_at"),
-  trialStartedAt: timestamp("trial_started_at"),
+  phoneNumber: text("phoneNumber"),
+  smsNotifications: boolean("smsNotifications").default(false).notNull(),
+  emailNotifications: boolean("emailNotifications").default(false).notNull(),
+  trialEndsAt: timestamp("trialEndsAt"),
+  trialStartedAt: timestamp("trialStartedAt"),
 });
 
 export const organizationRelations = relations(

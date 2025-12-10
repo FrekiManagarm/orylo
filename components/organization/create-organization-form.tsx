@@ -106,7 +106,7 @@ export function CreateOrganizationForm({ userName }: { userName: string }) {
       toast.success("Organization created", {
         description: "You can now access the dashboard.",
       });
-      router.push("/dashboard");
+      router.push("/dashboard/connect");
     });
   };
 

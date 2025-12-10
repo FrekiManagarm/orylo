@@ -19,18 +19,23 @@ export const auth = betterAuth({
           additionalFields: {
             phoneNumber: {
               type: "string",
+              required: false,
             },
             smsNotifications: {
               type: "boolean",
+              required: false,
             },
             emailNotifications: {
               type: "boolean",
+              required: false,
             },
             trialEndsAt: {
               type: "date",
+              required: false,
             },
             trialStartedAt: {
               type: "date",
+              required: false,
             },
           },
         },

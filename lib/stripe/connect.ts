@@ -155,13 +155,17 @@ export async function disconnectStripeAccount(
     }
 
     // Delete webhook endpoint if exists
+    // Les webhooks Connect sont gérés au niveau plateforme
     if (connection.webhookEndpointId) {
       try {
-        const accountStripe = new Stripe(decrypt(connection.accessToken), {
+        const platformStripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
           apiVersion: "2025-11-17.clover",
         });
 
-        await accountStripe.webhookEndpoints.del(connection.webhookEndpointId);
+        await platformStripe.webhookEndpoints.del(connection.webhookEndpointId);
+        console.log(
+          `✅ Deleted Connect webhook ${connection.webhookEndpointId}`,
+        );
       } catch (error) {
         console.warn("Error deleting webhook endpoint:", error);
       }

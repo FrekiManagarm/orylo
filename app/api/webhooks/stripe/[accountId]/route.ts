@@ -18,6 +18,11 @@ type RouteContext = {
   params: Promise<{ accountId: string }>;
 };
 
+// Désactiver le body parsing automatique pour préserver le corps brut
+// Nécessaire pour la vérification de signature Stripe
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 /**
  * Stripe webhook handler for connected accounts
  */
@@ -53,7 +58,6 @@ export async function POST(req: NextRequest, context: RouteContext) {
     const organizationId = connection.organizationId;
 
     // 2. Verify webhook signature
-    const body = await req.text();
     const signature = req.headers.get("stripe-signature");
 
     if (!signature || !connection.webhookSecret) {
@@ -64,17 +68,47 @@ export async function POST(req: NextRequest, context: RouteContext) {
       );
     }
 
-    const webhookSecret = decrypt(connection.webhookSecret);
+    // Lire le corps brut comme Buffer puis convertir en string
+    // Cela garantit que nous avons le corps exact envoyé par Stripe
+    const rawBody = await req.arrayBuffer();
+    const body = Buffer.from(rawBody).toString("utf-8");
+
+    let webhookSecret = decrypt(connection.webhookSecret);
+
+    // En développement local avec Stripe CLI, utiliser le secret depuis l'env si disponible
+    // Pour obtenir ce secret : stripe listen --forward-to http://localhost:3000/api/webhooks/stripe/{accountId}
+    const stripeCliSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (stripeCliSecret && (webhookSecret === "whsec_local_dev_secret" || process.env.NODE_ENV === "development")) {
+      console.log("🔧 Using Stripe CLI webhook secret from environment");
+      webhookSecret = stripeCliSecret;
+    }
+
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
       apiVersion: "2025-11-17.clover",
     });
 
     let event: Stripe.Event;
+    console.log("🔍 Webhook secret:", webhookSecret.substring(0, 10) + "...");
+    console.log("🔍 Signature:", signature);
+    console.log("🔍 Body type:", typeof body);
+    console.log("🔍 Body length:", body.length);
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err) {
       console.error("❌ Webhook signature verification failed:", err);
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    }
+
+    // Vérification de sécurité : s'assurer que l'événement provient bien du compte attendu
+    // Les webhooks Connect incluent le champ 'account' pour identifier le compte source
+    if (event.account && event.account !== accountId) {
+      console.error(
+        `❌ Account mismatch: expected ${accountId}, got ${event.account}`,
+      );
+      return NextResponse.json(
+        { error: "Account mismatch" },
+        { status: 400 },
+      );
     }
 
     console.log(`✅ Webhook verified: ${event.type} (${event.id})`);

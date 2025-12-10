@@ -7,7 +7,7 @@ import { Organization } from "@/lib/schemas";
 import { CreateOrganizationForm } from "@/components/organization/create-organization-form";
 
 export const metadata: Metadata = {
-  title: "Create an organization | Orylo",
+  title: "Create an organization",
   description:
     "Set up your Orylo space and access the dashboard by creating your first organization.",
   robots: {
