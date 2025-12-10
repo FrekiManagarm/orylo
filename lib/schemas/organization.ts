@@ -21,6 +21,8 @@ export const organization = pgTable("organization", {
   phoneNumber: text("phone_number"),
   smsNotifications: boolean("sms_notifications").default(false).notNull(),
   emailNotifications: boolean("email_notifications").default(false).notNull(),
+  trialEndsAt: timestamp("trial_ends_at"),
+  trialStartedAt: timestamp("trial_started_at"),
 });
 
 export const organizationRelations = relations(

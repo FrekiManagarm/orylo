@@ -11,7 +11,33 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  plugins: [autumn(), organization(), twoFactor()],
+  plugins: [
+    autumn(),
+    organization({
+      schema: {
+        organization: {
+          additionalFields: {
+            phoneNumber: {
+              type: "string",
+            },
+            smsNotifications: {
+              type: "boolean",
+            },
+            emailNotifications: {
+              type: "boolean",
+            },
+            trialEndsAt: {
+              type: "date",
+            },
+            trialStartedAt: {
+              type: "date",
+            },
+          },
+        },
+      },
+    }),
+    twoFactor(),
+  ],
 });
 
 export type AuthSession = typeof auth.$Infer.Session;
