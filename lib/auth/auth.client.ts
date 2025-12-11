@@ -6,30 +6,37 @@ import {
 
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_APP_URL,
-  plugins: [organizationClient({
-    schema: {
-      organization: {
-        additionalFields: {
-          smsNotifications: {
-            type: "boolean",
-            required: false,
+  plugins: [
+    organizationClient({
+      schema: {
+        organization: {
+          additionalFields: {
+            smsNotifications: {
+              type: "boolean",
+              required: false,
+            },
+            phoneNumber: {
+              type: "string",
+              required: false,
+            },
+            emailNotifications: {
+              type: "boolean",
+              required: false,
+            },
+            trialEndsAt: {
+              type: "date",
+              required: false,
+            },
+            trialStartedAt: {
+              type: "date",
+              required: false,
+            },
           },
-          emailNotifications: {
-            type: "boolean",
-            required: false,
-          },
-          trialEndsAt: {
-            type: "date",
-            required: false,
-          },
-          trialStartedAt: {
-            type: "date",
-            required: false,
-          },
-        }
-      }
-    }
-  }), twoFactorClient()],
+        },
+      },
+    }),
+    twoFactorClient(),
+  ],
 });
 
 export const {

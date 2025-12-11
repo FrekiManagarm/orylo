@@ -19,7 +19,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -444,8 +443,8 @@ const DashboardHome = () => {
       </div>
 
       {/* Recent Transactions Table */}
-      <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-xl overflow-hidden">
-        <CardHeader className="flex flex-row items-center justify-between border-b border-white/5 bg-white/2">
+      <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-xl overflow-hidden p-0 gap-0">
+        <CardHeader className="flex flex-row items-center justify-between border-white/5 bg-white/2 p-5">
           <div className="space-y-1">
             <CardTitle className="text-white">Recent Transactions</CardTitle>
             <CardDescription className="text-zinc-400">
@@ -462,7 +461,7 @@ const DashboardHome = () => {
             </Button>
           </Link>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="p-0 border-t border-white/5">
           <Table>
             <TableHeader className="bg-white/2">
               <TableRow className="border-white/5 hover:bg-transparent">

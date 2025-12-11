@@ -5,6 +5,13 @@ import { auth } from "@/lib/auth/auth.server";
 import { Organization } from "@/lib/schemas";
 
 import { ConnectStripeCard } from "./connect-stripe-card";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Stripe Connect | Orylo",
+  description:
+    "Connect your Stripe account to analyze transactions and prevent fraud in real-time.",
+};
 
 const ConnectPage = async () => {
   const requestHeaders = await headers();

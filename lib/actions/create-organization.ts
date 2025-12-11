@@ -20,6 +20,7 @@ export async function createOrganizationAction(
         name: values.name,
         slug: values.slug,
         logo: values.logo || undefined,
+        phoneNumber: "",
         smsNotifications: false,
         emailNotifications: false,
         trialEndsAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),

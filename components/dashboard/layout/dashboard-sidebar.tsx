@@ -48,7 +48,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AccountSwitchDialog } from "../dialogs/account-switch-dialog";
 import { toast } from "sonner";
-import { Credenza } from "@/components/ui/credenza";
 import {
   Collapsible,
   CollapsibleContent,
@@ -231,7 +230,7 @@ export function DashboardSidebar({
                   <>
                     <DropdownMenuGroup>
                       <DropdownMenuLabel className="text-xs font-medium px-2 py-1.5 text-muted-foreground">
-                        Comptes professionnels
+                        Accounts
                       </DropdownMenuLabel>
                       <div className="max-h-[200px] overflow-y-auto my-1 rounded-md space-y-0.5 pr-1">
                         {organizations.map((org) => (
@@ -286,7 +285,9 @@ export function DashboardSidebar({
                                 {org.name}
                               </span>
                               <span className="text-xs text-muted-foreground mt-1">
-                                Compte professionnel
+                                {org.trialEndsAt
+                                  ? "Trial account"
+                                  : "Paid account"}
                               </span>
                             </div>
                             {activeOrganization?.id === org.id && (
@@ -299,7 +300,7 @@ export function DashboardSidebar({
                     <DropdownMenuGroup>
                       <DropdownMenuSeparator className="my-2" />
                       <DropdownMenuLabel className="text-xs font-medium px-2 py-1.5 text-muted-foreground">
-                        Nouvelle entreprise
+                        New company
                       </DropdownMenuLabel>
                       <DropdownMenuItem
                         onClick={() => setShowCredenza(true)}
@@ -310,10 +311,7 @@ export function DashboardSidebar({
                         </div>
                         <div className="flex flex-col">
                           <span className="text-sm font-medium leading-none">
-                            Créer une entreprise
-                          </span>
-                          <span className="text-xs text-muted-foreground mt-1">
-                            Devenez professionnel
+                            Add a company
                           </span>
                         </div>
                       </DropdownMenuItem>

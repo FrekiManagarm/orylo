@@ -8,6 +8,8 @@ import { auth } from "@/lib/auth/auth.server";
 import { Organization } from "@/lib/schemas";
 
 export const metadata: Metadata = {
+  title: "Dashboard",
+  description: "Dashboard",
   robots: {
     index: false,
     follow: false,
@@ -31,16 +33,17 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
     redirect("/sign-in");
   }
 
-  const organizationsList = (organizations ?? []) as Organization[];
-
-  if (!organizationsList.length) {
+  if (!organizations.length) {
     redirect("/create-organization");
   }
 
   return (
     <SidebarProvider defaultOpen={sidebarOpen}>
       <div className="flex w-screen h-screen">
-        <DashboardSidebar session={session} organizations={organizationsList} />
+        <DashboardSidebar
+          session={session}
+          organizations={organizations as Organization[]}
+        />
         <SidebarInset>
           <DashboardHeader />
           <div className="w-full overflow-y-auto p-4 mb-4">{children}</div>
