@@ -2,7 +2,7 @@
 
 import { JSX, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { CheckCircle2, Loader2, RefreshCw } from "lucide-react";
+import { CheckCircle2, Loader2, Plus, RefreshCw, Trash2 } from "lucide-react";
 
 import {
   Card,
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type ConnectionStatus = {
   id: string;
@@ -20,11 +21,12 @@ type ConnectionStatus = {
   isActive: boolean;
   lastSyncAt: string | null;
   webhookEndpointId: string | null;
+  createdAt: string;
 };
 
 type StatusResponse = {
   organizationId: string;
-  connection: ConnectionStatus | null;
+  connections: ConnectionStatus[];
 };
 
 type ConnectStripeCardProps = {
@@ -34,10 +36,12 @@ type ConnectStripeCardProps = {
 export function ConnectStripeCard({
   organizationId,
 }: ConnectStripeCardProps): JSX.Element {
-  const [connection, setConnection] = useState<ConnectionStatus | null>(null);
+  const [connections, setConnections] = useState<ConnectionStatus[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isStarting, setIsStarting] = useState(false);
-  const [isDisconnecting, setIsDisconnecting] = useState(false);
+  const [disconnectingIds, setDisconnectingIds] = useState<Set<string>>(
+    new Set(),
+  );
   const [error, setError] = useState<string | null>(null);
 
   const loadStatus = async () => {
@@ -57,7 +61,11 @@ export function ConnectStripeCard({
       }
 
       const data = (await res.json()) as StatusResponse;
-      setConnection(data.connection);
+      // Filter only active connections or show inactive ones differently?
+      // Usually we want to show active ones.
+      setConnections(
+        (data.connections || []).filter((c) => c.isActive !== false),
+      );
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Erreur inconnue côté client.";
@@ -100,20 +108,19 @@ export function ConnectStripeCard({
         err instanceof Error ? err.message : "Erreur inconnue côté client.";
       setError(message);
       toast.error("Erreur", { description: message });
-    } finally {
       setIsStarting(false);
     }
   };
 
-  const handleDisconnect = async () => {
-    setIsDisconnecting(true);
+  const handleDisconnect = async (connectionId: string) => {
+    setDisconnectingIds((prev) => new Set(prev).add(connectionId));
     setError(null);
 
     try {
       const res = await fetch("/api/stripe/connect/disconnect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ organizationId }),
+        body: JSON.stringify({ organizationId, connectionId }),
       });
 
       if (!res.ok) {
@@ -134,123 +141,155 @@ export function ConnectStripeCard({
       setError(message);
       toast.error("Erreur", { description: message });
     } finally {
-      setIsDisconnecting(false);
+      setDisconnectingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(connectionId);
+        return next;
+      });
     }
   };
-
-  const isActive = connection?.isActive;
 
   return (
     <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-xl">
       <CardHeader>
-        <CardTitle className="text-white flex items-center gap-2">
-          Stripe Integration
-          {isActive ? (
-            <Badge
-              variant="secondary"
-              className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-            >
-              Active
-            </Badge>
-          ) : (
-            <Badge
-              variant="secondary"
-              className="bg-zinc-800 text-zinc-400 border-white/10"
-            >
-              Inactive
-            </Badge>
-          )}
-        </CardTitle>
-        <CardDescription className="text-zinc-400">
-          Connect your Stripe account to analyze transactions and prevent fraud
-          in real-time.
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <CardTitle className="text-white flex items-center gap-2">
+              Stripe Integration
+              <Badge
+                variant="secondary"
+                className="bg-zinc-800 text-zinc-400 border-white/10"
+              >
+                {connections.length} connected
+              </Badge>
+            </CardTitle>
+            <CardDescription className="text-zinc-400">
+              Connect your Stripe accounts to analyze transactions and prevent
+              fraud in real-time.
+            </CardDescription>
+          </div>
+          <Button
+            className="bg-[#635BFF] hover:bg-[#635BFF]/90 text-white"
+            onClick={handleConnect}
+            disabled={isStarting || isLoading}
+            size="sm"
+          >
+            {isStarting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Plus className="mr-2 h-4 w-4" />
+            )}
+            Connect Account
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="flex items-center gap-4 p-4 rounded-lg bg-white/5 border border-white/5">
-          <div className="h-12 w-12 rounded bg-[#635BFF] flex items-center justify-center text-white font-bold text-xl">
-            S
+        {error && (
+          <div className="p-3 text-sm text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-md">
+            {error}
           </div>
-          <div className="flex-1">
-            <h3 className="text-white font-medium">Stripe Account</h3>
-            <p className="text-sm text-zinc-400">
-              {isActive
-                ? `Connected to ${connection?.stripeAccountId}`
-                : "Not connected"}
+        )}
+
+        {isLoading ? (
+          <div className="flex items-center justify-center py-8 text-zinc-400">
+            <Loader2 className="h-6 w-6 animate-spin mr-2" />
+            Loading connections...
+          </div>
+        ) : connections.length === 0 ? (
+          <div className="text-center py-12 border border-dashed border-white/10 rounded-lg bg-white/5">
+            <div className="h-12 w-12 rounded bg-[#635BFF]/20 text-[#635BFF] flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+              S
+            </div>
+            <h3 className="text-white font-medium mb-1">
+              No accounts connected
+            </h3>
+            <p className="text-zinc-400 text-sm max-w-sm mx-auto mb-6">
+              Connect your first Stripe account to start analyzing your
+              transactions.
             </p>
-            {error && (
-              <p className="text-xs text-rose-400 mt-2">{error}</p>
-            )}
-          </div>
-          {isActive ? (
-            <Button
-              variant="destructive"
-              className="bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20"
-              onClick={handleDisconnect}
-              disabled={isDisconnecting || isLoading}
-            >
-              {isDisconnecting ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : null}
-              Disconnect
-            </Button>
-          ) : (
             <Button
               className="bg-[#635BFF] hover:bg-[#635BFF]/90 text-white"
               onClick={handleConnect}
-              disabled={isStarting || isLoading}
+              disabled={isStarting}
             >
               {isStarting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : null}
               Connect Stripe
             </Button>
-          )}
-        </div>
-
-        {isLoading && (
-          <div className="flex items-center gap-2 text-zinc-400 text-sm">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span>Récupération du statut…</span>
           </div>
-        )}
+        ) : (
+          <ScrollArea className="h-[400px] pr-4">
+            <div className="space-y-4">
+              {connections.map((connection) => (
+                <div
+                  key={connection.id}
+                  className="rounded-lg bg-white/5 border border-white/5 overflow-hidden"
+                >
+                  <div className="p-4 flex items-center gap-4">
+                    <div className="h-10 w-10 rounded bg-[#635BFF] flex items-center justify-center text-white font-bold text-lg shrink-0">
+                      S
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-white font-medium truncate">
+                          {connection.stripeAccountId}
+                        </h3>
+                        {connection.isActive && (
+                          <Badge
+                            variant="secondary"
+                            className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[10px] px-1.5 h-5"
+                          >
+                            Active
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-zinc-500 mt-1">
+                        Added on{" "}
+                        {new Date(connection.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10"
+                      onClick={() => handleDisconnect(connection.id)}
+                      disabled={disconnectingIds.has(connection.id)}
+                    >
+                      {disconnectingIds.has(connection.id) ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
 
-        {isActive && !isLoading && (
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="p-4 rounded-lg bg-white/5 border border-white/5">
-              <div className="flex items-center gap-2 mb-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                <span className="text-sm font-medium text-white">
-                  Sync Status
-                </span>
-              </div>
-              <p className="text-xs text-zinc-400">
-                Last synced:{" "}
-                {connection?.lastSyncAt
-                  ? new Date(connection.lastSyncAt).toLocaleString()
-                  : "Unknown"}
-              </p>
-              <Button
-                variant="link"
-                className="h-auto p-0 text-indigo-400 text-xs mt-2"
-                onClick={loadStatus}
-                disabled={isLoading}
-              >
-                <RefreshCw className="h-3 w-3 mr-1" /> Sync Now
-              </Button>
+                  <div className="bg-black/20 px-4 py-3 border-t border-white/5 grid grid-cols-2 gap-4 text-xs">
+                    <div>
+                      <div className="flex items-center gap-1.5 text-zinc-400 mb-1">
+                        <RefreshCw className="h-3 w-3" />
+                        Last Synced
+                      </div>
+                      <span className="text-zinc-300">
+                        {connection.lastSyncAt
+                          ? new Date(connection.lastSyncAt).toLocaleString()
+                          : "Never"}
+                      </span>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5 text-zinc-400 mb-1">
+                        <CheckCircle2 className="h-3 w-3" />
+                        Webhook
+                      </div>
+                      <span className="text-zinc-300 truncate block">
+                        {connection.webhookEndpointId || "Not configured"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="p-4 rounded-lg bg-white/5 border border-white/5">
-              <div className="flex items-center gap-2 mb-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                <span className="text-sm font-medium text-white">
-                  Webhooks
-                </span>
-              </div>
-              <p className="text-xs text-zinc-400">
-                Endpoint: {connection?.webhookEndpointId || "Not configured"}
-              </p>
-            </div>
-          </div>
+          </ScrollArea>
         )}
       </CardContent>
     </Card>

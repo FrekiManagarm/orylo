@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
     const orgList = (organizations ?? []) as Array<{ id: string }>;
     const body = await req.json();
     const organizationIdParam = body.organizationId as string | undefined;
+    const connectionId = body.connectionId as string | undefined;
 
     const resolvedOrganizationId =
       organizationIdParam || (orgList.length > 0 ? orgList[0]?.id : null);
@@ -38,15 +39,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const success = await disconnectStripeAccount(resolvedOrganizationId);
+    const success = await disconnectStripeAccount(
+      resolvedOrganizationId,
+      connectionId,
+    );
 
     return NextResponse.json({ success });
   } catch (error) {
     console.error("❌ Error disconnecting Stripe:", error);
     return NextResponse.json(
       {
-        error:
-          error instanceof Error ? error.message : "Internal server error",
+        error: error instanceof Error ? error.message : "Internal server error",
       },
       { status: 500 },
     );

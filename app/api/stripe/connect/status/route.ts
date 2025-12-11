@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 
 import { auth } from "@/lib/auth/auth.server";
-import { getStripeConnection } from "@/lib/stripe/connect";
+import {
+  getStripeConnection,
+  getStripeConnections,
+} from "@/lib/stripe/connect";
 
 export async function GET(req: NextRequest) {
   try {
@@ -43,26 +46,34 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const connection = await getStripeConnection(resolvedOrganizationId);
+    const connections = await getStripeConnections(resolvedOrganizationId);
+    const legacyConnection = await getStripeConnection(resolvedOrganizationId);
 
     return NextResponse.json({
       organizationId: resolvedOrganizationId,
-      connection: connection
+      connections: connections.map((conn) => ({
+        id: conn.id,
+        stripeAccountId: conn.stripeAccountId,
+        isActive: conn.isActive,
+        lastSyncAt: conn.lastSyncAt,
+        webhookEndpointId: conn.webhookEndpointId,
+        createdAt: conn.createdAt,
+      })),
+      connection: legacyConnection
         ? {
-          id: connection.id,
-          stripeAccountId: connection.stripeAccountId,
-          isActive: connection.isActive,
-          lastSyncAt: connection.lastSyncAt,
-          webhookEndpointId: connection.webhookEndpointId,
-        }
+            id: legacyConnection.id,
+            stripeAccountId: legacyConnection.stripeAccountId,
+            isActive: legacyConnection.isActive,
+            lastSyncAt: legacyConnection.lastSyncAt,
+            webhookEndpointId: legacyConnection.webhookEndpointId,
+          }
         : null,
     });
   } catch (error) {
     console.error("❌ Error getting Stripe connection status:", error);
     return NextResponse.json(
       {
-        error:
-          error instanceof Error ? error.message : "Internal server error",
+        error: error instanceof Error ? error.message : "Internal server error",
       },
       { status: 500 },
     );

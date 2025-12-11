@@ -89,7 +89,7 @@ const chartData = [
 
 const chartConfig = {
   total: {
-    label: "Total Tx",
+    label: "Total",
     color: "#818cf8",
   },
   blocked: {

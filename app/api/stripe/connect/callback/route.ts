@@ -70,9 +70,13 @@ export async function GET(req: NextRequest) {
       ? encrypt(response.refresh_token)
       : null;
 
-    // Check if connection already exists
+    // Check if connection already exists for this specific Stripe Account
     const existingConnection = await db.query.stripeConnections.findFirst({
-      where: eq(stripeConnections.organizationId, organizationId),
+      where: (connections, { and, eq }) =>
+        and(
+          eq(connections.organizationId, organizationId),
+          eq(connections.stripeAccountId, response.stripe_user_id!),
+        ),
     });
 
     let connectionId: string;
@@ -82,7 +86,6 @@ export async function GET(req: NextRequest) {
       await db
         .update(stripeConnections)
         .set({
-          stripeAccountId: response.stripe_user_id,
           accessToken: encryptedAccessToken,
           refreshToken: encryptedRefreshToken,
           scope: response.scope,
@@ -93,7 +96,7 @@ export async function GET(req: NextRequest) {
 
       connectionId = existingConnection.id;
       console.log(
-        `✅ Updated existing Stripe connection ${connectionId} for org ${organizationId}`,
+        `✅ Updated existing Stripe connection ${connectionId} for account ${response.stripe_user_id}`,
       );
     } else {
       // Create new connection

@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import { db } from "@/lib/db";
 import { stripeConnections } from "@/lib/schemas/stripeConnections";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { decrypt, encrypt } from "./encryption";
 import { CacheKeys, cacheGet, cacheSet, cacheDel } from "@/lib/redis";
 
@@ -78,6 +78,26 @@ export async function getStripeConnection(organizationId: string) {
 }
 
 /**
+ * Get all Stripe connections for an organization
+ */
+export async function getStripeConnections(organizationId: string) {
+  try {
+    const connections = await db.query.stripeConnections.findMany({
+      where: eq(stripeConnections.organizationId, organizationId),
+      orderBy: (connections, { desc }) => [desc(connections.createdAt)],
+    });
+
+    return connections;
+  } catch (error) {
+    console.error(
+      `Error fetching Stripe connections for org ${organizationId}:`,
+      error,
+    );
+    return [];
+  }
+}
+
+/**
  * Refresh Stripe access token using refresh token
  */
 export async function refreshAccessToken(
@@ -129,10 +149,18 @@ export async function refreshAccessToken(
  */
 export async function disconnectStripeAccount(
   organizationId: string,
+  connectionId?: string,
 ): Promise<boolean> {
   try {
+    const whereClause = connectionId
+      ? and(
+          eq(stripeConnections.id, connectionId),
+          eq(stripeConnections.organizationId, organizationId),
+        )
+      : eq(stripeConnections.organizationId, organizationId);
+
     const connection = await db.query.stripeConnections.findFirst({
-      where: eq(stripeConnections.organizationId, organizationId),
+      where: whereClause,
     });
 
     if (!connection) {
@@ -181,7 +209,7 @@ export async function disconnectStripeAccount(
     await cacheDel(CacheKeys.stripeConnection(organizationId));
 
     console.log(
-      `✅ Disconnected Stripe account for organization ${organizationId}`,
+      `✅ Disconnected Stripe account ${connection.stripeAccountId} for organization ${organizationId}`,
     );
     return true;
   } catch (error) {
