@@ -17,6 +17,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { CreateRuleDialog } from "./create-rule-dialog";
+import { useActiveOrganization } from "@/lib/auth/auth.client";
 
 // Mock data matching rules schema
 const rules = [
@@ -56,6 +58,8 @@ const rules = [
 ];
 
 const RulesClient = () => {
+  const { data: activeOrganization } = useActiveOrganization();
+
   const getActionColor = (action: string) => {
     switch (action) {
       case "block":
@@ -84,10 +88,9 @@ const RulesClient = () => {
             Configure automated decision logic for incoming transactions.
           </p>
         </div>
-        <Button className="bg-white text-black hover:bg-zinc-200">
-          <Plus className="mr-2 h-4 w-4" />
-          Create Rule
-        </Button>
+        {activeOrganization?.id && (
+          <CreateRuleDialog organizationId={activeOrganization.id} />
+        )}
       </div>
 
       <div className="relative z-10 grid gap-6">
