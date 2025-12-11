@@ -34,6 +34,7 @@ const pricePerTransaction = {
     10000: 0.014,   // €0.014/tx = €140/mois pour 10k (-29% vs 5k)
     50000: 0.008,   // €0.008/tx = €400/mois pour 50k (-60% vs 5k)
     100000: 0.006,  // €0.006/tx = €600/mois pour 100k (-70% vs 5k)
+    250000: 0.005,  // €0.005/tx = €1250/mois pour 250k (-75% vs 5k)
     500000: 0.004,  // €0.004/tx = €2000/mois pour 500k (-80% vs 5k)
     1000000: 0.003, // €0.003/tx = €3000/mois pour 1M+ (-85% vs 5k)
   },
@@ -42,6 +43,7 @@ const pricePerTransaction = {
     10000: 0.028,   // €0.028/tx = €280/mois pour 10k (-30% vs 5k)
     50000: 0.016,   // €0.016/tx = €800/mois pour 50k (-60% vs 5k)
     100000: 0.012,  // €0.012/tx = €1200/mois pour 100k (-70% vs 5k)
+    250000: 0.010,  // €0.010/tx = €2500/mois pour 250k (-75% vs 5k)
     500000: 0.008,  // €0.008/tx = €4000/mois pour 500k (-80% vs 5k)
     1000000: 0.006, // €0.006/tx = €6000/mois pour 1M+ (-85% vs 5k)
   },
@@ -52,6 +54,7 @@ const pricingTiers = [
   { limit: 10000, label: "10k" },
   { limit: 50000, label: "50k" },
   { limit: 100000, label: "100k" },
+  { limit: 250000, label: "250k" },
   { limit: 500000, label: "500k" },
   { limit: 1000000, label: "1M+" },
 ].map((tier) => ({

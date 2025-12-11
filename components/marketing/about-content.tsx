@@ -29,7 +29,7 @@ const values = [
     icon: Users,
     title: "Built for SMBs",
     description:
-      "€99-799/month pricing with GPT-4 powered technology. No €5K minimums.",
+      "Starting at €99/month with AI-powered fraud detection. No €5K minimums.",
   },
 ];
 
