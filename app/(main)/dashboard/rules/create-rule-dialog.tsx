@@ -9,7 +9,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -40,12 +39,11 @@ import {
   Plus,
   Loader2,
   ChevronRight,
-  ChevronLeft,
-  Check,
   Info,
   Zap,
   Filter,
   Sparkles,
+  ArrowRight,
 } from "lucide-react";
 import { createRule, type CreateRuleInput } from "@/lib/actions/rules";
 import { cn } from "@/lib/utils";
@@ -60,13 +58,9 @@ const createRuleFormSchema = z.object({
     .int()
     .min(0, "La priorité doit être supérieure ou égale à 0")
     .default(0),
-  action: z.enum(["block", "review", "require_3ds", "alert_only"], {
-    required_error: "Veuillez sélectionner une action",
-  }),
+  action: z.enum(["block", "review", "require_3ds", "alert_only"]),
   conditionField: z.string().min(1, "Le champ est requis"),
-  conditionOperator: z.enum(["gt", "lt", "eq", "in", "contains"], {
-    required_error: "Veuillez sélectionner un opérateur",
-  }),
+  conditionOperator: z.enum(["gt", "lt", "eq", "in", "contains"]),
   conditionValue: z.string().min(1, "La valeur est requise"),
   threshold: z.coerce.number().int().optional(),
 });
@@ -81,19 +75,16 @@ const steps = [
   {
     id: 1,
     title: "Informations",
-    description: "Nom et priorité de la règle",
     icon: Info,
   },
   {
     id: 2,
     title: "Action",
-    description: "Type d'action à effectuer",
     icon: Zap,
   },
   {
     id: 3,
     title: "Conditions",
-    description: "Critères de déclenchement",
     icon: Filter,
   },
 ];
@@ -103,7 +94,7 @@ export function CreateRuleDialog({ organizationId }: CreateRuleDialogProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const queryClient = useQueryClient();
 
-  const form = useForm<CreateRuleFormValues>({
+  const form = useForm({
     resolver: zodResolver(createRuleFormSchema),
     defaultValues: {
       name: "",
@@ -196,130 +187,94 @@ export function CreateRuleDialog({ organizationId }: CreateRuleDialogProps) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="bg-white text-black hover:bg-zinc-200 group">
-          <Plus className="mr-2 h-4 w-4 transition-transform group-hover:rotate-90 duration-200" />
+        <Button className="bg-white text-black hover:bg-zinc-200 border border-transparent shadow-none transition-all">
+          <Plus className="mr-2 h-4 w-4" />
           Créer une règle
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-zinc-900/95 border-white/10 text-white max-w-3xl max-h-[90vh] overflow-hidden backdrop-blur-xl">
-        {/* Background effects */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
-
-        <DialogHeader className="relative z-10 pb-6">
-          <DialogTitle className="text-2xl font-bold text-white">
-            Créer une nouvelle règle
-          </DialogTitle>
-          <DialogDescription className="text-zinc-400">
-            Étape {currentStep} sur {steps.length}
-          </DialogDescription>
-        </DialogHeader>
-
-        {/* Stepper */}
-        <div className="relative z-10 mb-8">
+      <DialogContent className="bg-zinc-950 border-white/5 text-white sm:max-w-[600px] overflow-hidden p-0 gap-0 shadow-2xl shadow-black/50">
+        <DialogHeader className="px-6 py-6 border-b border-white/5 bg-zinc-900/30">
           <div className="flex items-center justify-between">
-            {steps.map((step, index) => {
-              const StepIcon = step.icon;
-              const isCompleted = currentStep > step.id;
-              const isCurrent = currentStep === step.id;
+            <DialogTitle className="text-xl font-medium tracking-tight text-white">
+              Nouvelle règle
+            </DialogTitle>
+            <div className="flex items-center gap-1.5 bg-zinc-900/50 rounded-full px-3 py-1 border border-white/5">
+              <span className="text-xs font-medium text-zinc-400">
+                Étape {currentStep}
+              </span>
+              <span className="text-zinc-600">/</span>
+              <span className="text-xs font-medium text-zinc-600">
+                {steps.length}
+              </span>
+            </div>
+          </div>
+
+          {/* Minimalist Progress Bar */}
+          <div className="mt-6 flex items-center gap-2">
+            {steps.map((step) => {
+              const isActive = step.id === currentStep;
+              const isCompleted = step.id < currentStep;
 
               return (
-                <div key={step.id} className="flex items-center flex-1">
-                  <div className="flex flex-col items-center flex-1">
-                    <div
-                      className={cn(
-                        "flex items-center justify-center w-12 h-12 rounded-xl border-2 transition-all duration-300 mb-2",
-                        isCompleted &&
-                        "bg-indigo-500 border-indigo-500 shadow-lg shadow-indigo-500/30",
-                        isCurrent &&
-                        "bg-indigo-500/20 border-indigo-500 shadow-lg shadow-indigo-500/20 scale-110",
-                        !isCompleted &&
-                        !isCurrent &&
-                        "bg-zinc-900/50 border-white/10"
-                      )}
-                    >
-                      {isCompleted ? (
-                        <Check className="h-6 w-6 text-white" />
-                      ) : (
-                        <StepIcon
-                          className={cn(
-                            "h-5 w-5 transition-colors",
-                            isCurrent ? "text-indigo-400" : "text-zinc-500"
-                          )}
-                        />
-                      )}
-                    </div>
-                    <div className="text-center">
-                      <p
-                        className={cn(
-                          "text-sm font-semibold transition-colors",
-                          isCurrent || isCompleted
-                            ? "text-white"
-                            : "text-zinc-500"
-                        )}
-                      >
-                        {step.title}
-                      </p>
-                      <p className="text-xs text-zinc-500 hidden sm:block">
-                        {step.description}
-                      </p>
-                    </div>
-                  </div>
-                  {index < steps.length - 1 && (
-                    <div
-                      className={cn(
-                        "h-0.5 flex-1 mx-2 transition-all duration-300 mb-8",
-                        isCompleted
-                          ? "bg-indigo-500"
-                          : "bg-white/10"
-                      )}
-                    />
-                  )}
+                <div key={step.id} className="flex-1 flex flex-col gap-2 group">
+                  <div
+                    className={cn(
+                      "h-1 w-full rounded-full transition-all duration-300",
+                      isActive
+                        ? "bg-indigo-500"
+                        : isCompleted
+                          ? "bg-indigo-500/50"
+                          : "bg-zinc-800",
+                    )}
+                  />
+                  <span
+                    className={cn(
+                      "text-[10px] uppercase tracking-wider font-medium transition-colors duration-300",
+                      isActive
+                        ? "text-indigo-400"
+                        : isCompleted
+                          ? "text-zinc-400"
+                          : "text-zinc-600",
+                    )}
+                  >
+                    {step.title}
+                  </span>
                 </div>
               );
             })}
           </div>
-        </div>
+        </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="relative z-10">
-            <div className="min-h-[400px] overflow-hidden">
-              <AnimatePresence mode="wait">
-                {/* Étape 1: Informations de base */}
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col"
+          >
+            <div className="p-6 min-h-[400px]">
+              <AnimatePresence mode="wait" initial={false}>
                 {currentStep === 1 && (
                   <motion.div
                     key="step1"
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0.2 }}
                     className="space-y-6"
                   >
-                    <div className="p-6 rounded-xl bg-zinc-900/50 border border-white/5 backdrop-blur-sm space-y-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Info className="h-5 w-5 text-indigo-400" />
-                        <h3 className="text-base font-semibold text-white">
-                          Informations de base
-                        </h3>
-                      </div>
-                      <p className="text-sm text-zinc-400 mb-4">
-                        Donnez un nom unique à votre règle et définissez sa
-                        priorité d'exécution.
-                      </p>
-
+                    <div className="space-y-4">
                       <FormField
                         control={form.control}
                         name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-zinc-300">
+                            <FormLabel className="text-zinc-400 font-normal">
                               Nom de la règle
                             </FormLabel>
                             <FormControl>
                               <Input
                                 {...field}
-                                placeholder="Ex: Transactions à haut montant"
-                                className="bg-zinc-900/50 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500 h-11"
+                                placeholder="Ex: Transactions suspectes"
+                                className="bg-zinc-900/50 border-white/5 text-white placeholder:text-zinc-600 focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500/50 h-11 transition-colors"
                               />
                             </FormControl>
                             <FormMessage />
@@ -332,14 +287,14 @@ export function CreateRuleDialog({ organizationId }: CreateRuleDialogProps) {
                         name="description"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-zinc-300">
-                              Description (optionnelle)
+                            <FormLabel className="text-zinc-400 font-normal">
+                              Description
                             </FormLabel>
                             <FormControl>
                               <Textarea
                                 {...field}
-                                placeholder="Décrivez l'objectif de cette règle..."
-                                className="bg-zinc-900/50 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500 min-h-[100px] resize-none"
+                                placeholder="Objectif de cette règle..."
+                                className="bg-zinc-900/50 border-white/5 text-white placeholder:text-zinc-600 focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500/50 min-h-[100px] resize-none transition-colors"
                               />
                             </FormControl>
                             <FormMessage />
@@ -353,20 +308,18 @@ export function CreateRuleDialog({ organizationId }: CreateRuleDialogProps) {
                           name="priority"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-zinc-300">
+                              <FormLabel className="text-zinc-400 font-normal">
                                 Priorité
                               </FormLabel>
                               <FormControl>
                                 <Input
                                   {...field}
+                                  value={field.value as number}
                                   type="number"
                                   min="0"
-                                  className="bg-zinc-900/50 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500 h-11"
+                                  className="bg-zinc-900/50 border-white/5 text-white placeholder:text-zinc-600 focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500/50 h-11 transition-colors"
                                 />
                               </FormControl>
-                              <FormDescription className="text-xs text-zinc-500">
-                                Plus élevée = exécutée en premier
-                              </FormDescription>
                               <FormMessage />
                             </FormItem>
                           )}
@@ -376,22 +329,19 @@ export function CreateRuleDialog({ organizationId }: CreateRuleDialogProps) {
                           control={form.control}
                           name="enabled"
                           render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 p-4 bg-zinc-900/50">
-                              <div className="space-y-0.5">
-                                <FormLabel className="text-zinc-300">
-                                  Active
-                                </FormLabel>
-                                <FormDescription className="text-xs text-zinc-500">
-                                  Activer immédiatement
-                                </FormDescription>
+                            <FormItem className="flex flex-col justify-end pb-2">
+                              <div className="flex items-center justify-between p-3 rounded-lg border border-white/5 bg-zinc-900/30">
+                                <span className="text-sm text-zinc-300">
+                                  Statut actif
+                                </span>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="data-[state=checked]:bg-indigo-500"
+                                  />
+                                </FormControl>
                               </div>
-                              <FormControl>
-                                <Switch
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                  className="data-[state=checked]:bg-indigo-500"
-                                />
-                              </FormControl>
                             </FormItem>
                           )}
                         />
@@ -400,75 +350,72 @@ export function CreateRuleDialog({ organizationId }: CreateRuleDialogProps) {
                   </motion.div>
                 )}
 
-                {/* Étape 2: Action */}
                 {currentStep === 2 && (
                   <motion.div
                     key="step2"
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0.2 }}
                     className="space-y-6"
                   >
-                    <div className="p-6 rounded-xl bg-zinc-900/50 border border-white/5 backdrop-blur-sm space-y-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Zap className="h-5 w-5 text-orange-400" />
-                        <h3 className="text-base font-semibold text-white">
-                          Action à effectuer
-                        </h3>
-                      </div>
-                      <p className="text-sm text-zinc-400 mb-4">
-                        Choisissez l'action qui sera déclenchée lorsque les
-                        conditions de cette règle seront remplies.
-                      </p>
-
+                    <div className="space-y-4">
                       <FormField
                         control={form.control}
                         name="action"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-zinc-300">
-                              Type d'action
+                            <FormLabel className="text-zinc-400 font-normal">
+                              Action à déclencher
                             </FormLabel>
                             <Select
                               onValueChange={field.onChange}
                               defaultValue={field.value}
                             >
                               <FormControl>
-                                <SelectTrigger className="bg-zinc-900/50 border-white/10 text-white focus:ring-indigo-500 h-11">
+                                <SelectTrigger className="bg-zinc-900/50 border-white/5 text-white focus:ring-indigo-500/50 focus:border-indigo-500/50 h-12">
                                   <SelectValue placeholder="Sélectionner une action" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent className="bg-zinc-900 border-white/10">
                                 <SelectItem
                                   value="block"
-                                  className="text-rose-400 focus:bg-rose-500/10 focus:text-rose-400"
+                                  className="text-rose-400 focus:text-rose-400"
                                 >
-                                  🛑 BLOCK - Bloquer la transaction
+                                  <div className="flex items-center gap-2">
+                                    <div className="h-2 w-2 rounded-full bg-rose-500" />
+                                    <span>Bloquer la transaction</span>
+                                  </div>
                                 </SelectItem>
                                 <SelectItem
                                   value="review"
-                                  className="text-orange-400 focus:bg-orange-500/10 focus:text-orange-400"
+                                  className="text-orange-400 focus:text-orange-400"
                                 >
-                                  ⚠️ REVIEW - Marquer pour révision
+                                  <div className="flex items-center gap-2">
+                                    <div className="h-2 w-2 rounded-full bg-orange-500" />
+                                    <span>Marquer pour révision</span>
+                                  </div>
                                 </SelectItem>
                                 <SelectItem
                                   value="require_3ds"
-                                  className="text-indigo-400 focus:bg-indigo-500/10 focus:text-indigo-400"
+                                  className="text-indigo-400 focus:text-indigo-400"
                                 >
-                                  🔐 REQUIRE 3DS - Exiger 3D Secure
+                                  <div className="flex items-center gap-2">
+                                    <div className="h-2 w-2 rounded-full bg-indigo-500" />
+                                    <span>Exiger 3D Secure</span>
+                                  </div>
                                 </SelectItem>
                                 <SelectItem
                                   value="alert_only"
-                                  className="text-zinc-300 focus:bg-white/10 focus:text-white"
+                                  className="text-zinc-300 focus:text-white"
                                 >
-                                  🔔 ALERT ONLY - Alerte uniquement
+                                  <div className="flex items-center gap-2">
+                                    <div className="h-2 w-2 rounded-full bg-zinc-500" />
+                                    <span>Alerte uniquement</span>
+                                  </div>
                                 </SelectItem>
                               </SelectContent>
                             </Select>
-                            <FormDescription className="text-xs text-zinc-400">
-                              L'action sera exécutée automatiquement
-                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -479,19 +426,20 @@ export function CreateRuleDialog({ organizationId }: CreateRuleDialogProps) {
                         name="threshold"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-zinc-300">
-                              Seuil (optionnel)
+                            <FormLabel className="text-zinc-400 font-normal">
+                              Seuil de déclenchement (optionnel)
                             </FormLabel>
                             <FormControl>
                               <Input
                                 {...field}
+                                value={(field.value as number) ?? ""}
                                 type="number"
                                 placeholder="Ex: 5"
-                                className="bg-zinc-900/50 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500 h-11"
+                                className="bg-zinc-900/50 border-white/5 text-white placeholder:text-zinc-600 focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500/50 h-11 transition-colors"
                               />
                             </FormControl>
                             <FormDescription className="text-xs text-zinc-500">
-                              Nombre d'occurrences avant déclenchement
+                              Nombre d'occurrences nécessaires
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -501,46 +449,31 @@ export function CreateRuleDialog({ organizationId }: CreateRuleDialogProps) {
                   </motion.div>
                 )}
 
-                {/* Étape 3: Conditions */}
                 {currentStep === 3 && (
                   <motion.div
                     key="step3"
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0.2 }}
                     className="space-y-6"
                   >
-                    <div className="p-6 rounded-xl bg-zinc-900/50 border border-white/5 backdrop-blur-sm space-y-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Filter className="h-5 w-5 text-purple-400" />
-                        <h3 className="text-base font-semibold text-white">
-                          Conditions de déclenchement
-                        </h3>
-                      </div>
-                      <p className="text-sm text-zinc-400 mb-4">
-                        Définissez les critères qui déclencheront l'exécution
-                        de cette règle.
-                      </p>
-
+                    <div className="space-y-4">
                       <FormField
                         control={form.control}
                         name="conditionField"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-zinc-300">
+                            <FormLabel className="text-zinc-400 font-normal">
                               Champ à analyser
                             </FormLabel>
                             <FormControl>
                               <Input
                                 {...field}
-                                placeholder="Ex: amount, country, ip, velocity_ip_1h"
-                                className="bg-zinc-900/50 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500 h-11"
+                                placeholder="Ex: amount"
+                                className="bg-zinc-900/50 border-white/5 text-white placeholder:text-zinc-600 focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500/50 h-11 transition-colors"
                               />
                             </FormControl>
-                            <FormDescription className="text-xs text-zinc-500">
-                              Le champ de transaction à analyser
-                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -552,7 +485,7 @@ export function CreateRuleDialog({ organizationId }: CreateRuleDialogProps) {
                           name="conditionOperator"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-zinc-300">
+                              <FormLabel className="text-zinc-400 font-normal">
                                 Opérateur
                               </FormLabel>
                               <Select
@@ -560,23 +493,23 @@ export function CreateRuleDialog({ organizationId }: CreateRuleDialogProps) {
                                 defaultValue={field.value}
                               >
                                 <FormControl>
-                                  <SelectTrigger className="bg-zinc-900/50 border-white/10 text-white focus:ring-indigo-500 h-11">
+                                  <SelectTrigger className="bg-zinc-900/50 border-white/5 text-white focus:ring-indigo-500/50 focus:border-indigo-500/50 h-11">
                                     <SelectValue placeholder="Opérateur" />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent className="bg-zinc-900 border-white/10 text-white">
                                   <SelectItem value="gt">
-                                    {">"} Supérieur à
+                                    Supérieur à {">"}
                                   </SelectItem>
                                   <SelectItem value="lt">
-                                    {"<"} Inférieur à
+                                    Inférieur à {"<"}
                                   </SelectItem>
-                                  <SelectItem value="eq">= Égal à</SelectItem>
+                                  <SelectItem value="eq">Égal à =</SelectItem>
                                   <SelectItem value="in">
-                                    ⊂ Dans la liste
+                                    Dans la liste
                                   </SelectItem>
                                   <SelectItem value="contains">
-                                    ⊃ Contient
+                                    Contient
                                   </SelectItem>
                                 </SelectContent>
                               </Select>
@@ -590,39 +523,49 @@ export function CreateRuleDialog({ organizationId }: CreateRuleDialogProps) {
                           name="conditionValue"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-zinc-300">
+                              <FormLabel className="text-zinc-400 font-normal">
                                 Valeur
                               </FormLabel>
                               <FormControl>
                                 <Input
                                   {...field}
-                                  placeholder="Ex: 1000 ou FR,DE"
-                                  className="bg-zinc-900/50 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500 h-11"
+                                  placeholder="Ex: 1000"
+                                  className="bg-zinc-900/50 border-white/5 text-white placeholder:text-zinc-600 focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500/50 h-11 transition-colors"
                                 />
                               </FormControl>
-                              <FormDescription className="text-xs text-zinc-500">
-                                Liste: séparez par des virgules
-                              </FormDescription>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
                       </div>
 
-                      <div className="mt-6 p-4 rounded-lg bg-indigo-500/5 border border-indigo-500/20">
+                      <div className="rounded-lg bg-zinc-900/50 border border-white/5 p-4 mt-6">
                         <div className="flex items-start gap-3">
-                          <Sparkles className="h-5 w-5 text-indigo-400 mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="text-sm font-medium text-indigo-300">
-                              Exemple de règle
+                          <Sparkles className="h-4 w-4 text-indigo-400 mt-0.5 shrink-0" />
+                          <div className="space-y-1">
+                            <p className="text-sm font-medium text-zinc-200">
+                              Aperçu de la condition
                             </p>
-                            <p className="text-xs text-zinc-400 mt-1">
-                              Pour bloquer les transactions supérieures à
-                              1000€, utilisez: <br />
-                              <span className="text-indigo-300">
-                                amount {">"} 100000
+                            <p className="text-xs text-zinc-400 leading-relaxed">
+                              Si{" "}
+                              <span className="text-indigo-300 font-mono bg-indigo-500/10 px-1 rounded">
+                                {form.watch("conditionField") || "champ"}
                               </span>{" "}
-                              (montant en centimes)
+                              est{" "}
+                              <span className="text-zinc-300">
+                                {form.watch("conditionOperator") === "gt"
+                                  ? "supérieur à"
+                                  : form.watch("conditionOperator") === "lt"
+                                    ? "inférieur à"
+                                    : form.watch("conditionOperator") === "eq"
+                                      ? "égal à"
+                                      : form.watch("conditionOperator") === "in"
+                                        ? "dans"
+                                        : "contient"}
+                              </span>{" "}
+                              <span className="text-indigo-300 font-mono bg-indigo-500/10 px-1 rounded">
+                                {form.watch("conditionValue") || "valeur"}
+                              </span>
                             </p>
                           </div>
                         </div>
@@ -633,27 +576,26 @@ export function CreateRuleDialog({ organizationId }: CreateRuleDialogProps) {
               </AnimatePresence>
             </div>
 
-            <DialogFooter className="relative z-10 gap-3 mt-6 pt-6 border-t border-white/5">
+            <DialogFooter className="px-6 py-4 border-t border-white/5 bg-zinc-900/30">
               <div className="flex items-center justify-between w-full">
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={() => handleOpenChange(false)}
-                  className="text-zinc-400 hover:text-white hover:bg-white/5"
+                  className="text-zinc-500 hover:text-white hover:bg-white/5"
                 >
                   Annuler
                 </Button>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   {currentStep > 1 && (
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="ghost"
                       onClick={prevStep}
-                      className="border-white/10 text-white hover:bg-white/5"
+                      className="text-zinc-400 hover:text-white hover:bg-white/5"
                     >
-                      <ChevronLeft className="mr-2 h-4 w-4" />
-                      Précédent
+                      Retour
                     </Button>
                   )}
 
@@ -661,7 +603,7 @@ export function CreateRuleDialog({ organizationId }: CreateRuleDialogProps) {
                     <Button
                       type="button"
                       onClick={nextStep}
-                      className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/30 transition-all"
+                      className="bg-white text-black hover:bg-zinc-200"
                     >
                       Suivant
                       <ChevronRight className="ml-2 h-4 w-4" />
@@ -670,7 +612,7 @@ export function CreateRuleDialog({ organizationId }: CreateRuleDialogProps) {
                     <Button
                       type="submit"
                       disabled={createRuleMutation.isPending}
-                      className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/30 transition-all"
+                      className="bg-indigo-500 text-white hover:bg-indigo-600 border border-indigo-400/20"
                     >
                       {createRuleMutation.isPending ? (
                         <>
@@ -679,8 +621,8 @@ export function CreateRuleDialog({ organizationId }: CreateRuleDialogProps) {
                         </>
                       ) : (
                         <>
-                          <Sparkles className="mr-2 h-4 w-4" />
                           Créer la règle
+                          <ArrowRight className="ml-2 h-4 w-4" />
                         </>
                       )}
                     </Button>

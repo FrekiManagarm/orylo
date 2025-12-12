@@ -46,7 +46,7 @@ export async function getStripeClient(
     }
 
     // Return authenticated Stripe client
-    return new Stripe(accessToken, {
+    return new Stripe(process.env.STRIPE_SECRET_KEY!, {
       apiVersion: "2025-11-17.clover",
     });
   } catch (error) {
@@ -61,10 +61,16 @@ export async function getStripeClient(
 /**
  * Get Stripe connection details
  */
-export async function getStripeConnection(organizationId: string) {
+export async function getStripeConnection(
+  organizationId: string,
+  connectionId: string,
+) {
   try {
     const connection = await db.query.stripeConnections.findFirst({
-      where: eq(stripeConnections.organizationId, organizationId),
+      where: and(
+        eq(stripeConnections.organizationId, organizationId),
+        eq(stripeConnections.id, connectionId),
+      ),
     });
 
     return connection;
@@ -154,9 +160,9 @@ export async function disconnectStripeAccount(
   try {
     const whereClause = connectionId
       ? and(
-        eq(stripeConnections.id, connectionId),
-        eq(stripeConnections.organizationId, organizationId),
-      )
+          eq(stripeConnections.id, connectionId),
+          eq(stripeConnections.organizationId, organizationId),
+        )
       : eq(stripeConnections.organizationId, organizationId);
 
     const connection = await db.query.stripeConnections.findFirst({

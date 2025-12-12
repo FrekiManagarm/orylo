@@ -17,19 +17,8 @@ import {
   Filter,
   ArrowUpDown,
   Download as DownloadIcon,
-  Eye,
-  CreditCard,
-  Calendar,
-  ShieldAlert,
-  ShieldCheck,
-  Shield,
-  Mail,
-  Globe,
-  Activity,
-  User,
 } from "lucide-react";
-import { TransactionDetailsDrawer } from "./components/transaction-details-drawer";
-import { cn } from "@/lib/utils";
+import { TransactionDetailsDrawer } from "./transaction-details-drawer";
 
 // Mock data matching fraudAnalyses schema
 const analyses = [
@@ -171,13 +160,13 @@ const TransactionsClient = () => {
   };
 
   return (
-    <div className="bg-black min-h-screen space-y-8 relative overflow-hidden">
+    <div className="bg-black min-h-screen space-y-8 relative overflow-hidden px-1">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-indigo-900/20 via-zinc-900/0 to-zinc-900/0 pointer-events-none" />
 
       <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
-          <h1 className="text-2xl font-medium tracking-tight text-white">
+          <h1 className="text-3xl font-bold tracking-tight text-white">
             Transactions
           </h1>
           <p className="text-zinc-400 mt-1 text-sm">

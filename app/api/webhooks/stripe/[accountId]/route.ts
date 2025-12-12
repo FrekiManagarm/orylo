@@ -11,7 +11,7 @@ import { runQuickChecks } from "@/lib/quick-checks";
 import { analyzeFraud } from "@/lib/mastra/agents/fraud-analyzer";
 import { getModelForOrganization } from "@/lib/mastra/config";
 import { executeAction } from "@/lib/stripe/actions";
-import { checkLimits, incrementUsage } from "@/lib/autumn";
+import { checkTransactionsLimit, incrementUsage } from "@/lib/autumn";
 import { sendAlert, AlertTemplates } from "@/lib/alerts/notifications";
 
 type RouteContext = {
@@ -78,7 +78,11 @@ export async function POST(req: NextRequest, context: RouteContext) {
     // En développement local avec Stripe CLI, utiliser le secret depuis l'env si disponible
     // Pour obtenir ce secret : stripe listen --forward-to http://localhost:3000/api/webhooks/stripe/{accountId}
     const stripeCliSecret = process.env.STRIPE_WEBHOOK_SECRET;
-    if (stripeCliSecret && (webhookSecret === "whsec_local_dev_secret" || process.env.NODE_ENV === "development")) {
+    if (
+      stripeCliSecret &&
+      (webhookSecret === "whsec_local_dev_secret" ||
+        process.env.NODE_ENV === "development")
+    ) {
       console.log("🔧 Using Stripe CLI webhook secret from environment");
       webhookSecret = stripeCliSecret;
     }
@@ -105,10 +109,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
       console.error(
         `❌ Account mismatch: expected ${accountId}, got ${event.account}`,
       );
-      return NextResponse.json(
-        { error: "Account mismatch" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Account mismatch" }, { status: 400 });
     }
 
     console.log(`✅ Webhook verified: ${event.type} (${event.id})`);
@@ -126,7 +127,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
       .returning();
 
     // 4. Check Autumn limits before processing
-    const limitsCheck = await checkLimits(organizationId, 1);
+    const limitsCheck = await checkTransactionsLimit(organizationId);
 
     if (!limitsCheck.allowed) {
       console.warn(`⚠️ Transaction limit reached for org ${organizationId}`);
@@ -277,7 +278,7 @@ async function handlePaymentIntentCreated(
       action: "accepted",
     });
 
-    await incrementUsage(organizationId, 1);
+    await incrementUsage(organizationId);
     return { accepted: true, reason: "whitelisted" };
   }
 
@@ -322,7 +323,7 @@ async function handlePaymentIntentCreated(
       ),
     );
 
-    await incrementUsage(organizationId, 1);
+    await incrementUsage(organizationId);
     return { blocked: true, reason: "blacklisted" };
   }
 
@@ -409,7 +410,7 @@ async function handlePaymentIntentCreated(
     }
 
     // Increment usage
-    await incrementUsage(organizationId, 1);
+    await incrementUsage(organizationId);
 
     return {
       analyzed: true,
@@ -435,7 +436,7 @@ async function handlePaymentIntentCreated(
       action: "accepted",
     });
 
-    await incrementUsage(organizationId, 1);
+    await incrementUsage(organizationId);
     return { analyzed: false, reason: "ai_error", requiresReview: true };
   }
 }

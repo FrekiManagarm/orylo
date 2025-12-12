@@ -1,3 +1,4 @@
+import { transactions } from "@/autumn.config";
 import { Autumn } from "autumn-js";
 
 export const autumn = new Autumn({
@@ -7,20 +8,20 @@ export const autumn = new Autumn({
 /**
  * Check if organization has reached transaction limits
  */
-export async function checkLimits(organizationId: string, amount: number = 1) {
+export async function checkTransactionsLimit(organizationId: string) {
   try {
     const response = await autumn.check({
       customer_id: organizationId,
+      feature_id: transactions.id,
     });
 
     // Autumn returns a Result type with data property
-    const data = response.data as any;
+    const data = response.data;
 
     return {
-      allowed: data?.allowed ?? false,
-      used: data?.used ?? 0,
-      limit: data?.limit ?? 0,
-      features: data?.features ?? [],
+      allowed: data?.allowed,
+      used: data?.balance,
+      limit: data?.included_usage,
     };
   } catch (error) {
     console.error("Error checking Autumn limits:", error);
@@ -29,7 +30,6 @@ export async function checkLimits(organizationId: string, amount: number = 1) {
       allowed: true,
       used: 0,
       limit: 999999,
-      features: [],
     };
   }
 }
@@ -37,19 +37,16 @@ export async function checkLimits(organizationId: string, amount: number = 1) {
 /**
  * Increment transaction usage counter
  */
-export async function incrementUsage(
-  organizationId: string,
-  amount: number = 1,
-) {
+export async function incrementUsage(organizationId: string) {
   try {
     await autumn.track({
       customer_id: organizationId,
-      feature_id: "transaction_analyses", // Track fraud analyses
-      value: amount,
+      feature_id: transactions.id,
+      value: 1,
     });
 
     console.log(
-      `📊 Incremented usage for org ${organizationId}: +${amount} transaction(s)`,
+      `📊 Incremented usage for org ${organizationId}: +1 transaction(s)`,
     );
   } catch (error) {
     console.error("Error incrementing Autumn usage:", error);

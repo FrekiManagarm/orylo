@@ -1,13 +1,5 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   AlertTriangle,
@@ -15,7 +7,11 @@ import {
   Info,
   CheckCircle2,
   X,
+  Bell,
+  Clock,
+  ShieldAlert,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Mock data matching alerts schema
 const alerts = [
@@ -51,96 +47,125 @@ const alerts = [
 ];
 
 const AlertsClient = () => {
-  const getSeverityIcon = (severity: string) => {
-    switch (severity) {
-      case "critical":
-        return <AlertTriangle className="h-5 w-5 text-rose-500" />;
-      case "warning":
-        return <AlertCircle className="h-5 w-5 text-orange-500" />;
-      case "info":
-        return <Info className="h-5 w-5 text-blue-500" />;
-      default:
-        return <Info className="h-5 w-5 text-zinc-500" />;
-    }
-  };
-
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case "critical":
-        return "border-rose-500/20 bg-rose-500/5";
-      case "warning":
-        return "border-orange-500/20 bg-orange-500/5";
-      case "info":
-        return "border-blue-500/20 bg-blue-500/5";
-      default:
-        return "border-zinc-500/20 bg-zinc-500/5";
-    }
-  };
-
   return (
-    <div className="bg-black min-h-screen space-y-8 relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-indigo-900/20 via-zinc-900/0 to-zinc-900/0 pointer-events-none" />
-
-      <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="min-h-screen space-y-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">
-            Alerts
+          <h1 className="text-2xl font-medium tracking-tight text-white">
+            Alertes système
           </h1>
-          <p className="text-zinc-400 mt-1">
-            System notifications and critical updates.
+          <p className="text-zinc-400 mt-1 text-sm">
+            Notifications critiques et mises à jour de sécurité.
           </p>
         </div>
         <Button
           variant="outline"
-          className="bg-zinc-900/50 border-white/10 text-zinc-300 hover:text-white"
+          className="bg-zinc-900/50 border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 transition-all"
         >
           <CheckCircle2 className="mr-2 h-4 w-4" />
-          Mark all as read
+          Tout marquer comme lu
         </Button>
       </div>
 
-      <div className="relative z-10 grid gap-4 max-w-4xl">
+      <div className="grid gap-3">
         {alerts.map((alert) => (
-          <Card
+          <div
             key={alert.id}
-            className={`backdrop-blur-xl transition-all hover:border-white/20 ${getSeverityColor(alert.severity)} ${!alert.read ? "border-l-4" : "border-white/5 opacity-70"}`}
+            className={cn(
+              "group relative overflow-hidden rounded-lg border transition-all duration-300",
+              alert.read
+                ? "bg-zinc-900/20 border-white/5 opacity-60 hover:opacity-100"
+                : "bg-zinc-900/50 border-white/10",
+            )}
           >
-            <CardContent className="p-6 flex items-start gap-4">
-              <div className="mt-1 shrink-0">
-                {getSeverityIcon(alert.severity)}
-              </div>
-              <div className="flex-1 space-y-1">
-                <div className="flex items-center justify-between">
-                  <h3
-                    className={`font-semibold ${!alert.read ? "text-white" : "text-zinc-400"}`}
-                  >
-                    {alert.title}
-                  </h3>
-                  <span className="text-xs text-zinc-500">
-                    {new Date(alert.createdAt).toLocaleDateString()}
-                  </span>
+            {/* Unread Indicator */}
+            {!alert.read && (
+              <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500" />
+            )}
+
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between p-5 gap-4 pl-6">
+              <div className="flex items-start gap-4">
+                <div
+                  className={cn(
+                    "mt-1 p-2 rounded-lg border shrink-0",
+                    alert.severity === "critical"
+                      ? "bg-rose-500/10 border-rose-500/20 text-rose-500"
+                      : alert.severity === "warning"
+                        ? "bg-orange-500/10 border-orange-500/20 text-orange-500"
+                        : "bg-blue-500/10 border-blue-500/20 text-blue-500",
+                  )}
+                >
+                  {alert.severity === "critical" ? (
+                    <ShieldAlert className="w-5 h-5" />
+                  ) : alert.severity === "warning" ? (
+                    <AlertTriangle className="w-5 h-5" />
+                  ) : (
+                    <Info className="w-5 h-5" />
+                  )}
                 </div>
-                <p className="text-sm text-zinc-400">{alert.message}</p>
-                <div className="pt-2 flex items-center gap-2">
-                  <Badge
-                    variant="secondary"
-                    className="bg-black/40 text-zinc-400 border-none text-[10px] uppercase tracking-wider"
-                  >
-                    {alert.type.replace(/_/g, " ")}
-                  </Badge>
+
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3
+                      className={cn(
+                        "text-sm font-medium",
+                        alert.read ? "text-zinc-300" : "text-white",
+                      )}
+                    >
+                      {alert.title}
+                    </h3>
+
+                    {/* Severity Badge */}
+                    <div
+                      className={cn(
+                        "flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider border",
+                        alert.severity === "critical"
+                          ? "bg-rose-500/5 border-rose-500/10 text-rose-400"
+                          : alert.severity === "warning"
+                            ? "bg-orange-500/5 border-orange-500/10 text-orange-400"
+                            : "bg-blue-500/5 border-blue-500/10 text-blue-400",
+                      )}
+                    >
+                      {alert.severity}
+                    </div>
+
+                    {!alert.read && (
+                      <span className="flex h-2 w-2 rounded-full bg-indigo-500 animate-pulse" />
+                    )}
+                  </div>
+
+                  <p className="text-sm text-zinc-400 leading-relaxed max-w-2xl">
+                    {alert.message}
+                  </p>
+
+                  <div className="flex items-center gap-3 text-xs text-zinc-500 pt-2">
+                    <span className="flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5" />
+                      {new Date(alert.createdAt).toLocaleDateString()} à{" "}
+                      {new Date(alert.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                    <span className="w-1 h-1 rounded-full bg-zinc-700" />
+                    <span className="font-mono text-zinc-600">
+                      ID: {alert.id.split("_")[1]}
+                    </span>
+                  </div>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-zinc-500 hover:text-white -mr-2 -mt-2"
-              >
-                <X className="h-4 w-4" />
-                <span className="sr-only">Dismiss</span>
-              </Button>
-            </CardContent>
-          </Card>
+
+              <div className="flex items-center gap-2 sm:pl-4 sm:border-l sm:border-white/5 self-start h-full min-h-[50px]">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-zinc-500 hover:text-white hover:bg-white/5"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
         ))}
       </div>
     </div>

@@ -1,4 +1,4 @@
-import TransactionsClient from "./transactions-client";
+import TransactionsClient from "./components/transactions-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

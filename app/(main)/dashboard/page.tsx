@@ -78,13 +78,13 @@ const stats = [
 ];
 
 const chartData = [
-  { day: "Mon", total: 120, blocked: 5 },
-  { day: "Tue", total: 145, blocked: 8 },
-  { day: "Wed", total: 132, blocked: 4 },
-  { day: "Thu", total: 198, blocked: 12 },
-  { day: "Fri", total: 210, blocked: 15 },
-  { day: "Sat", total: 160, blocked: 9 },
-  { day: "Sun", total: 180, blocked: 7 },
+  { day: "Mon", total: 120, blocked: 5, review: 15 },
+  { day: "Tue", total: 145, blocked: 8, review: 12 },
+  { day: "Wed", total: 132, blocked: 4, review: 18 },
+  { day: "Thu", total: 198, blocked: 12, review: 25 },
+  { day: "Fri", total: 210, blocked: 15, review: 22 },
+  { day: "Sat", total: 160, blocked: 9, review: 10 },
+  { day: "Sun", total: 180, blocked: 7, review: 14 },
 ];
 
 const chartConfig = {
@@ -95,6 +95,10 @@ const chartConfig = {
   blocked: {
     label: "Blocked",
     color: "#f43f5e",
+  },
+  review: {
+    label: "Review",
+    color: "#f97316",
   },
 } satisfies ChartConfig;
 
@@ -301,6 +305,18 @@ const DashboardHome = () => {
                       stopOpacity={0}
                     />
                   </linearGradient>
+                  <linearGradient id="fillReview" x1="0" y1="0" x2="0" y2="1">
+                    <stop
+                      offset="5%"
+                      stopColor="var(--color-review)"
+                      stopOpacity={0.3}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="var(--color-review)"
+                      stopOpacity={0}
+                    />
+                  </linearGradient>
                 </defs>
                 <CartesianGrid
                   vertical={false}
@@ -344,6 +360,13 @@ const DashboardHome = () => {
                   dataKey="blocked"
                   stroke="var(--color-blocked)"
                   fill="url(#fillBlocked)"
+                  strokeWidth={2}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="review"
+                  stroke="var(--color-review)"
+                  fill="url(#fillReview)"
                   strokeWidth={2}
                 />
               </AreaChart>
