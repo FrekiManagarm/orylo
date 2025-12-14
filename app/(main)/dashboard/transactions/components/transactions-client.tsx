@@ -218,7 +218,10 @@ const TransactionsClient = ({ analyses }: TransactionsClientProps) => {
                         : "N/A"}
                     </TableCell>
                     <TableCell className="text-right pr-6">
-                      <TransactionDetailsDrawer analysis={analysis} />
+                      <TransactionDetailsDrawer analysis={{
+                        ...analysis,
+                        createdAt: analysis.createdAt?.toISOString() ?? "",
+                      }} />
                     </TableCell>
                   </TableRow>
                 ))}

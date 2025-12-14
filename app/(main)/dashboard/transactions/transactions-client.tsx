@@ -17,19 +17,8 @@ import {
   Filter,
   ArrowUpDown,
   Download as DownloadIcon,
-  Eye,
-  CreditCard,
-  Calendar,
-  ShieldAlert,
-  ShieldCheck,
-  Shield,
-  Mail,
-  Globe,
-  Activity,
-  User,
 } from "lucide-react";
 import { TransactionDetailsDrawer } from "./components/transaction-details-drawer";
-import { cn } from "@/lib/utils";
 
 // Mock data matching fraudAnalyses schema
 const analyses = [
