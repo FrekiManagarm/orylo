@@ -5,6 +5,7 @@ import { fraudAnalyses } from "@/lib/schemas/fraudAnalyses";
 import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
 import { auth } from "@/lib/auth/auth.server";
 import { headers } from "next/headers";
+import { cacheTag } from "next/cache";
 
 export async function getFraudAnalyses(limit?: number) {
   try {

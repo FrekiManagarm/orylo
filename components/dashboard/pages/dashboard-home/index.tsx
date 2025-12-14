@@ -10,6 +10,7 @@ import { TransactionActivityChart } from "./transaction-activity-chart";
 import { StatsGrid } from "./stats-grid";
 import RecentTransactionsTable from "./recent-transactions-table";
 import { UsageCard } from "@/components/usage-card";
+import { SimulatePaymentButton } from "@/components/dashboard/pages/dashboard-home/simulate-payment-button";
 
 
 const DashboardClient = async () => {
@@ -85,13 +86,7 @@ const DashboardClient = async () => {
                 <span className="text-xs font-medium">Threats</span>
               </Button>
             </Link>
-            <Button
-              variant="outline"
-              className="h-24 flex flex-col items-center justify-center gap-2 bg-zinc-900/50 border-white/5 hover:bg-white/5 hover:border-indigo-500/30 hover:text-indigo-400 transition-all group"
-            >
-              <Download className="h-6 w-6 text-zinc-400 group-hover:text-indigo-400 transition-colors" />
-              <span className="text-xs font-medium">Export</span>
-            </Button>
+            <SimulatePaymentButton />
           </div>
         </div>
       </div>

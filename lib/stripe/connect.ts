@@ -160,9 +160,9 @@ export async function disconnectStripeAccount(
   try {
     const whereClause = connectionId
       ? and(
-          eq(stripeConnections.id, connectionId),
-          eq(stripeConnections.organizationId, organizationId),
-        )
+        eq(stripeConnections.id, connectionId),
+        eq(stripeConnections.organizationId, organizationId),
+      )
       : eq(stripeConnections.organizationId, organizationId);
 
     const connection = await db.query.stripeConnections.findFirst({

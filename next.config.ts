@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
     AUTUMN_SECRET_KEY: process.env.AUTUMN_SECRET_KEY,
     STRIPE_CONNECT_CLIENT_ID: process.env.STRIPE_CONNECT_CLIENT_ID,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    STRIPE_TEST_KEY: process.env.STRIPE_TEST_KEY,
   },
 };
 
