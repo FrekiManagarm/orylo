@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
     }
 
     const connections = await getStripeConnections(resolvedOrganizationId);
-    const legacyConnection = await getStripeConnection(resolvedOrganizationId);
+    const legacyConnection = await getStripeConnection(resolvedOrganizationId, connections[0]?.id);
 
     return NextResponse.json({
       organizationId: resolvedOrganizationId,
@@ -61,12 +61,12 @@ export async function GET(req: NextRequest) {
       })),
       connection: legacyConnection
         ? {
-            id: legacyConnection.id,
-            stripeAccountId: legacyConnection.stripeAccountId,
-            isActive: legacyConnection.isActive,
-            lastSyncAt: legacyConnection.lastSyncAt,
-            webhookEndpointId: legacyConnection.webhookEndpointId,
-          }
+          id: legacyConnection.id,
+          stripeAccountId: legacyConnection.stripeAccountId,
+          isActive: legacyConnection.isActive,
+          lastSyncAt: legacyConnection.lastSyncAt,
+          webhookEndpointId: legacyConnection.webhookEndpointId,
+        }
         : null,
     });
   } catch (error) {
