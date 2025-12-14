@@ -20,91 +20,31 @@ import {
 } from "lucide-react";
 import { TransactionDetailsDrawer } from "./transaction-details-drawer";
 
-// Mock data matching fraudAnalyses schema
-const analyses = [
-  {
-    id: "fa_1",
-    paymentIntentId: "pi_123456789",
-    email: "john.doe@example.com",
-    amount: 14900, // cents
-    currency: "USD",
-    riskScore: 92,
-    action: "blocked",
-    recommandation: "block",
-    reasoning: "High velocity of transactions from same IP",
-    ipAddress: "192.168.1.1",
-    createdAt: "2024-03-10T14:30:00Z",
-    country: "US",
-    userAgent:
-      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1",
-    signals: {
-      cardBrand: "visa",
-      cardLast4: "4242",
-      velocity_ip_1h: 12,
-      velocity_card_24h: 3,
-      distance_from_billing: 1200,
-    },
-    agentsUsed: ["velocity_check", "ip_reputation"],
-    blocked: true,
-    actualFraud: null,
-    falsePositive: null,
-  },
-  {
-    id: "fa_2",
-    paymentIntentId: "pi_987654321",
-    email: "sarah.m@company.com",
-    amount: 29900,
-    currency: "USD",
-    riskScore: 15,
-    action: "accepted",
-    recommandation: "allow",
-    reasoning: "Low risk factors",
-    ipAddress: "10.0.0.1",
-    createdAt: "2024-03-10T14:25:00Z",
-    country: "FR",
-    userAgent:
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    signals: {
-      cardBrand: "mastercard",
-      cardLast4: "8888",
-      velocity_ip_1h: 1,
-      velocity_card_24h: 1,
-      cvc_check: "pass",
-    },
-    agentsUsed: ["rules_engine"],
-    blocked: false,
-    actualFraud: false,
-    falsePositive: false,
-  },
-  {
-    id: "fa_3",
-    paymentIntentId: "pi_456123789",
-    email: "suspicious@temp.mail",
-    amount: 89900,
-    currency: "USD",
-    riskScore: 78,
-    action: "review",
-    recommandation: "review",
-    reasoning: "Disposable email domain detected",
-    ipAddress: "172.16.0.1",
-    createdAt: "2024-03-10T14:15:00Z",
-    country: "RU",
-    userAgent:
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-    signals: {
-      cardBrand: "visa",
-      cardLast4: "1234",
-      email_domain_disposable: true,
-      proxy_detected: true,
-    },
-    agentsUsed: ["email_risk", "proxy_detection"],
-    blocked: false,
-    actualFraud: null,
-    falsePositive: null,
-  },
-];
+interface TransactionsClientProps {
+  analyses: Array<{
+    id: string;
+    paymentIntentId: string;
+    email: string | null;
+    amount: number;
+    currency: string;
+    riskScore: number;
+    action: "canceled" | "refunded" | "3ds_required" | "accepted";
+    recommandation: string;
+    reasoning: string;
+    ipAddress: string | null;
+    createdAt: Date | null;
+    country: string | null;
+    userAgent: string | null;
+    signals: any;
+    agentsUsed: string[];
+    blocked: boolean;
+    actualFraud: boolean | null;
+    falsePositive: boolean | null;
+    organizationId: string;
+  }>;
+}
 
-const TransactionsClient = () => {
+const TransactionsClient = ({ analyses }: TransactionsClientProps) => {
   const getScoreColor = (score: number) => {
     if (score < 30)
       return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
@@ -273,7 +213,9 @@ const TransactionsClient = () => {
                       {analysis.reasoning}
                     </TableCell>
                     <TableCell className="text-right text-zinc-500 text-sm">
-                      {new Date(analysis.createdAt).toLocaleDateString()}
+                      {analysis.createdAt
+                        ? new Date(analysis.createdAt).toLocaleDateString()
+                        : "N/A"}
                     </TableCell>
                     <TableCell className="text-right pr-6">
                       <TransactionDetailsDrawer analysis={analysis} />

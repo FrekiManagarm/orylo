@@ -60,12 +60,12 @@ export function getModelByPlan(planName: string): AIModelConfig {
     pro: {
       provider: "openai",
       model: "gpt-4o",
-      temperature: 0.1,
+      temperature: 0.3,
     },
     enterprise: {
       provider: "anthropic",
       model: "claude-3-5-sonnet-20241022",
-      temperature: 0.1,
+      temperature: 0.,
     },
   };
 

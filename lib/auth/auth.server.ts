@@ -22,6 +22,9 @@ export const auth = betterAuth({
 
         return {
           customerId: req.organization.id,
+          customerData: {
+            ...req.organization,
+          },
         };
       },
     }),
