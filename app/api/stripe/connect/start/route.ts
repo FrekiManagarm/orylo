@@ -25,37 +25,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verify user has access to this organization
-    // TODO: Add proper authorization check here
-    // For now, we trust the organizationId from the request
-
-    // Generate state token (JWT signed with our secret)
-    const secret = new TextEncoder().encode(
-      process.env.STRIPE_CONNECT_STATE_SECRET || process.env.BETTER_AUTH_SECRET,
-    );
-
-    const state = await new SignJWT({
-      organizationId,
-      userId: session.user.id,
-      timestamp: Date.now(),
-    })
-      .setProtectedHeader({ alg: "HS256" })
-      .setIssuedAt()
-      .setExpirationTime("15m") // State expires in 15 minutes
-      .sign(secret);
-
     // Construct Stripe Connect OAuth URL
     const stripeClientId = process.env.STRIPE_CONNECT_CLIENT_ID;
     if (!stripeClientId) {
       throw new Error("STRIPE_CONNECT_CLIENT_ID is not configured");
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://app.orylo.com";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://orylo.app";
     const redirectUri = `${baseUrl}/api/stripe/connect/callback`;
 
     const stripeAuthUrl = new URL("https://connect.stripe.com/oauth/authorize");
     stripeAuthUrl.searchParams.set("client_id", stripeClientId);
-    stripeAuthUrl.searchParams.set("state", state);
+    stripeAuthUrl.searchParams.set("state", organizationId);
     stripeAuthUrl.searchParams.set("redirect_uri", redirectUri);
     stripeAuthUrl.searchParams.set("response_type", "code");
     stripeAuthUrl.searchParams.set("scope", "read_write");

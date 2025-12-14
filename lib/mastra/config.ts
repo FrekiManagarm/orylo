@@ -1,3 +1,4 @@
+import { advancedAiAgents } from "@/autumn.config";
 import { autumn } from "@/lib/autumn";
 
 export interface AIModelConfig {
@@ -17,6 +18,7 @@ export async function getModelForOrganization(
     // Check organization's plan via Autumn
     const planInfo = await autumn.check({
       customer_id: organizationId,
+      feature_id: advancedAiAgents.id,
     });
 
     // For now, we use a default mapping

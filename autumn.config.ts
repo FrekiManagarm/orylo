@@ -55,7 +55,7 @@ export const starterTier1Monthly = product({
 
 		featureItem({
 			feature_id: rules.id,
-			included_usage: 3,
+			included_usage: 5,
 		}),
 
 		featureItem({
@@ -82,7 +82,7 @@ export const starterTier2Monthly = product({
 
 		featureItem({
 			feature_id: rules.id,
-			included_usage: 3,
+			included_usage: 5,
 		}),
 
 		featureItem({
@@ -193,7 +193,7 @@ export const starterTier3Monthly = product({
 
 		featureItem({
 			feature_id: rules.id,
-			included_usage: 3,
+			included_usage: 5,
 		}),
 
 		featureItem({
@@ -220,7 +220,7 @@ export const starterTier4Monthly = product({
 
 		featureItem({
 			feature_id: rules.id,
-			included_usage: 3,
+			included_usage: 5,
 		}),
 
 		featureItem({
@@ -331,7 +331,7 @@ export const starterTier5Monthly = product({
 
 		featureItem({
 			feature_id: rules.id,
-			included_usage: 3,
+			included_usage: 5,
 		}),
 
 		featureItem({
@@ -358,7 +358,7 @@ export const starterTier6Monthly = product({
 
 		featureItem({
 			feature_id: rules.id,
-			included_usage: 3,
+			included_usage: 5,
 		}),
 
 		featureItem({
@@ -554,7 +554,7 @@ export const starterTier1Yearly = product({
 
 		featureItem({
 			feature_id: rules.id,
-			included_usage: 3,
+			included_usage: 5,
 		}),
 
 		featureItem({
@@ -581,7 +581,7 @@ export const starterTier2Yearly = product({
 
 		featureItem({
 			feature_id: rules.id,
-			included_usage: 3,
+			included_usage: 5,
 		}),
 
 		featureItem({
@@ -692,7 +692,7 @@ export const starterTier3Yearly = product({
 
 		featureItem({
 			feature_id: rules.id,
-			included_usage: 3,
+			included_usage: 5,
 		}),
 
 		featureItem({
@@ -719,7 +719,7 @@ export const starterTier4Yearly = product({
 
 		featureItem({
 			feature_id: rules.id,
-			included_usage: 3,
+			included_usage: 5,
 		}),
 
 		featureItem({
@@ -831,7 +831,7 @@ export const starterTier5Yearly = product({
 
 		featureItem({
 			feature_id: rules.id,
-			included_usage: 3,
+			included_usage: 5,
 		}),
 
 		featureItem({
@@ -858,7 +858,7 @@ export const starterTier6Yearly = product({
 
 		featureItem({
 			feature_id: rules.id,
-			included_usage: 3,
+			included_usage: 5,
 		}),
 
 		featureItem({
@@ -927,7 +927,7 @@ export const starterTier7Yearly = product({
 
 		featureItem({
 			feature_id: rules.id,
-			included_usage: 3,
+			included_usage: 5,
 		}),
 
 		featureItem({

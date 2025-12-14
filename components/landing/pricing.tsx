@@ -91,7 +91,7 @@ export default function Pricing() {
       limits: [
         `${currentTier.label} transactions/mo`,
         "30-day history",
-        "3 custom rules",
+        "5 custom rules",
         "Basic AI agents (basic + geo)",
         "No API access",
         "No webhooks",

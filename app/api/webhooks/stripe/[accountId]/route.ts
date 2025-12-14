@@ -13,6 +13,7 @@ import { getModelForOrganization } from "@/lib/mastra/config";
 import { executeAction } from "@/lib/stripe/actions";
 import { checkTransactionsLimit, incrementUsage } from "@/lib/autumn";
 import { sendAlert, AlertTemplates } from "@/lib/alerts/notifications";
+import { logger } from "@/lib/logger";
 
 type RouteContext = {
   params: Promise<{ accountId: string }>;
@@ -87,6 +88,8 @@ export async function POST(req: NextRequest, context: RouteContext) {
       webhookSecret = stripeCliSecret;
     }
 
+    console.log("🔍 Webhook secret:", webhookSecret);
+
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
       apiVersion: "2025-11-17.clover",
     });
@@ -128,6 +131,9 @@ export async function POST(req: NextRequest, context: RouteContext) {
 
     // 4. Check Autumn limits before processing
     const limitsCheck = await checkTransactionsLimit(organizationId);
+
+    console.log(`🔍 Limits check: ${limitsCheck.used} / ${limitsCheck.limit}`);
+    console.log(`🔍 Limits check: ${limitsCheck.allowed}`);
 
     if (!limitsCheck.allowed) {
       console.warn(`⚠️ Transaction limit reached for org ${organizationId}`);
@@ -252,6 +258,11 @@ async function handlePaymentIntentCreated(
   const paymentIntent = event.data.object as Stripe.PaymentIntent;
 
   console.log(`🔍 Processing payment: ${paymentIntent.id}`);
+  logger.info({
+    type: "payment_intent_created",
+    paymentIntentId: paymentIntent.id,
+    paymentIntent: paymentIntent,
+  });
 
   const settings = connection.organization.settings;
   if (!settings) {

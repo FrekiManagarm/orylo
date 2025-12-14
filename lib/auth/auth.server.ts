@@ -12,7 +12,19 @@ export const auth = betterAuth({
     enabled: true,
   },
   plugins: [
-    autumn(),
+    autumn({
+      secretKey: process.env.AUTUMN_SECRET_KEY,
+      customerScope: "organization",
+      identify: async (req) => {
+        if (!req.organization) {
+          throw new Error("Organization not found");
+        }
+
+        return {
+          customerId: req.organization.id,
+        };
+      },
+    }),
     organization({
       schema: {
         organization: {

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
 import Stripe from "stripe";
 import { db } from "@/lib/db";
 import { stripeConnections } from "@/lib/schemas/stripeConnections";
@@ -9,7 +8,7 @@ import { setupWebhooks } from "@/lib/stripe/webhooks-setup";
 import { eq } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
-  const searchParams = req.nextUrl.searchParams;
+  const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
   const state = searchParams.get("state");
   const error = searchParams.get("error");
@@ -32,37 +31,18 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Verify and decode state JWT
-    const secret = new TextEncoder().encode(
-      process.env.STRIPE_CONNECT_STATE_SECRET || process.env.BETTER_AUTH_SECRET,
-    );
-
-    const { payload } = await jwtVerify(state, secret);
-
-    const organizationId = payload.organizationId as string;
-    const userId = payload.userId as string;
-
-    if (!organizationId || !userId) {
-      throw new Error("Invalid state token");
-    }
-
-    console.log(
-      `🔄 Processing Stripe OAuth callback for org ${organizationId}`,
-    );
-
-    // Exchange authorization code for access token
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
       apiVersion: "2025-11-17.clover",
     });
+
+    console.log(`🔄 Exchanging OAuth code for client ${state}`);
 
     const response = await stripe.oauth.token({
       grant_type: "authorization_code",
       code,
     });
 
-    console.log(
-      `✅ Received Stripe tokens for account ${response.stripe_user_id}`,
-    );
+    console.log(`✅ Received tokens for Stripe account: ${response.stripe_user_id}`);
 
     // Encrypt sensitive tokens
     const encryptedAccessToken = encrypt(response.access_token!);
@@ -74,7 +54,7 @@ export async function GET(req: NextRequest) {
     const existingConnection = await db.query.stripeConnections.findFirst({
       where: (connections, { and, eq }) =>
         and(
-          eq(connections.organizationId, organizationId),
+          eq(connections.organizationId, state),
           eq(connections.stripeAccountId, response.stripe_user_id!),
         ),
     });
@@ -103,7 +83,7 @@ export async function GET(req: NextRequest) {
       const [newConnection] = await db
         .insert(stripeConnections)
         .values({
-          organizationId: organizationId as string,
+          organizationId: state as string,
           stripeAccountId: response.stripe_user_id!,
           accessToken: encryptedAccessToken,
           refreshToken: encryptedRefreshToken,
@@ -114,7 +94,7 @@ export async function GET(req: NextRequest) {
 
       connectionId = newConnection.id;
       console.log(
-        `✅ Created new Stripe connection ${connectionId} for org ${organizationId}`,
+        `✅ Created new Stripe connection ${connectionId} for org ${state}`,
       );
     }
 
@@ -122,7 +102,7 @@ export async function GET(req: NextRequest) {
     const webhookResult = await setupWebhooks(
       response.stripe_user_id!,
       response.access_token!,
-      organizationId,
+      state as string,
     );
 
     if (webhookResult) {
@@ -137,12 +117,12 @@ export async function GET(req: NextRequest) {
 
     // Create default settings if they don't exist
     const existingSettings = await db.query.settings.findFirst({
-      where: eq(settings.organizationId, organizationId),
+      where: eq(settings.organizationId, state as string),
     });
 
     if (!existingSettings) {
       await db.insert(settings).values({
-        organizationId,
+        organizationId: state as string,
         blockThreshold: 80,
         reviewThreshold: 60,
         require3DSScore: 70,
@@ -151,7 +131,7 @@ export async function GET(req: NextRequest) {
         shadowMode: false,
       });
 
-      console.log(`✅ Created default settings for org ${organizationId}`);
+      console.log(`✅ Created default settings for org ${state}`);
     }
 
     // Redirect to dashboard with success message
