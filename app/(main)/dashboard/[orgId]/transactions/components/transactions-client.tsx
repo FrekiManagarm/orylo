@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Table,
   TableBody,
@@ -18,93 +16,47 @@ import {
   ArrowUpDown,
   Download as DownloadIcon,
 } from "lucide-react";
-import { TransactionDetailsDrawer } from "./components/transaction-details-drawer";
+import { TransactionDetailsDrawer } from "./transaction-details-drawer";
 
-// Mock data matching fraudAnalyses schema
-const analyses = [
-  {
-    id: "fa_1",
-    paymentIntentId: "pi_123456789",
-    email: "john.doe@example.com",
-    amount: 14900, // cents
-    currency: "USD",
-    riskScore: 92,
-    action: "blocked",
-    recommandation: "block",
-    reasoning: "High velocity of transactions from same IP",
-    ipAddress: "192.168.1.1",
-    createdAt: "2024-03-10T14:30:00Z",
-    country: "US",
-    userAgent:
-      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1",
-    signals: {
-      cardBrand: "visa",
-      cardLast4: "4242",
-      velocity_ip_1h: 12,
-      velocity_card_24h: 3,
-      distance_from_billing: 1200,
-    },
-    agentsUsed: ["velocity_check", "ip_reputation"],
-    blocked: true,
-    actualFraud: null,
-    falsePositive: null,
-  },
-  {
-    id: "fa_2",
-    paymentIntentId: "pi_987654321",
-    email: "sarah.m@company.com",
-    amount: 29900,
-    currency: "USD",
-    riskScore: 15,
-    action: "accepted",
-    recommandation: "allow",
-    reasoning: "Low risk factors",
-    ipAddress: "10.0.0.1",
-    createdAt: "2024-03-10T14:25:00Z",
-    country: "FR",
-    userAgent:
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    signals: {
-      cardBrand: "mastercard",
-      cardLast4: "8888",
-      velocity_ip_1h: 1,
-      velocity_card_24h: 1,
-      cvc_check: "pass",
-    },
-    agentsUsed: ["rules_engine"],
-    blocked: false,
-    actualFraud: false,
-    falsePositive: false,
-  },
-  {
-    id: "fa_3",
-    paymentIntentId: "pi_456123789",
-    email: "suspicious@temp.mail",
-    amount: 89900,
-    currency: "USD",
-    riskScore: 78,
-    action: "review",
-    recommandation: "review",
-    reasoning: "Disposable email domain detected",
-    ipAddress: "172.16.0.1",
-    createdAt: "2024-03-10T14:15:00Z",
-    country: "RU",
-    userAgent:
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-    signals: {
-      cardBrand: "visa",
-      cardLast4: "1234",
-      email_domain_disposable: true,
-      proxy_detected: true,
-    },
-    agentsUsed: ["email_risk", "proxy_detection"],
-    blocked: false,
-    actualFraud: null,
-    falsePositive: null,
-  },
-];
+type FraudAnalysis = {
+  id: string;
+  paymentIntentId: string;
+  email: string | null;
+  amount: number;
+  currency: string;
+  riskScore: number;
+  action: "canceled" | "refunded" | "3ds_required" | "accepted";
+  recommandation: string;
+  reasoning: string;
+  ipAddress: string | null;
+  createdAt: Date | null;
+  country: string | null;
+  userAgent: string | null;
+  signals: any;
+  agentsUsed: string[];
+  blocked: boolean;
+  actualFraud: boolean | null;
+  falsePositive: boolean | null;
+  organizationId: string;
+};
 
-const TransactionsClient = () => {
+async function getAllAnalyses(): Promise<FraudAnalysis[]> {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const res = await fetch(`${baseUrl}/api/fraud-analyses`, {
+    next: {
+      tags: ["all-transactions", "fraud-analyses"],
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch analyses");
+  }
+
+  return res.json();
+}
+
+const TransactionsClient = async () => {
+  const analyses = await getAllAnalyses();
   const getScoreColor = (score: number) => {
     if (score < 30)
       return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
@@ -160,13 +112,13 @@ const TransactionsClient = () => {
   };
 
   return (
-    <div className="bg-black min-h-screen space-y-8 relative overflow-hidden">
+    <div className="bg-black min-h-screen space-y-8 relative overflow-hidden px-1">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-indigo-900/20 via-zinc-900/0 to-zinc-900/0 pointer-events-none" />
 
       <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
-          <h1 className="text-2xl font-medium tracking-tight text-white">
+          <h1 className="text-3xl font-bold tracking-tight text-white">
             Transactions
           </h1>
           <p className="text-zinc-400 mt-1 text-sm">
@@ -273,10 +225,17 @@ const TransactionsClient = () => {
                       {analysis.reasoning}
                     </TableCell>
                     <TableCell className="text-right text-zinc-500 text-sm">
-                      {new Date(analysis.createdAt).toLocaleDateString()}
+                      {analysis.createdAt
+                        ? new Date(analysis.createdAt).toLocaleDateString()
+                        : "N/A"}
                     </TableCell>
                     <TableCell className="text-right pr-6">
-                      <TransactionDetailsDrawer analysis={analysis} />
+                      <TransactionDetailsDrawer
+                        analysis={{
+                          ...analysis,
+                          createdAt: analysis.createdAt?.toISOString() ?? "",
+                        }}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}

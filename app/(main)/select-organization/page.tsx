@@ -4,24 +4,26 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth/auth.server";
 import { Organization } from "@/lib/schemas";
-import { CreateOrganizationForm } from "@/components/organization/create-organization-form";
+import { SelectOrganizationCard } from "@/components/organization/select-organization-card";
 
 export const metadata: Metadata = {
-  title: "Create an organization",
-  description:
-    "Set up your Orylo space and access the dashboard by creating your first organization.",
+  title: "Select an organization",
+  description: "Choose the organization you want to work with.",
   robots: {
     index: false,
     follow: false,
   },
 };
 
-const CreateOrganizationPage = async () => {
-  const [session, organizations] = await Promise.all([
+const SelectOrganizationPage = async () => {
+  const [session, organizations, org] = await Promise.all([
     auth.api.getSession({
       headers: await headers(),
     }),
     auth.api.listOrganizations({
+      headers: await headers(),
+    }),
+    auth.api.getFullOrganization({
       headers: await headers(),
     }),
   ]);
@@ -32,10 +34,13 @@ const CreateOrganizationPage = async () => {
 
   const organizationsList = (organizations ?? []) as Organization[];
 
-  // Si l'utilisateur a déjà des organisations, rediriger vers la sélection
-  if (organizationsList.length > 0) {
-    redirect("/select-organization");
+  if (organizationsList.length === 0) {
+    redirect("/create-organization");
   }
+
+  console.log(org, "org");
+  console.log(organizations, "organizations");
+  console.log(session, "session");
 
   return (
     <div className="relative h-screen w-screen flex items-center justify-center bg-black text-white overflow-hidden selection:bg-primary/20 selection:text-primary">
@@ -43,26 +48,26 @@ const CreateOrganizationPage = async () => {
       <div className="absolute inset-0 flex justify-center">
         <div className="w-[520px] h-[520px] bg-indigo-500/10 rounded-full blur-3xl translate-y-[24%]" />
       </div>
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-14">
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-14">
         <div className="text-center mb-10 space-y-3">
           <p className="text-xs uppercase tracking-[0.3em] text-indigo-300/80">
-            Secure onboarding
+            Organization switch
           </p>
           <h1 className="text-3xl md:text-4xl font-bold text-white">
-            Set up your organization before opening the dashboard
+            Select your organization
           </h1>
           <p className="text-zinc-400 max-w-2xl mx-auto">
-            Create the space that centralizes your rules, alerts, and
-            connections. You can invite your team and enable fraud protections
-            in minutes.
+            Choose the organization you want to work with. You can switch at any
+            time from the dashboard.
           </p>
         </div>
-        <CreateOrganizationForm
-          userName={session.user.name || session.user.email || ""}
+        <SelectOrganizationCard
+          organizations={organizationsList}
+          currentOrganizationId={org?.id || null}
         />
       </div>
     </div>
   );
 };
 
-export default CreateOrganizationPage;
+export default SelectOrganizationPage;

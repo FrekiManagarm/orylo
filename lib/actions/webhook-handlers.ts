@@ -12,7 +12,6 @@ import { executeAction } from "@/lib/stripe/actions";
 import { incrementUsage } from "@/lib/autumn";
 import { sendAlert, AlertTemplates } from "@/lib/alerts/notifications";
 import { logger } from "@/lib/logger";
-import { revalidatePath } from "next/cache";
 
 /**
  * Handle payment_intent.created event
@@ -57,11 +56,6 @@ export async function handlePaymentIntentCreated(
     });
 
     await incrementUsage(organizationId);
-
-    // Revalidate paths to refresh data
-    revalidatePath("/dashboard");
-    revalidatePath("/dashboard/transactions");
-    revalidatePath("/dashboard/alerts");
 
     return { accepted: true, reason: "whitelisted" };
   }
@@ -108,11 +102,6 @@ export async function handlePaymentIntentCreated(
     );
 
     await incrementUsage(organizationId);
-
-    // Revalidate paths to refresh data
-    revalidatePath("/dashboard");
-    revalidatePath("/dashboard/transactions");
-    revalidatePath("/dashboard/alerts");
 
     return { blocked: true, reason: "blacklisted" };
   }
@@ -202,11 +191,6 @@ export async function handlePaymentIntentCreated(
     // Increment usage
     await incrementUsage(organizationId);
 
-    // Revalidate paths to refresh data
-    revalidatePath("/dashboard");
-    revalidatePath("/dashboard/transactions");
-    revalidatePath("/dashboard/alerts");
-
     return {
       analyzed: true,
       riskScore: aiAnalysis.riskScore,
@@ -232,11 +216,6 @@ export async function handlePaymentIntentCreated(
     });
 
     await incrementUsage(organizationId);
-
-    // Revalidate paths to refresh data
-    revalidatePath("/dashboard");
-    revalidatePath("/dashboard/transactions");
-    revalidatePath("/dashboard/alerts");
 
     return { analyzed: false, reason: "ai_error", requiresReview: true };
   }
@@ -296,10 +275,6 @@ export async function handlePaymentIntentSucceeded(
     }
   }
 
-  // Revalidate paths to refresh data
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/transactions");
-
   return { processed: true };
 }
 
@@ -325,10 +300,6 @@ export async function handlePaymentIntentFailed(
       },
     })
     .where(eq(fraudAnalyses.paymentIntentId, paymentIntent.id));
-
-  // Revalidate paths to refresh data
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/transactions");
 
   return { processed: true };
 }
@@ -379,11 +350,6 @@ export async function handleDisputeCreated(
     ),
   );
 
-  // Revalidate paths to refresh data
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/transactions");
-  revalidatePath("/dashboard/alerts");
-
   return { processed: true, markedAsFraud: !!analysis };
 }
 
@@ -407,10 +373,6 @@ export async function handleChargeRefunded(
         eq(fraudAnalyses.paymentIntentId, charge.payment_intent as string),
       );
   }
-
-  // Revalidate paths to refresh data
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/transactions");
 
   return { processed: true };
 }

@@ -5,26 +5,21 @@ import { fraudAnalyses } from "@/lib/schemas/fraudAnalyses";
 import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
 import { auth } from "@/lib/auth/auth.server";
 import { headers } from "next/headers";
-import { cacheTag } from "next/cache";
 
-export async function getFraudAnalyses(limit?: number) {
+export async function getFraudAnalyses(orgId: string, limit?: number) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
-    const org = await auth.api.getFullOrganization({
-      headers: await headers(),
-    });
-
-    if (!session?.user?.id || !org?.id) {
+    if (!session?.user?.id || !orgId) {
       throw new Error("Unauthorized");
     }
 
     const query = db
       .select()
       .from(fraudAnalyses)
-      .where(eq(fraudAnalyses.organizationId, org.id))
+      .where(eq(fraudAnalyses.organizationId, orgId))
       .orderBy(desc(fraudAnalyses.createdAt));
 
     if (limit) {
@@ -60,10 +55,7 @@ export async function getFraudAnalysisById(id: string) {
       .where(eq(fraudAnalyses.id, id))
       .limit(1);
 
-    if (
-      !analysis[0] ||
-      analysis[0].organizationId !== org.id
-    ) {
+    if (!analysis[0] || analysis[0].organizationId !== org.id) {
       throw new Error("Fraud analysis not found");
     }
 
@@ -74,28 +66,38 @@ export async function getFraudAnalysisById(id: string) {
   }
 }
 
-export async function getDashboardStats() {
+export async function getDashboardStats(orgId: string) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
-    const org = await auth.api.getFullOrganization({
-      headers: await headers(),
-    });
-
-    if (!session?.user?.id || !org?.id) {
+    if (!session?.user?.id || !orgId) {
       throw new Error("Unauthorized");
     }
 
     // Get current month date range
     const now = new Date();
     const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfCurrentMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+    const endOfCurrentMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+    );
 
     // Get previous month date range
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+    const endOfLastMonth = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      0,
+      23,
+      59,
+      59,
+    );
 
     // Get current month stats
     const currentMonthStats = await db
@@ -108,10 +110,10 @@ export async function getDashboardStats() {
       .from(fraudAnalyses)
       .where(
         and(
-          eq(fraudAnalyses.organizationId, org.id),
+          eq(fraudAnalyses.organizationId, orgId),
           gte(fraudAnalyses.createdAt, startOfCurrentMonth),
-          lte(fraudAnalyses.createdAt, endOfCurrentMonth)
-        )
+          lte(fraudAnalyses.createdAt, endOfCurrentMonth),
+        ),
       );
 
     // Get previous month stats
@@ -125,10 +127,10 @@ export async function getDashboardStats() {
       .from(fraudAnalyses)
       .where(
         and(
-          eq(fraudAnalyses.organizationId, org.id),
+          eq(fraudAnalyses.organizationId, orgId),
           gte(fraudAnalyses.createdAt, startOfLastMonth),
-          lte(fraudAnalyses.createdAt, endOfLastMonth)
-        )
+          lte(fraudAnalyses.createdAt, endOfLastMonth),
+        ),
       );
 
     const current = currentMonthStats[0] || {
@@ -154,7 +156,10 @@ export async function getDashboardStats() {
     return {
       transactionsAnalyzed: {
         value: current.totalTransactions,
-        change: calculateChange(current.totalTransactions, previous.totalTransactions),
+        change: calculateChange(
+          current.totalTransactions,
+          previous.totalTransactions,
+        ),
       },
       fraudsBlocked: {
         value: current.totalBlocked,

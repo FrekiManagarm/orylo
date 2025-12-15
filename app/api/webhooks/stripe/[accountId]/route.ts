@@ -14,6 +14,7 @@ import {
   handleDisputeCreated,
   handleChargeRefunded,
 } from "@/lib/actions/webhook-handlers";
+import { revalidatePath } from "next/cache";
 
 type RouteContext = {
   params: Promise<{ accountId: string }>;
@@ -213,6 +214,8 @@ export async function POST(req: NextRequest, context: RouteContext) {
           statusCode: 200,
         })
         .where(eq(webhookLogs.id, webhookLog.id));
+
+      revalidatePath(`/dashboard/${organizationId}`);
 
       return NextResponse.json({ received: true, ...result });
     } catch (handlerError) {

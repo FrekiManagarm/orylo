@@ -1,25 +1,41 @@
-import Link from "next/link";
-import {
-  Download,
-  Settings,
-  Plus,
-  ShieldAlert,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { TransactionActivityChart } from "./transaction-activity-chart";
-import { StatsGrid } from "./stats-grid";
-import RecentTransactionsTable from "./recent-transactions-table";
-import { UsageCard } from "@/components/usage-card";
+import RecentTransactionsTable from "@/components/dashboard/pages/dashboard-home/recent-transactions-table";
+import { RefreshButton } from "@/components/dashboard/pages/dashboard-home/refresh-button";
 import { SimulatePaymentButton } from "@/components/dashboard/pages/dashboard-home/simulate-payment-button";
+import { StatsGrid } from "@/components/dashboard/pages/dashboard-home/stats-grid";
+import { TransactionActivityChart } from "@/components/dashboard/pages/dashboard-home/transaction-activity-chart";
+import { Button } from "@/components/ui/button";
+import { UsageCard } from "@/components/usage-card";
+import {
+  getDashboardStats,
+  getFraudAnalyses,
+} from "@/lib/actions/fraud-analyses";
+import { Plus, Settings, ShieldAlert } from "lucide-react";
+import Link from "next/link";
+import { Suspense } from "react";
 
+export const dynamic = "force-dynamic";
 
-const DashboardClient = async () => {
+const DashboardHome = async ({
+  params,
+}: {
+  params: Promise<{ orgId: string }>;
+}) => {
+  const { orgId } = await params;
+
   const currentDate = new Date().toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
   });
+
+  const [stats, recentAnalyses] = await Promise.all([
+    getDashboardStats(orgId),
+    getFraudAnalyses(orgId, 5),
+  ]);
 
   return (
     <div className="bg-black space-y-8 relative overflow-hidden min-h-screen">
@@ -38,24 +54,33 @@ const DashboardClient = async () => {
             Monitor your fraud protection in real-time
           </p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-zinc-400 border border-white/10 px-4 py-2 rounded-full bg-zinc-900/50 backdrop-blur-sm shadow-sm">
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          {currentDate}
+        <div className="flex items-center gap-3">
+          <RefreshButton />
+          <div className="flex items-center gap-2 text-sm text-zinc-400 border border-white/10 px-4 py-2 rounded-full bg-zinc-900/50 backdrop-blur-sm shadow-sm">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            {currentDate}
+          </div>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <StatsGrid />
+      <Suspense fallback={<div>Loading...</div>}>
+        <StatsGrid stats={stats} />
+      </Suspense>
 
       {/* Main Content Grid */}
       <div className="relative z-10 grid gap-6 md:grid-cols-12">
         {/* Chart Section - Expanded to 8 columns */}
-        <TransactionActivityChart />
+        <Suspense fallback={<div>Loading...</div>}>
+          <TransactionActivityChart />
+        </Suspense>
 
         {/* Usage & Quick Actions Column - 4 columns */}
         <div className="col-span-12 md:col-span-4 space-y-6">
           {/* Usage Card */}
-          <UsageCard />
+          <Suspense fallback={<div>Loading...</div>}>
+            <UsageCard />
+          </Suspense>
 
           {/* Quick Actions Grid */}
           <div className="grid grid-cols-2 gap-3">
@@ -92,9 +117,11 @@ const DashboardClient = async () => {
       </div>
 
       {/* Recent Transactions Table */}
-      <RecentTransactionsTable />
+      <Suspense fallback={<div>Loading...</div>}>
+        <RecentTransactionsTable recentAnalyses={recentAnalyses} />
+      </Suspense>
     </div>
   );
 };
 
-export default DashboardClient;
+export default DashboardHome;

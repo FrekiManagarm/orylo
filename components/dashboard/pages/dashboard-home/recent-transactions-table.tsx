@@ -19,33 +19,54 @@ import {
 } from "@/components/ui/table";
 import { getFraudAnalyses } from "@/lib/actions/fraud-analyses";
 
-interface RecentTransactionsTableProps {
-  recentAnalyses: Array<{
-    id: string;
-    paymentIntentId: string;
-    email: string | null;
-    amount: number;
-    currency: string;
-    riskScore: number;
-    action: "canceled" | "refunded" | "3ds_required" | "accepted";
-    recommandation: string;
-    reasoning: string;
-    ipAddress: string | null;
-    createdAt: Date | null;
-    country: string | null;
-    userAgent: string | null;
-    signals: any;
-    agentsUsed: string[];
-    blocked: boolean;
-    actualFraud: boolean | null;
-    falsePositive: boolean | null;
-    organizationId: string;
-  }>;
-}
+type FraudAnalysis = {
+  id: string;
+  paymentIntentId: string;
+  email: string | null;
+  amount: number;
+  currency: string;
+  riskScore: number;
+  action: "canceled" | "refunded" | "3ds_required" | "accepted";
+  recommandation: string;
+  reasoning: string;
+  ipAddress: string | null;
+  createdAt: Date | null;
+  country: string | null;
+  userAgent: string | null;
+  signals: any;
+  agentsUsed: string[];
+  blocked: boolean;
+  actualFraud: boolean | null;
+  falsePositive: boolean | null;
+  organizationId: string;
+};
 
-const RecentTransactionsTable = async () => {
+const RecentTransactionsTable = async ({
+  recentAnalyses,
+}: {
+  recentAnalyses: FraudAnalysis[];
+}) => {
+  const formatCurrency = (amount: number, currency: string) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
+    }).format(amount / 100);
+  };
 
-  const recentAnalyses = await getFraudAnalyses(5);
+  const formatTimeAgo = (date: Date | null) => {
+    if (!date) return "N/A";
+
+    const now = new Date();
+    const diff = now.getTime() - new Date(date).getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
+    if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    if (minutes > 0) return `${minutes} min ago`;
+    return "Just now";
+  };
 
   const getScoreColor = (score: number) => {
     if (score < 30)
@@ -96,28 +117,6 @@ const RecentTransactionsTable = async () => {
     }
   };
 
-  const formatCurrency = (amount: number, currency: string) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: currency,
-    }).format(amount / 100);
-  };
-
-  const formatTimeAgo = (date: Date | null) => {
-    if (!date) return "N/A";
-
-    const now = new Date();
-    const diff = now.getTime() - new Date(date).getTime();
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
-    if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
-    if (minutes > 0) return `${minutes} min ago`;
-    return "Just now";
-  };
-
   return (
     <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-xl overflow-hidden p-0 gap-0">
       <CardHeader className="flex flex-row items-center justify-between border-white/5 bg-white/2 p-5">
@@ -144,9 +143,7 @@ const RecentTransactionsTable = async () => {
               <TableHead className="text-zinc-500 font-medium pl-6">
                 Transaction ID
               </TableHead>
-              <TableHead className="text-zinc-500 font-medium">
-                User
-              </TableHead>
+              <TableHead className="text-zinc-500 font-medium">User</TableHead>
               <TableHead className="text-zinc-500 font-medium">
                 Amount
               </TableHead>

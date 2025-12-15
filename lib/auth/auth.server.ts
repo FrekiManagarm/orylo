@@ -3,6 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { organization, twoFactor } from "better-auth/plugins";
 import { db } from "../db";
 import { autumn } from "autumn-js/better-auth";
+import { nextCookies } from "better-auth/next-js";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -12,6 +13,7 @@ export const auth = betterAuth({
     enabled: true,
   },
   plugins: [
+    nextCookies(),
     autumn({
       secretKey: process.env.AUTUMN_SECRET_KEY,
       customerScope: "organization",

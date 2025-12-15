@@ -3,7 +3,6 @@ import { db } from "@/lib/db";
 import { stripeConnections } from "@/lib/schemas/stripeConnections";
 import { eq, and } from "drizzle-orm";
 import { decrypt, encrypt } from "./encryption";
-import { CacheKeys, cacheGet, cacheSet, cacheDel } from "@/lib/redis";
 
 /**
  * Get authenticated Stripe client for a connected account
@@ -12,38 +11,20 @@ export async function getStripeClient(
   organizationId: string,
 ): Promise<Stripe | null> {
   try {
-    // Try cache first
-    const cached = await cacheGet<{ accessToken: string }>(
-      CacheKeys.stripeConnection(organizationId),
-    );
+    // Fetch from database
+    const connection = await db.query.stripeConnections.findFirst({
+      where: eq(stripeConnections.organizationId, organizationId),
+    });
 
-    let accessToken: string;
-
-    if (cached) {
-      accessToken = cached.accessToken;
-    } else {
-      // Fetch from database
-      const connection = await db.query.stripeConnections.findFirst({
-        where: eq(stripeConnections.organizationId, organizationId),
-      });
-
-      if (!connection || !connection.isActive) {
-        console.warn(
-          `No active Stripe connection for organization ${organizationId}`,
-        );
-        return null;
-      }
-
-      // Decrypt access token
-      accessToken = decrypt(connection.accessToken);
-
-      // Cache for 1 hour
-      await cacheSet(
-        CacheKeys.stripeConnection(organizationId),
-        { accessToken },
-        3600,
+    if (!connection || !connection.isActive) {
+      console.warn(
+        `No active Stripe connection for organization ${organizationId}`,
       );
+      return null;
     }
+
+    // Decrypt access token
+    const accessToken = decrypt(connection.accessToken);
 
     // Return authenticated Stripe client
     return new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -139,9 +120,6 @@ export async function refreshAccessToken(
       })
       .where(eq(stripeConnections.id, connectionId));
 
-    // Clear cache
-    await cacheDel(CacheKeys.stripeConnection(connection.organizationId));
-
     console.log(`✅ Refreshed access token for connection ${connectionId}`);
     return true;
   } catch (error) {
@@ -160,9 +138,9 @@ export async function disconnectStripeAccount(
   try {
     const whereClause = connectionId
       ? and(
-        eq(stripeConnections.id, connectionId),
-        eq(stripeConnections.organizationId, organizationId),
-      )
+          eq(stripeConnections.id, connectionId),
+          eq(stripeConnections.organizationId, organizationId),
+        )
       : eq(stripeConnections.organizationId, organizationId);
 
     const connection = await db.query.stripeConnections.findFirst({
@@ -210,9 +188,6 @@ export async function disconnectStripeAccount(
       .update(stripeConnections)
       .set({ isActive: false })
       .where(eq(stripeConnections.id, connection.id));
-
-    // Clear cache
-    await cacheDel(CacheKeys.stripeConnection(organizationId));
 
     console.log(
       `✅ Disconnected Stripe account ${connection.stripeAccountId} for organization ${organizationId}`,

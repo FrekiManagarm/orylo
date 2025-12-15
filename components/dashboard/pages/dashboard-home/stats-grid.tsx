@@ -1,4 +1,3 @@
-import { getDashboardStats } from "@/lib/actions/fraud-analyses";
 import {
   Activity,
   ShieldAlert,
@@ -7,16 +6,14 @@ import {
   ArrowUpRight,
   ArrowDownRight,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getDashboardStats } from "@/lib/actions/fraud-analyses";
 
-export const StatsGrid = async () => {
-  const stats = await getDashboardStats();
-
+export const StatsGrid = async ({
+  stats,
+}: {
+  stats: Awaited<ReturnType<typeof getDashboardStats>>;
+}) => {
   const formatCurrency = (amountInCents: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",

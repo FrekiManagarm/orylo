@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth.server";
 import { headers } from "next/headers";
 import { SignJWT } from "jose";
+import Stripe from "stripe";
 
 export async function POST(req: NextRequest) {
   try {
@@ -42,10 +43,25 @@ export async function POST(req: NextRequest) {
     stripeAuthUrl.searchParams.set("scope", "read_write");
     stripeAuthUrl.searchParams.set("stripe_user[business_type]", "company");
 
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: "2025-11-17.clover",
+    });
+
+    const url = stripe.oauth.authorizeUrl({
+      client_id: stripeClientId,
+      state: organizationId,
+      redirect_uri: redirectUri,
+      response_type: "code",
+      scope: "read_write",
+      stripe_user: {
+        business_type: "company",
+      },
+    });
+
     console.log(`🔗 Generated Stripe Connect URL for org ${organizationId}`);
 
     return NextResponse.json({
-      url: stripeAuthUrl.toString(),
+      url: url.toString(),
     });
   } catch (error) {
     console.error("❌ Error generating Stripe Connect URL:", error);

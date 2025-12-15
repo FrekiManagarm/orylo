@@ -20,11 +20,14 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   const cookieStore = await cookies();
   const sidebarOpen = cookieStore.get("sidebar_state")?.value === "true";
 
-  const [session, organizations] = await Promise.all([
+  const [session, organizations, org] = await Promise.all([
     auth.api.getSession({
       headers: await headers(),
     }),
     auth.api.listOrganizations({
+      headers: await headers(),
+    }),
+    auth.api.getFullOrganization({
       headers: await headers(),
     }),
   ]);
@@ -33,8 +36,12 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
     redirect("/sign-in");
   }
 
-  if (!organizations.length) {
+  if (!organizations.length || !org?.id) {
     redirect("/create-organization");
+  }
+
+  if (!org?.id) {
+    redirect("/select-organization");
   }
 
   return (

@@ -1,6 +1,5 @@
 import TransactionsClient from "./components/transactions-client";
 import { Metadata } from "next";
-import { getFraudAnalyses } from "@/lib/actions/fraud-analyses";
 
 export const metadata: Metadata = {
   title: "Transactions | Orylo",
@@ -8,9 +7,7 @@ export const metadata: Metadata = {
 };
 
 const TransactionsPage = async () => {
-  const analyses = await getFraudAnalyses();
-
-  return <TransactionsClient analyses={analyses} />;
+  return <TransactionsClient />;
 };
 
 export default TransactionsPage;
