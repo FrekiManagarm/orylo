@@ -2,35 +2,172 @@
 
 import { db } from "@/lib/db";
 import { fraudAnalyses } from "@/lib/schemas/fraudAnalyses";
-import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
+import { eq, desc, and, gte, lte, sql, or } from "drizzle-orm";
 import { auth } from "@/lib/auth/auth.server";
 import { headers } from "next/headers";
 
-export async function getFraudAnalyses(orgId: string, limit?: number) {
+export type FraudAnalysisFilters = {
+  riskScoreRange?: "low" | "medium" | "high";
+  actions?: string[];
+  dateRange?: "24h" | "7d" | "30d" | "all";
+};
+
+export async function getFraudAnalyses(options?: {
+  limit?: number;
+  offset?: number;
+  filters?: FraudAnalysisFilters;
+}) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
-    if (!session?.user?.id || !orgId) {
+    const org = await auth.api.getFullOrganization({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.id || !org?.id) {
       throw new Error("Unauthorized");
     }
 
-    const query = db
+    // Build conditions array
+    const conditions = [eq(fraudAnalyses.organizationId, org.id)];
+
+    // Apply filters
+    if (options?.filters) {
+      const { riskScoreRange, actions, dateRange } = options.filters;
+
+      // Risk Score filter
+      if (riskScoreRange) {
+        if (riskScoreRange === "low") {
+          conditions.push(lte(fraudAnalyses.riskScore, 30));
+        } else if (riskScoreRange === "medium") {
+          conditions.push(
+            and(
+              gte(fraudAnalyses.riskScore, 30),
+              lte(fraudAnalyses.riskScore, 70)
+            )!
+          );
+        } else if (riskScoreRange === "high") {
+          conditions.push(gte(fraudAnalyses.riskScore, 70));
+        }
+      }
+
+      // Actions filter
+      if (actions && actions.length > 0) {
+        const actionConditions = actions.map((action) =>
+          eq(fraudAnalyses.action, action as any)
+        );
+        conditions.push(or(...actionConditions)!);
+      }
+
+      // Date range filter
+      if (dateRange && dateRange !== "all") {
+        const now = new Date();
+        let startDate: Date;
+
+        if (dateRange === "24h") {
+          startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        } else if (dateRange === "7d") {
+          startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        } else {
+          // 30d
+          startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        }
+
+        conditions.push(gte(fraudAnalyses.createdAt, startDate));
+      }
+    }
+
+    let query = db
       .select()
       .from(fraudAnalyses)
-      .where(eq(fraudAnalyses.organizationId, orgId))
+      .where(and(...conditions))
       .orderBy(desc(fraudAnalyses.createdAt));
 
-    if (limit) {
-      const analyses = await query.limit(limit);
-      return analyses;
+    if (options?.limit) {
+      query = query.limit(options.limit) as any;
+    }
+
+    if (options?.offset) {
+      query = query.offset(options.offset) as any;
     }
 
     const analyses = await query;
     return analyses;
   } catch (error) {
     console.error("Error fetching fraud analyses:", error);
+    throw error;
+  }
+}
+
+export async function getTotalFraudAnalysesCount(filters?: FraudAnalysisFilters) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    const org = await auth.api.getFullOrganization({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.id || !org?.id) {
+      throw new Error("Unauthorized");
+    }
+
+    // Build conditions array
+    const conditions = [eq(fraudAnalyses.organizationId, org.id)];
+
+    // Apply same filters as getFraudAnalyses
+    if (filters) {
+      const { riskScoreRange, actions, dateRange } = filters;
+
+      if (riskScoreRange) {
+        if (riskScoreRange === "low") {
+          conditions.push(lte(fraudAnalyses.riskScore, 30));
+        } else if (riskScoreRange === "medium") {
+          conditions.push(
+            and(
+              gte(fraudAnalyses.riskScore, 30),
+              lte(fraudAnalyses.riskScore, 70)
+            )!
+          );
+        } else if (riskScoreRange === "high") {
+          conditions.push(gte(fraudAnalyses.riskScore, 70));
+        }
+      }
+
+      if (actions && actions.length > 0) {
+        const actionConditions = actions.map((action) =>
+          eq(fraudAnalyses.action, action as any)
+        );
+        conditions.push(or(...actionConditions)!);
+      }
+
+      if (dateRange && dateRange !== "all") {
+        const now = new Date();
+        let startDate: Date;
+
+        if (dateRange === "24h") {
+          startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        } else if (dateRange === "7d") {
+          startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        } else {
+          startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        }
+
+        conditions.push(gte(fraudAnalyses.createdAt, startDate));
+      }
+    }
+
+    const result = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(fraudAnalyses)
+      .where(and(...conditions));
+
+    return result[0]?.count || 0;
+  } catch (error) {
+    console.error("Error fetching fraud analyses count:", error);
     throw error;
   }
 }
@@ -66,13 +203,17 @@ export async function getFraudAnalysisById(id: string) {
   }
 }
 
-export async function getDashboardStats(orgId: string) {
+export async function getDashboardStats() {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
-    if (!session?.user?.id || !orgId) {
+    const org = await auth.api.getFullOrganization({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.id || !org?.id) {
       throw new Error("Unauthorized");
     }
 
@@ -110,7 +251,7 @@ export async function getDashboardStats(orgId: string) {
       .from(fraudAnalyses)
       .where(
         and(
-          eq(fraudAnalyses.organizationId, orgId),
+          eq(fraudAnalyses.organizationId, org.id),
           gte(fraudAnalyses.createdAt, startOfCurrentMonth),
           lte(fraudAnalyses.createdAt, endOfCurrentMonth),
         ),
@@ -127,7 +268,7 @@ export async function getDashboardStats(orgId: string) {
       .from(fraudAnalyses)
       .where(
         and(
-          eq(fraudAnalyses.organizationId, orgId),
+          eq(fraudAnalyses.organizationId, org.id),
           gte(fraudAnalyses.createdAt, startOfLastMonth),
           lte(fraudAnalyses.createdAt, endOfLastMonth),
         ),

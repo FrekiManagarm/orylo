@@ -14,14 +14,11 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
-const DashboardHome = async ({
-  params,
-}: {
-  params: Promise<{ orgId: string }>;
-}) => {
-  const { orgId } = await params;
 
+const DashboardHome = async () => {
   const currentDate = new Date().toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
@@ -33,12 +30,12 @@ const DashboardHome = async ({
   });
 
   const [stats, recentAnalyses] = await Promise.all([
-    getDashboardStats(orgId),
-    getFraudAnalyses(orgId, 5),
+    getDashboardStats(),
+    getFraudAnalyses({ limit: 5 }),
   ]);
 
   return (
-    <div className="bg-black space-y-8 relative overflow-hidden min-h-screen">
+    <div className="bg-black space-y-4 relative overflow-hidden min-h-screen">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-indigo-900/20 via-zinc-900/0 to-zinc-900/0 pointer-events-none" />
       <div className="absolute top-0 left-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-[128px] -translate-y-1/2 pointer-events-none" />
@@ -69,14 +66,14 @@ const DashboardHome = async ({
       </Suspense>
 
       {/* Main Content Grid */}
-      <div className="relative z-10 grid gap-6 md:grid-cols-12">
+      <div className="relative z-10 grid gap-4 md:grid-cols-12">
         {/* Chart Section - Expanded to 8 columns */}
         <Suspense fallback={<div>Loading...</div>}>
           <TransactionActivityChart />
         </Suspense>
 
         {/* Usage & Quick Actions Column - 4 columns */}
-        <div className="col-span-12 md:col-span-4 space-y-6">
+        <div className="col-span-12 md:col-span-4 space-y-4">
           {/* Usage Card */}
           <Suspense fallback={<div>Loading...</div>}>
             <UsageCard />

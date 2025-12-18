@@ -55,7 +55,7 @@ export function SelectOrganizationCard({
           description: "Redirecting to dashboard...",
         });
 
-        router.push(`/dashboard/${organizationId}`);
+        router.push("/dashboard");
         router.refresh();
       } catch (error) {
         const message =
