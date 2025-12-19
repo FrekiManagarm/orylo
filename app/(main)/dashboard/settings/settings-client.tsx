@@ -116,7 +116,7 @@ export function SettingsClient({ billing }: { billing: BillingData }) {
         title: "Settings Saved",
         description: "Your settings have been updated successfully.",
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to save settings. Please try again.",
@@ -127,9 +127,9 @@ export function SettingsClient({ billing }: { billing: BillingData }) {
     }
   };
 
-  const updateSetting = <K extends keyof typeof settings>(
+  const updateSetting = <K extends keyof typeof initialSettings>(
     key: K,
-    value: (typeof settings)[K],
+    value: (typeof initialSettings)[K],
   ) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
     setHasChanges(true);
@@ -141,6 +141,46 @@ export function SettingsClient({ billing }: { billing: BillingData }) {
         return newErrors;
       });
     }
+  };
+
+  // Type-safe wrapper for risk settings
+  const updateRiskSetting = <
+    K extends keyof Pick<
+      typeof initialSettings,
+      | "blockThreshold"
+      | "reviewThreshold"
+      | "require3DSScore"
+      | "autoBlock"
+      | "shadowMode"
+    >,
+  >(
+    key: K,
+    value: Pick<
+      typeof initialSettings,
+      | "blockThreshold"
+      | "reviewThreshold"
+      | "require3DSScore"
+      | "autoBlock"
+      | "shadowMode"
+    >[K],
+  ) => {
+    updateSetting(key, value);
+  };
+
+  // Type-safe wrapper for notification settings
+  const updateNotificationSetting = <
+    K extends keyof Pick<
+      typeof initialSettings,
+      "emailAlerts" | "slackWebhook" | "discordWebhook"
+    >,
+  >(
+    key: K,
+    value: Pick<
+      typeof initialSettings,
+      "emailAlerts" | "slackWebhook" | "discordWebhook"
+    >[K],
+  ) => {
+    updateSetting(key, value);
   };
 
   return (
@@ -200,17 +240,27 @@ export function SettingsClient({ billing }: { billing: BillingData }) {
 
         <TabsContent value="risk" className="grid gap-8">
           <RiskSettings
-            settings={settings}
+            settings={{
+              blockThreshold: settings.blockThreshold,
+              reviewThreshold: settings.reviewThreshold,
+              require3DSScore: settings.require3DSScore,
+              autoBlock: settings.autoBlock,
+              shadowMode: settings.shadowMode,
+            }}
             errors={errors}
-            onUpdate={updateSetting}
+            onUpdate={updateRiskSetting}
           />
         </TabsContent>
 
         <TabsContent value="notifications" className="grid gap-8">
           <NotificationSettings
-            settings={settings}
+            settings={{
+              emailAlerts: settings.emailAlerts,
+              slackWebhook: settings.slackWebhook,
+              discordWebhook: settings.discordWebhook,
+            }}
             errors={errors}
-            onUpdate={updateSetting}
+            onUpdate={updateNotificationSetting}
           />
         </TabsContent>
 
