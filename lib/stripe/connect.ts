@@ -9,12 +9,18 @@ import { decrypt, encrypt } from "./encryption";
  */
 export async function getStripeClient(
   organizationId: string,
+  accountId?: string,
 ): Promise<Stripe | null> {
   try {
     // Fetch from database
     const connection = await db.query.stripeConnections.findFirst({
-      where: eq(stripeConnections.organizationId, organizationId),
+      where: and(
+        eq(stripeConnections.organizationId, organizationId),
+        eq(stripeConnections.id, accountId ?? ""),
+      ),
     });
+
+    console.log("connection", connection);
 
     if (!connection || !connection.isActive) {
       console.warn(
@@ -27,8 +33,8 @@ export async function getStripeClient(
     const accessToken = decrypt(connection.accessToken);
 
     // Return authenticated Stripe client
-    return new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2025-11-17.clover",
+    return new Stripe(accessToken, {
+      apiVersion: "2025-12-15.clover",
     });
   } catch (error) {
     console.error(
@@ -103,7 +109,7 @@ export async function refreshAccessToken(
 
     // Exchange refresh token for new access token
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2025-11-17.clover",
+      apiVersion: "2025-12-15.clover",
     });
 
     const response = await stripe.oauth.token({
@@ -138,9 +144,9 @@ export async function disconnectStripeAccount(
   try {
     const whereClause = connectionId
       ? and(
-          eq(stripeConnections.id, connectionId),
-          eq(stripeConnections.organizationId, organizationId),
-        )
+        eq(stripeConnections.id, connectionId),
+        eq(stripeConnections.organizationId, organizationId),
+      )
       : eq(stripeConnections.organizationId, organizationId);
 
     const connection = await db.query.stripeConnections.findFirst({
@@ -152,7 +158,7 @@ export async function disconnectStripeAccount(
     }
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2025-11-17.clover",
+      apiVersion: "2025-12-15.clover",
     });
 
     // Deauthorize the account
@@ -171,7 +177,7 @@ export async function disconnectStripeAccount(
     if (connection.webhookEndpointId) {
       try {
         const platformStripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-          apiVersion: "2025-11-17.clover",
+          apiVersion: "2025-12-15.clover",
         });
 
         await platformStripe.webhookEndpoints.del(connection.webhookEndpointId);

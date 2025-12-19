@@ -14,7 +14,7 @@ import {
   handleDisputeCreated,
   handleChargeRefunded,
 } from "@/lib/actions/webhook-handlers";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 
 type RouteContext = {
   params: Promise<{ accountId: string }>;
@@ -22,8 +22,8 @@ type RouteContext = {
 
 // Désactiver le body parsing automatique pour préserver le corps brut
 // Nécessaire pour la vérification de signature Stripe
-export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 /**
  * Stripe webhook handler for connected accounts
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
     console.log("🔍 Webhook secret:", webhookSecret);
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2025-11-17.clover",
+      apiVersion: "2025-12-15.clover",
     });
 
     let event: Stripe.Event;

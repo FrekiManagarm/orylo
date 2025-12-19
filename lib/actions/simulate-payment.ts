@@ -43,8 +43,8 @@ export async function simulatePaymentIntent(options?: {
     const riskLevel = options?.riskLevel || "medium";
     const testData = generateTestData(riskLevel);
 
-    const stripe = new Stripe(process.env.STRIPE_TEST_KEY!, {
-      apiVersion: "2025-11-17.clover",
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: "2025-12-15.clover",
     });
 
     // Get base URL for redirect
