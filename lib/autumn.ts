@@ -53,3 +53,63 @@ export async function incrementUsage(organizationId: string) {
     // Log but don't fail the transaction
   }
 }
+
+/**
+ * Get customer billing data including subscription and usage
+ */
+export async function getBillingData(organizationId: string) {
+  try {
+    const customerResponse = await autumn.customers.get(organizationId, {
+      expand: ["payment_method", "invoices"],
+    });
+    const customer = customerResponse.data;
+
+    if (!customer) {
+      throw new Error("Customer not found");
+    }
+
+    // Get transaction usage
+    const transactionCheck = await autumn.check({
+      customer_id: organizationId,
+      feature_id: transactions.id,
+    });
+
+    const transactionData = transactionCheck.data;
+
+    // Get active product from customer.products array
+    const activeProduct = customer.products.find(
+      (p) => p.status === "active" || p.status === "trialing",
+    );
+
+    return {
+      plan: activeProduct?.name || "Free",
+      price: "0 €/mois", // Price info not directly available in Customer type
+      interval: "month",
+      nextInvoice: null, // Next invoice info not available in Customer type
+      invoices: customer.invoices || [],
+      usage: {
+        transactions: transactionData?.balance || 0,
+        limit: transactionData?.included_usage || 0,
+      },
+      paymentMethod: customer.payment_method || null,
+      status: activeProduct?.status || "active",
+    };
+  } catch (error) {
+    console.error("Error fetching billing data:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get billing portal URL for customer
+ */
+export async function getBillingPortalUrl(organizationId: string) {
+  try {
+    const response = await autumn.customers.billingPortal(organizationId);
+
+    return response.data?.url;
+  } catch (error) {
+    console.error("Error getting billing portal URL:", error);
+    throw error;
+  }
+}

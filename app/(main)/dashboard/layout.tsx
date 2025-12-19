@@ -6,6 +6,7 @@ import { DashboardSidebar } from "@/components/dashboard/layout/dashboard-sideba
 import { DashboardHeader } from "@/components/dashboard/layout/dashboard-header";
 import { auth } from "@/lib/auth/auth.server";
 import { Organization } from "@/lib/schemas";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -56,6 +57,7 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
           <div className="w-full overflow-y-auto p-4 mb-4">{children}</div>
         </SidebarInset>
       </div>
+      <Toaster />
     </SidebarProvider>
   );
 };

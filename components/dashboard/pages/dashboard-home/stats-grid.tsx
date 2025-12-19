@@ -67,7 +67,7 @@ export const StatsGrid = async ({
       {statsConfig.map((stat, index) => (
         <Card
           key={index}
-          className="bg-zinc-900/50 border-white/5 backdrop-blur-xl hover:border-indigo-500/30 transition-all duration-300 group"
+          className="bg-zinc-900/50 border border-white/5 backdrop-blur-xl hover:border-indigo-500/30 transition-all duration-300 group"
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-zinc-400 group-hover:text-zinc-300 transition-colors">

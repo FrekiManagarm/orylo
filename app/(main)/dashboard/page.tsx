@@ -4,7 +4,7 @@ import { SimulatePaymentButton } from "@/components/dashboard/pages/dashboard-ho
 import { StatsGrid } from "@/components/dashboard/pages/dashboard-home/stats-grid";
 import { TransactionActivityChart } from "@/components/dashboard/pages/dashboard-home/transaction-activity-chart";
 import { Button } from "@/components/ui/button";
-import { UsageCard } from "@/components/usage-card";
+import { UsageCard } from "@/components/dashboard/pages/dashboard-home/usage-card";
 import {
   getDashboardStats,
   getFraudAnalyses,

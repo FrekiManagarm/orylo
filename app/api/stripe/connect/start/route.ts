@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     stripeAuthUrl.searchParams.set("stripe_user[business_type]", "company");
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2025-11-17.clover",
+      apiVersion: "2025-12-15.clover",
     });
 
     const url = stripe.oauth.authorizeUrl({
