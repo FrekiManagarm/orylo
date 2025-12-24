@@ -1,4 +1,4 @@
-import { defineConfig, defineCollections, frontmatterSchema } from "fumadocs-mdx/config";
+import { defineCollections, frontmatterSchema } from "fumadocs-mdx/config";
 import z from "zod";
 
 export const blogPosts = defineCollections({
@@ -8,4 +8,4 @@ export const blogPosts = defineCollections({
     author: z.string(),
     date: z.date(),
   }),
-})
+});
