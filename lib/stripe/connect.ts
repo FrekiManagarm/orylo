@@ -16,7 +16,7 @@ export async function getStripeClient(
     const connection = await db.query.stripeConnections.findFirst({
       where: and(
         eq(stripeConnections.organizationId, organizationId),
-        eq(stripeConnections.id, accountId ?? ""),
+        eq(stripeConnections.stripeAccountId, accountId ?? ""),
       ),
     });
 

@@ -55,7 +55,7 @@ export async function setupWebhooks(
     // Créer un webhook Connect au niveau plateforme
     // (Les comptes Standard ne permettent pas de créer des webhooks directement)
     const platformStripe = new Stripe(accessToken, {
-      apiVersion: "2025-11-17.clover",
+      apiVersion: "2025-12-15.clover",
     });
 
     const webhookEndpoint = await platformStripe.webhookEndpoints.create({
@@ -67,6 +67,9 @@ export async function setupWebhooks(
         'payment_intent.payment_failed', // Analyse des échecs
         'charge.dispute.created',        // Chargeback = fraude confirmée
         'charge.refund.updated',         // Suivi des remboursements
+        'checkout.session.completed',    // Card testing detection
+        'checkout.session.expired',      // Card testing detection
+        'checkout.session.async_payment_succeeded', // Card testing detection
       ],
       description: `Orylo Fraud Shield - Connect (${stripeAccountId})`,
     }, {
@@ -110,7 +113,7 @@ export async function deleteWebhooks(
   try {
     // Les webhooks Connect sont gérés au niveau plateforme (pas de stripeAccount)
     const stripe = new Stripe(accessToken, {
-      apiVersion: "2025-11-17.clover",
+      apiVersion: "2025-12-15.clover",
     });
 
     await stripe.webhookEndpoints.del(webhookEndpointId, {
@@ -142,7 +145,7 @@ export async function updateWebhookEvents(
   try {
     // Les webhooks Connect sont gérés au niveau plateforme (pas de stripeAccount)
     const stripe = new Stripe(accessToken, {
-      apiVersion: "2025-11-17.clover",
+      apiVersion: "2025-12-15.clover",
     });
 
     await stripe.webhookEndpoints.update(webhookEndpointId, {
@@ -174,7 +177,7 @@ export async function listWebhooks(
   try {
     // Les webhooks Connect sont gérés au niveau plateforme (pas de stripeAccount)
     const stripe = new Stripe(accessToken, {
-      apiVersion: "2025-11-17.clover",
+      apiVersion: "2025-12-15.clover",
     });
 
     // Lister tous les webhooks Connect (filtrer côté client si nécessaire)

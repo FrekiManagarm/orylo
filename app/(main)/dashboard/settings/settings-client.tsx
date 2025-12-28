@@ -143,6 +143,32 @@ export function SettingsClient({ billing }: { billing: BillingData }) {
     }
   };
 
+  // Sous-ensembles de settings pour chaque composant
+  const riskSettings = {
+    blockThreshold: settings.blockThreshold,
+    reviewThreshold: settings.reviewThreshold,
+    require3DSScore: settings.require3DSScore,
+    autoBlock: settings.autoBlock,
+    shadowMode: settings.shadowMode,
+  };
+
+  const notificationSettings = {
+    emailAlerts: settings.emailAlerts,
+    slackWebhook: settings.slackWebhook,
+    discordWebhook: settings.discordWebhook,
+  };
+
+  // Fonctions wrapper typées pour chaque composant
+  const updateRiskSetting = <K extends keyof typeof riskSettings>(
+    key: K,
+    value: (typeof riskSettings)[K]
+  ) => updateSetting(key as keyof typeof settings, value as any);
+
+  const updateNotificationSetting = <K extends keyof typeof notificationSettings>(
+    key: K,
+    value: (typeof notificationSettings)[K]
+  ) => updateSetting(key as keyof typeof settings, value as any);
+
   return (
     <div className="bg-black min-h-screen space-y-8 relative overflow-hidden">
       {/* Background Effects */}
@@ -200,17 +226,17 @@ export function SettingsClient({ billing }: { billing: BillingData }) {
 
         <TabsContent value="risk" className="grid gap-8">
           <RiskSettings
-            settings={settings}
+            settings={riskSettings}
             errors={errors}
-            onUpdate={updateSetting}
+            onUpdate={updateRiskSetting}
           />
         </TabsContent>
 
         <TabsContent value="notifications" className="grid gap-8">
           <NotificationSettings
-            settings={settings}
+            settings={notificationSettings}
             errors={errors}
-            onUpdate={updateSetting}
+            onUpdate={updateNotificationSetting}
           />
         </TabsContent>
 

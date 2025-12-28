@@ -1,16 +1,14 @@
 import RecentTransactionsTable from "@/components/dashboard/pages/dashboard-home/recent-transactions-table";
 import { RefreshButton } from "@/components/dashboard/pages/dashboard-home/refresh-button";
-import { SimulatePaymentButton } from "@/components/dashboard/pages/dashboard-home/simulate-payment-button";
+import { QuickActionsDropdown } from "@/components/dashboard/pages/dashboard-home/quick-actions-dropdown";
 import { StatsGrid } from "@/components/dashboard/pages/dashboard-home/stats-grid";
 import { TransactionActivityChart } from "@/components/dashboard/pages/dashboard-home/transaction-activity-chart";
-import { Button } from "@/components/ui/button";
+import { CardTestingWidget } from "@/components/dashboard/pages/dashboard-home/card-testing-widget";
 import { UsageCard } from "@/components/dashboard/pages/dashboard-home/usage-card";
 import {
   getDashboardStats,
   getFraudAnalyses,
 } from "@/lib/actions/fraud-analyses";
-import { Plus, Settings, ShieldAlert } from "lucide-react";
-import Link from "next/link";
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
@@ -52,6 +50,7 @@ const DashboardHome = async () => {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <QuickActionsDropdown />
           <RefreshButton />
           <div className="flex items-center gap-2 text-sm text-zinc-400 border border-white/10 px-4 py-2 rounded-full bg-zinc-900/50 backdrop-blur-sm shadow-sm">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -74,42 +73,15 @@ const DashboardHome = async () => {
 
         {/* Usage & Quick Actions Column - 4 columns */}
         <div className="col-span-12 md:col-span-4 space-y-4">
+          {/* Card Testing Widget */}
+          <Suspense fallback={<div className="h-40 bg-zinc-900/50 rounded-lg animate-pulse" />}>
+            <CardTestingWidget />
+          </Suspense>
+
           {/* Usage Card */}
           <Suspense fallback={<div>Loading...</div>}>
             <UsageCard />
           </Suspense>
-
-          {/* Quick Actions Grid */}
-          <div className="grid grid-cols-2 gap-3">
-            <Link href="/dashboard/rules" className="block">
-              <Button
-                variant="outline"
-                className="w-full h-24 flex flex-col items-center justify-center gap-2 bg-zinc-900/50 border-white/5 hover:bg-white/5 hover:border-indigo-500/30 hover:text-indigo-400 transition-all group"
-              >
-                <Plus className="h-6 w-6 text-zinc-400 group-hover:text-indigo-400 transition-colors" />
-                <span className="text-xs font-medium">New Rule</span>
-              </Button>
-            </Link>
-            <Link href="/dashboard/settings" className="block">
-              <Button
-                variant="outline"
-                className="w-full h-24 flex flex-col items-center justify-center gap-2 bg-zinc-900/50 border-white/5 hover:bg-white/5 hover:border-indigo-500/30 hover:text-indigo-400 transition-all group"
-              >
-                <Settings className="h-6 w-6 text-zinc-400 group-hover:text-indigo-400 transition-colors" />
-                <span className="text-xs font-medium">Config</span>
-              </Button>
-            </Link>
-            <Link href="/dashboard/alerts" className="block">
-              <Button
-                variant="outline"
-                className="w-full h-24 flex flex-col items-center justify-center gap-2 bg-zinc-900/50 border-white/5 hover:bg-white/5 hover:border-indigo-500/30 hover:text-indigo-400 transition-all group"
-              >
-                <ShieldAlert className="h-6 w-6 text-zinc-400 group-hover:text-indigo-400 transition-colors" />
-                <span className="text-xs font-medium">Threats</span>
-              </Button>
-            </Link>
-            <SimulatePaymentButton />
-          </div>
         </div>
       </div>
 

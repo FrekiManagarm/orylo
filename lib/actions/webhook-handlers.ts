@@ -4,17 +4,18 @@ import { db } from "@/lib/db";
 import { fraudAnalyses } from "@/lib/schemas/fraudAnalyses";
 import { eq, and } from "drizzle-orm";
 import Stripe from "stripe";
-import { getStripeClient } from "@/lib/stripe/connect";
 import { runQuickChecks } from "@/lib/quick-checks";
-import { analyzeFraud } from "@/lib/mastra/agents/fraud-analyzer";
-import { getModelForOrganization } from "@/lib/mastra/config";
-import { executeAction } from "@/lib/stripe/actions";
 import { incrementUsage } from "@/lib/autumn";
 import { sendAlert, AlertTemplates } from "@/lib/alerts/notifications";
 import { logger } from "@/lib/logger";
 
 /**
  * Handle payment_intent.created event
+ * 
+ * SIMPLIFIED FOR MVP:
+ * - Only quick checks (whitelist/blacklist)
+ * - No AI analysis
+ * - Log for tracking
  */
 export async function handlePaymentIntentCreated(
   event: Stripe.Event,
@@ -27,7 +28,8 @@ export async function handlePaymentIntentCreated(
   logger.info({
     type: "payment_intent_created",
     paymentIntentId: paymentIntent.id,
-    paymentIntent: paymentIntent,
+    amount: paymentIntent.amount,
+    currency: paymentIntent.currency,
   });
 
   const settings = connection.organization.settings;
@@ -35,7 +37,7 @@ export async function handlePaymentIntentCreated(
     throw new Error("Organization settings not found");
   }
 
-  // Step 1: Quick checks (< 100ms)
+  // Quick checks (whitelist/blacklist)
   const quickCheck = await runQuickChecks(paymentIntent, organizationId);
 
   // If whitelisted - accept immediately
@@ -62,17 +64,8 @@ export async function handlePaymentIntentCreated(
 
   // If blacklisted - block immediately
   if (quickCheck.shouldBlock) {
-    const stripeClient = await getStripeClient(organizationId);
-
-    if (stripeClient) {
-      try {
-        await stripeClient.paymentIntents.cancel(paymentIntent.id, {
-          cancellation_reason: "fraudulent",
-        });
-      } catch (err) {
-        console.error("Error canceling payment:", err);
-      }
-    }
+    // Note: We don't cancel here anymore, let Stripe handle it
+    // or use 3D Secure requirements instead
 
     await db.insert(fraudAnalyses).values({
       organizationId,
@@ -106,123 +99,38 @@ export async function handlePaymentIntentCreated(
     return { blocked: true, reason: "blacklisted" };
   }
 
-  // Step 2: AI analysis
-  try {
-    const modelConfig = await getModelForOrganization(organizationId);
+  // Normal payment - just log it
+  // Card testing detection will happen on succeeded/failed events
+  await db.insert(fraudAnalyses).values({
+    organizationId,
+    paymentIntentId: paymentIntent.id,
+    amount: paymentIntent.amount,
+    currency: paymentIntent.currency,
+    email: paymentIntent.receipt_email || null,
+    riskScore: 0,
+    recommandation: "ACCEPT",
+    reasoning: "Normal payment - monitoring",
+    signals: quickCheck.signals,
+    agentsUsed: ["quick_check"],
+    blocked: false,
+    action: "accepted",
+  });
 
-    const aiAnalysis = await analyzeFraud(
-      {
-        paymentIntent,
-        organizationId,
-        quickCheckSignals: quickCheck.signals,
-      },
-      modelConfig,
-    );
+  await incrementUsage(organizationId);
 
-    console.log(
-      `🤖 AI Analysis: Score ${aiAnalysis.riskScore}, Recommendation: ${aiAnalysis.recommendation}`,
-    );
-
-    // Save analysis to database
-    const [analysis] = await db
-      .insert(fraudAnalyses)
-      .values({
-        organizationId,
-        paymentIntentId: paymentIntent.id,
-        amount: paymentIntent.amount,
-        currency: paymentIntent.currency,
-        email: paymentIntent.receipt_email || null,
-        riskScore: aiAnalysis.riskScore,
-        recommandation: aiAnalysis.recommendation,
-        reasoning: aiAnalysis.reasoning,
-        signals: { ...quickCheck.signals, ...aiAnalysis.signals },
-        agentsUsed: [...aiAnalysis.agentsUsed, "quick_check"],
-        blocked: false,
-        action: "accepted",
-      })
-      .returning();
-
-    // Step 3: Execute action based on settings
-    const stripeClient = await getStripeClient(organizationId);
-
-    if (stripeClient) {
-      const actionResult = await executeAction(
-        paymentIntent.id,
-        aiAnalysis.riskScore,
-        aiAnalysis.recommendation,
-        stripeClient,
-        {
-          autoBlock: settings.autoBlock,
-          shadowMode: settings.shadowMode,
-          blockThreshold: settings.blockThreshold,
-          require3DSScore: settings.require3DSScore,
-        },
-        aiAnalysis.reasoning,
-      );
-
-      // Send alerts for high risk or blocked payments
-      if (aiAnalysis.riskScore >= 70) {
-        await sendAlert(
-          organizationId,
-          "high_risk_detected",
-          AlertTemplates.highRiskDetected(
-            paymentIntent.id,
-            aiAnalysis.riskScore,
-            paymentIntent.amount,
-            paymentIntent.currency,
-          ),
-        );
-      }
-
-      if (actionResult.action === "canceled") {
-        await sendAlert(
-          organizationId,
-          "payment_blocked",
-          AlertTemplates.paymentBlocked(
-            paymentIntent.id,
-            aiAnalysis.reasoning,
-            paymentIntent.amount,
-            paymentIntent.currency,
-          ),
-        );
-      }
-    }
-
-    // Increment usage
-    await incrementUsage(organizationId);
-
-    return {
-      analyzed: true,
-      riskScore: aiAnalysis.riskScore,
-      recommendation: aiAnalysis.recommendation,
-    };
-  } catch (aiError) {
-    console.error("❌ AI analysis failed:", aiError);
-
-    // Fallback: save with manual review flag
-    await db.insert(fraudAnalyses).values({
-      organizationId,
-      paymentIntentId: paymentIntent.id,
-      amount: paymentIntent.amount,
-      currency: paymentIntent.currency,
-      email: paymentIntent.receipt_email || null,
-      riskScore: 50,
-      recommandation: "REVIEW",
-      reasoning: "AI analysis failed - flagged for manual review",
-      signals: { error: true, ...quickCheck.signals },
-      agentsUsed: ["quick_check", "fallback"],
-      blocked: false,
-      action: "accepted",
-    });
-
-    await incrementUsage(organizationId);
-
-    return { analyzed: false, reason: "ai_error", requiresReview: true };
-  }
+  return {
+    analyzed: true,
+    riskScore: 0,
+    recommendation: "ACCEPT",
+  };
 }
 
 /**
  * Handle payment_intent.succeeded event
+ * 
+ * SIMPLIFIED FOR MVP:
+ * - Just log the success
+ * - Card testing detection is handled separately in webhook route
  */
 export async function handlePaymentIntentSucceeded(
   event: Stripe.Event,
@@ -233,53 +141,38 @@ export async function handlePaymentIntentSucceeded(
 
   console.log(`✅ Payment succeeded: ${paymentIntent.id}`);
 
-  // Check if this payment was flagged as high risk
-  const analysis = await db.query.fraudAnalyses.findFirst({
-    where: and(
-      eq(fraudAnalyses.organizationId, organizationId),
-      eq(fraudAnalyses.paymentIntentId, paymentIntent.id),
-    ),
+  logger.info({
+    type: "payment_intent_succeeded",
+    paymentIntentId: paymentIntent.id,
+    amount: paymentIntent.amount,
+    currency: paymentIntent.currency,
   });
 
-  if (analysis && analysis.riskScore >= 80 && !analysis.blocked) {
-    // High risk payment went through - consider auto-refund
-    const settings = connection.organization.settings;
-
-    if (settings?.autoBlock && !settings?.shadowMode) {
-      console.warn(
-        `⚠️ High-risk payment ${paymentIntent.id} succeeded - considering refund`,
-      );
-
-      const stripeClient = await getStripeClient(organizationId);
-      if (stripeClient) {
-        try {
-          await stripeClient.refunds.create({
-            payment_intent: paymentIntent.id,
-            reason: "fraudulent",
-            metadata: {
-              auto_refund: "true",
-              risk_score: String(analysis.riskScore),
-            },
-          });
-
-          await db
-            .update(fraudAnalyses)
-            .set({ action: "refunded" })
-            .where(eq(fraudAnalyses.id, analysis.id));
-
-          console.log(`💸 Auto-refunded high-risk payment ${paymentIntent.id}`);
-        } catch (refundError) {
-          console.error("Error auto-refunding:", refundError);
-        }
-      }
-    }
-  }
+  // Update fraud analysis if it exists
+  await db
+    .update(fraudAnalyses)
+    .set({
+      signals: {
+        payment_succeeded: true,
+        succeeded_at: new Date().toISOString(),
+      },
+    })
+    .where(
+      and(
+        eq(fraudAnalyses.organizationId, organizationId),
+        eq(fraudAnalyses.paymentIntentId, paymentIntent.id),
+      ),
+    );
 
   return { processed: true };
 }
 
 /**
  * Handle payment_intent.payment_failed event
+ * 
+ * SIMPLIFIED FOR MVP:
+ * - Just log the failure
+ * - Card testing detection is handled separately in webhook route
  */
 export async function handlePaymentIntentFailed(
   event: Stripe.Event,
@@ -289,6 +182,13 @@ export async function handlePaymentIntentFailed(
 
   console.log(`❌ Payment failed: ${paymentIntent.id}`);
 
+  logger.info({
+    type: "payment_intent_failed",
+    paymentIntentId: paymentIntent.id,
+    failureCode: paymentIntent.last_payment_error?.code,
+    failureMessage: paymentIntent.last_payment_error?.message,
+  });
+
   // Update analysis if exists
   await db
     .update(fraudAnalyses)
@@ -297,15 +197,26 @@ export async function handlePaymentIntentFailed(
         payment_failed: true,
         failure_code: paymentIntent.last_payment_error?.code,
         failure_message: paymentIntent.last_payment_error?.message,
+        failed_at: new Date().toISOString(),
       },
     })
-    .where(eq(fraudAnalyses.paymentIntentId, paymentIntent.id));
+    .where(
+      and(
+        eq(fraudAnalyses.organizationId, organizationId),
+        eq(fraudAnalyses.paymentIntentId, paymentIntent.id),
+      ),
+    );
 
   return { processed: true };
 }
 
 /**
  * Handle charge.dispute.created event
+ * 
+ * SIMPLIFIED FOR MVP:
+ * - Mark payment as confirmed fraud
+ * - Send alert
+ * - No AI evidence generation (Phase 2 feature)
  */
 export async function handleDisputeCreated(
   event: Stripe.Event,
@@ -316,6 +227,14 @@ export async function handleDisputeCreated(
   console.log(
     `⚡ Dispute created: ${dispute.id} for ${dispute.payment_intent}`,
   );
+
+  logger.info({
+    type: "dispute_created",
+    disputeId: dispute.id,
+    paymentIntentId: dispute.payment_intent,
+    amount: dispute.amount,
+    reason: dispute.reason,
+  });
 
   // Find and update the fraud analysis
   const analysis = await db.query.fraudAnalyses.findFirst({
@@ -330,6 +249,12 @@ export async function handleDisputeCreated(
       .update(fraudAnalyses)
       .set({
         actualFraud: true, // Mark as confirmed fraud for learning
+        signals: {
+          ...(analysis.signals || {}),
+          dispute_created: true,
+          dispute_id: dispute.id,
+          dispute_reason: dispute.reason,
+        },
       })
       .where(eq(fraudAnalyses.id, analysis.id));
 
@@ -355,6 +280,10 @@ export async function handleDisputeCreated(
 
 /**
  * Handle charge.refunded event
+ * 
+ * SIMPLIFIED FOR MVP:
+ * - Just update the status
+ * - Log for tracking
  */
 export async function handleChargeRefunded(
   event: Stripe.Event,
@@ -364,13 +293,30 @@ export async function handleChargeRefunded(
 
   console.log(`💸 Charge refunded: ${charge.id}`);
 
+  logger.info({
+    type: "charge_refunded",
+    chargeId: charge.id,
+    paymentIntentId: charge.payment_intent,
+    amount: charge.amount_refunded,
+  });
+
   // Update analysis if exists
   if (charge.payment_intent) {
     await db
       .update(fraudAnalyses)
-      .set({ action: "refunded" })
+      .set({
+        action: "refunded",
+        signals: {
+          refunded: true,
+          refunded_at: new Date().toISOString(),
+          refund_amount: charge.amount_refunded,
+        },
+      })
       .where(
-        eq(fraudAnalyses.paymentIntentId, charge.payment_intent as string),
+        and(
+          eq(fraudAnalyses.organizationId, organizationId),
+          eq(fraudAnalyses.paymentIntentId, charge.payment_intent as string),
+        ),
       );
   }
 

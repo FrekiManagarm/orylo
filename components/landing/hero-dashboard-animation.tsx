@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertTriangle, CheckCircle, MapPin, CreditCard, Activity, Search, ShieldCheck, Globe, Smartphone } from "lucide-react";
+import { AlertTriangle, CheckCircle, CreditCard, Activity, Search, Ban, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -18,40 +18,42 @@ interface Scenario {
   email: string;
   amount: string;
   risk: number;
-  status: "block" | "allow" | "review";
-  location: string;
+  status: "block" | "allow";
+  type: "card-testing" | "legitimate";
   details: TransactionDetail[];
+  action?: string;
 }
 
 const scenarios: Scenario[] = [
   {
     id: "sc_1",
-    email: "suspicious_user@mail.ru",
-    amount: "€450.00",
-    risk: 98,
+    email: "card_tester@temp.xyz",
+    amount: "€89.00",
+    risk: 92,
     status: "block",
-    location: "Moscow, RU",
+    type: "card-testing",
+    action: "Auto-refunded",
     details: [
       {
-        icon: MapPin,
-        label: "IP Location",
-        value: "Moscow, RU 🇷🇺",
-        subValue: "Mismatch with Billing (FR)",
-        color: "text-red-400"
-      },
-      {
         icon: CreditCard,
-        label: "Card BIN",
-        value: "French Debit 🇫🇷",
-        subValue: "Distance: >2500km",
-        color: "text-amber-400"
+        label: "Multiple cards detected",
+        value: "4 different cards",
+        subValue: "Same session, 3 min window",
+        color: "text-rose-400"
       },
       {
-        icon: Activity,
-        label: "Behavioral",
-        value: "High Amount",
-        subValue: "5x average order value",
-        color: "text-red-400"
+        icon: Ban,
+        label: "Pattern detected",
+        value: "Fail → Fail → Fail → Success",
+        subValue: "Classic card testing",
+        color: "text-rose-400"
+      },
+      {
+        icon: RefreshCw,
+        label: "Action taken",
+        value: "Auto-refund + Blacklist",
+        subValue: "IP added to watchlist",
+        color: "text-amber-400"
       }
     ]
   },
@@ -59,53 +61,69 @@ const scenarios: Scenario[] = [
     id: "sc_2",
     email: "john.doe@gmail.com",
     amount: "€42.50",
-    risk: 12,
+    risk: 8,
     status: "allow",
-    location: "Paris, FR",
+    type: "legitimate",
     details: [
       {
-        icon: ShieldCheck,
-        label: "Trust Score",
-        value: "High Trust",
-        subValue: "Returning customer",
+        icon: CheckCircle,
+        label: "No suspicious activity",
+        value: "Single card, normal pattern",
         color: "text-green-400"
       }
     ]
   },
   {
     id: "sc_3",
-    email: "hacker_vpn@proton.me",
-    amount: "€899.00",
-    risk: 85,
+    email: "fraud_attempt@proxy.io",
+    amount: "€199.00",
+    risk: 78,
     status: "block",
-    location: "Unknown (VPN)",
+    type: "card-testing",
+    action: "Auto-refunded",
     details: [
       {
-        icon: Globe,
-        label: "Network",
-        value: "Data Center IP",
-        subValue: "Known VPN endpoint",
-        color: "text-red-400"
+        icon: CreditCard,
+        label: "Multiple cards detected",
+        value: "3 different cards",
+        subValue: "5 attempts in 2 minutes",
+        color: "text-rose-400"
       },
       {
-        icon: Smartphone,
-        label: "Device",
-        value: "Emulator",
-        subValue: "Rooted Android device",
+        icon: Activity,
+        label: "Rapid attempts",
+        value: "5 attempts in 2 min",
+        subValue: "Velocity check failed",
         color: "text-amber-400"
       }
     ]
-  }
+  },
+  {
+    id: "sc_4",
+    email: "alice@company.co",
+    amount: "€129.00",
+    risk: 12,
+    status: "allow",
+    type: "legitimate",
+    details: [
+      {
+        icon: CheckCircle,
+        label: "Normal transaction",
+        value: "Single attempt, single card",
+        color: "text-green-400"
+      }
+    ]
+  },
 ];
 
 const initialHistory = [
-  { id: "tx_1", email: "alice@example.com", amount: "€42.00", status: "allow", time: "2 min ago", risk: 12 },
-  { id: "tx_2", email: "bob@company.co", amount: "€129.50", status: "allow", time: "5 min ago", risk: 8 },
+  { id: "tx_1", email: "alice@example.com", amount: "€42.00", status: "allow", time: "2 min ago", risk: 8 },
+  { id: "tx_2", email: "bob@company.co", amount: "€129.50", status: "allow", time: "5 min ago", risk: 6 },
   { id: "tx_3", email: "sarah.j@gmail.com", amount: "€24.90", status: "allow", time: "12 min ago", risk: 4 },
 ];
 
 export function HeroDashboardAnimation() {
-  const [step, setStep] = useState(0); // 0: wait, 1: incoming, 2: analyzing, 3: result
+  const [step, setStep] = useState(0);
   const [scenarioIndex, setScenarioIndex] = useState(0);
   const [history, setHistory] = useState(initialHistory);
 
@@ -137,7 +155,7 @@ export function HeroDashboardAnimation() {
             amount: scenarios[scenarioIndex].amount,
             status: scenarios[scenarioIndex].status,
             time: "Just now",
-            risk: scenarios[scenarioIndex].risk
+            risk: scenarios[scenarioIndex].risk,
           },
           ...prev.slice(0, 4)
         ]);
@@ -164,7 +182,7 @@ export function HeroDashboardAnimation() {
 function DashboardContent({ step, scenario, history }: { step: number, scenario: Scenario, history: any[] }) {
   return (
     <div className="w-full h-full bg-zinc-950 rounded-xl overflow-hidden flex flex-col border border-white/5 relative font-sans select-none">
-      {/* Fake Header - Fixed Height */}
+      {/* Fake Header */}
       <div className="h-14 shrink-0 border-b border-white/5 flex items-center px-6 gap-4 bg-zinc-900/50 backdrop-blur-sm z-30 relative">
         <div className="flex gap-2">
           <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
@@ -191,9 +209,6 @@ function DashboardContent({ step, scenario, history }: { step: number, scenario:
         </div>
 
         <div className="flex-1 relative flex flex-col">
-          {/* Active Transaction Area - Fixed Height / Absolute to prevent jumping */}
-          {/* We make this area take up the top space, and history below */}
-
           <div className="relative z-20 min-h-[180px] mb-4">
             <AnimatePresence mode="wait">
               {step >= 1 ? (
@@ -237,11 +252,27 @@ function DashboardContent({ step, scenario, history }: { step: number, scenario:
                               {scenario.status === "block" ? "BLOCKED" : "ALLOWED"}
                             </motion.span>
                           )}
+                          {step >= 2 && scenario.type === "card-testing" && (
+                            <motion.span
+                              initial={{ opacity: 0, scale: 0.9 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ delay: 0.1 }}
+                              className="text-[9px] font-bold text-white px-1.5 py-0.5 rounded-sm bg-rose-500"
+                            >
+                              CARD TESTING
+                            </motion.span>
+                          )}
                         </div>
                         <div className="text-xs text-zinc-500 mt-0.5 flex items-center gap-2">
                           <span>{scenario.amount}</span>
                           <span className="w-1 h-1 rounded-full bg-zinc-700" />
                           <span>Just now</span>
+                          {step >= 2 && scenario.action && (
+                            <>
+                              <span className="w-1 h-1 rounded-full bg-zinc-700" />
+                              <span className="text-amber-400">{scenario.action}</span>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -266,12 +297,12 @@ function DashboardContent({ step, scenario, history }: { step: number, scenario:
                         <div className={cn(
                           "text-[10px] font-medium",
                           scenario.status === "block" ? "text-red-400/80" : "text-green-400/80"
-                        )}>Risk Score</div>
+                        )}>Suspicion Score</div>
                       </motion.div>
                     )}
                   </div>
 
-                  {/* Analysis Details Popover - Absolute positioned relative to container */}
+                  {/* Visual Explanations - USP */}
                   <AnimatePresence>
                     {step >= 2 && scenario.details.length > 0 && (
                       <motion.div
@@ -305,7 +336,7 @@ function DashboardContent({ step, scenario, history }: { step: number, scenario:
             </AnimatePresence>
           </div>
 
-          {/* History List - Scrollable/Fade */}
+          {/* History List */}
           <div className="flex-1 overflow-hidden relative">
             <div className="absolute inset-0 mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)">
               <div className="space-y-2">

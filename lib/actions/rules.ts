@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { rules, rulesInsertSchema } from "@/lib/schemas/rules";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -128,6 +128,31 @@ export async function toggleRuleEnabled(id: string, enabled: boolean) {
         error instanceof Error
           ? error.message
           : "Une erreur est survenue lors de la modification de la règle",
+    };
+  }
+}
+
+export async function getRulesByOrganization(organizationId: string) {
+  try {
+    const organizationRules = await db
+      .select()
+      .from(rules)
+      .where(eq(rules.organizationId, organizationId))
+      .orderBy(desc(rules.priority));
+
+    return {
+      success: true,
+      data: organizationRules,
+    };
+  } catch (error) {
+    console.error("Error fetching rules:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Une erreur est survenue lors de la récupération des règles",
+      data: [],
     };
   }
 }

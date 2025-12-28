@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
-import { ArrowRight, CheckCircle2, BarChart3 } from "lucide-react";
+import { ArrowRight, CheckCircle2, CreditCard, Eye, Zap } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -69,7 +69,7 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-5xl md:text-8xl font-bold tracking-tight mb-8 text-white"
           >
-            Stop fraud. <br />
+            Stop card testing. <br />
             <span className="bg-clip-text text-transparent bg-linear-to-b from-white to-white/40">
               Understand why.
             </span>
@@ -81,8 +81,8 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-xl text-zinc-400 mb-12 max-w-2xl leading-relaxed"
           >
-            AI-powered protection for Stripe merchants.
-            Every decision explained. Setup in 5 minutes, not 5 months.
+            Detect and block card testing attacks with visual explanations.
+            See exactly why each transaction was flagged. Setup in 5 minutes.
           </motion.p>
 
           <motion.div
@@ -112,10 +112,31 @@ export default function Hero() {
             </Button>
           </motion.div>
 
+          {/* Feature Pills */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
+            className="flex flex-wrap items-center justify-center gap-3 md:gap-4 text-sm mb-8"
+          >
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-rose-500/10 border border-rose-500/20">
+              <CreditCard className="h-4 w-4 text-rose-400" />
+              <span className="text-rose-300">Card Testing Detection</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20">
+              <Eye className="h-4 w-4 text-purple-400" />
+              <span className="text-purple-300">Visual Explanations</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+              <Zap className="h-4 w-4 text-emerald-400" />
+              <span className="text-emerald-300">Auto-Actions</span>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
             className="flex flex-wrap items-center justify-center gap-6 md:gap-8 text-sm text-zinc-500"
           >
             <div className="flex items-center gap-2">
@@ -124,7 +145,7 @@ export default function Hero() {
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-indigo-500" />
-              <span>Transparent AI decisions</span>
+              <span>Clear explanations for every block</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-indigo-500" />

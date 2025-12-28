@@ -2,35 +2,38 @@
 
 import { motion } from "framer-motion";
 import {
-  DollarSign,
   Zap,
   Brain,
-  BarChart3,
-  Target,
   ArrowRight,
-  TrendingDown,
   Clock,
   Sparkles,
+  CreditCard,
+  ShieldCheck,
+  Eye,
+  Ban,
+  RefreshCw,
+  Target,
 } from "lucide-react";
 
 const features = [
   {
-    id: "chargebacks",
-    title: "Save on chargebacks",
+    id: "card-testing",
+    title: "Card Testing Detection",
     description:
-      "No more lost Stripe fees, no more disputes, no more at-risk accounts.",
-    icon: DollarSign,
-    stat: "80%",
-    statLabel: "fraud blocked",
-    gradient: "from-indigo-500 to-violet-500",
-    bgGradient: "from-indigo-500/20 via-indigo-500/5 to-transparent",
-    shadowColor: "shadow-indigo-500/20",
+      "Automatically detect and block card testing attacks. Multiple cards on same session? Blocked. Fail-fail-fail-success pattern? Blocked. Auto-refund fraudulent payments.",
+    icon: CreditCard,
+    stat: "Real-time",
+    statLabel: "detection",
+    gradient: "from-rose-500 to-orange-500",
+    bgGradient: "from-rose-500/20 via-rose-500/5 to-transparent",
+    shadowColor: "shadow-rose-500/20",
+    tags: ["Auto-block", "Auto-refund", "Blacklist"],
   },
   {
     id: "setup",
     title: "Live in 5 minutes",
     description:
-      "One-click Stripe connection, zero code. AI automatically analyzes all your transactions.",
+      "One-click Stripe OAuth connection, zero code. Instantly start monitoring all your transactions.",
     icon: Zap,
     stat: "5",
     statLabel: "min to get started",
@@ -40,40 +43,41 @@ const features = [
   },
   {
     id: "explainable",
-    title: "AI that explains its decisions",
+    title: "Visual Explanations",
     description:
-      "Every block is justified with clear reasons. No more black box decisions.",
-    icon: Brain,
+      "Every block is justified with clear, visual reasons. See exactly why a transaction was flagged. No more black box decisions.",
+    icon: Eye,
     stat: "100%",
     statLabel: "transparent",
     gradient: "from-purple-500 to-fuchsia-500",
     bgGradient: "from-purple-500/20 via-purple-500/5 to-transparent",
     shadowColor: "shadow-purple-500/20",
-    example: '"IP in Russia, French card, amount 5× above average"',
+    example: '"3 different cards used • fail-fail-fail-success pattern • 5 attempts in 2 minutes"',
   },
   {
-    id: "dashboard",
-    title: "Smart dashboard",
+    id: "auto-actions",
+    title: "Automatic Actions",
     description:
-      "Real-time view, configurable alerts, automatic reports. Track your ROI.",
-    icon: BarChart3,
-    stat: "24/7",
-    statLabel: "monitoring",
-    gradient: "from-indigo-400 to-cyan-500",
-    bgGradient: "from-indigo-400/20 via-indigo-400/5 to-transparent",
-    shadowColor: "shadow-indigo-400/20",
+      "Block and auto-refund fraudulent payments. Add IPs to blacklist. Send real-time alerts. All without lifting a finger.",
+    icon: RefreshCw,
+    stat: "Zero",
+    statLabel: "manual work",
+    gradient: "from-emerald-500 to-teal-500",
+    bgGradient: "from-emerald-500/20 via-emerald-500/5 to-transparent",
+    shadowColor: "shadow-emerald-500/20",
+    tags: ["Auto-refund", "Blacklist", "Alerts"],
   },
   {
-    id: "custom",
-    title: "Adapts to your business",
+    id: "custom-rules",
+    title: "Custom Rules",
     description:
-      "Custom rules, adjustable thresholds, whitelist loyal customers.",
+      "Create your own rules: whitelist VIP customers, block specific countries, set amount thresholds. Your business, your rules.",
     icon: Target,
     stat: "∞",
-    statLabel: "custom rules",
-    gradient: "from-violet-400 to-indigo-500",
-    bgGradient: "from-violet-400/20 via-violet-400/5 to-transparent",
-    shadowColor: "shadow-violet-400/20",
+    statLabel: "flexibility",
+    gradient: "from-indigo-500 to-blue-500",
+    bgGradient: "from-indigo-500/20 via-indigo-500/5 to-transparent",
+    shadowColor: "shadow-indigo-500/20",
   },
 ];
 
@@ -96,7 +100,7 @@ export default function Features() {
           >
             <Sparkles className="w-4 h-4 text-indigo-400" />
             <span className="text-sm font-medium text-indigo-400">
-              Why Fraud Shield?
+              Simple & Effective
             </span>
           </motion.div>
 
@@ -107,10 +111,10 @@ export default function Features() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-4xl md:text-6xl font-bold mb-6 text-white tracking-tight"
           >
-            Enterprise protection.
+            Stop card testing.
             <br />
             <span className="bg-linear-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
-              SMB pricing.
+              Understand why.
             </span>
           </motion.h2>
 
@@ -121,14 +125,14 @@ export default function Features() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-xl text-zinc-400 max-w-2xl mx-auto"
           >
-            AI fraud detection that explains every decision.
-            Set up in 5 minutes via OAuth. From €99/month.
+            Rule-based detection with visual explanations. 
+            See exactly why each transaction was blocked.
           </motion.p>
         </div>
 
         {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
-          {/* Feature 1 - Large */}
+          {/* Feature 1 - Card Testing - Large */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -136,7 +140,7 @@ export default function Features() {
             transition={{ duration: 0.5 }}
             className="lg:col-span-2 group"
           >
-            <div className="relative h-full min-h-[320px] rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-indigo-500/30 transition-all duration-500">
+            <div className="relative h-full min-h-[320px] rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-rose-500/30 transition-all duration-500">
               <div
                 className={`absolute inset-0 bg-linear-to-br ${features[0].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
               />
@@ -144,9 +148,9 @@ export default function Features() {
               <div className="relative z-10 h-full flex flex-col justify-between">
                 <div>
                   <div
-                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[0].gradient} mb-6 shadow-lg shadow-indigo-500/20`}
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[0].gradient} mb-6 shadow-lg shadow-rose-500/20`}
                   >
-                    <DollarSign className="w-7 h-7 text-white" />
+                    <CreditCard className="w-7 h-7 text-white" />
                   </div>
 
                   <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
@@ -158,18 +162,19 @@ export default function Features() {
                 </div>
 
                 <div className="flex items-end justify-between mt-8">
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20">
-                      <TrendingDown className="w-4 h-4 text-indigo-400" />
-                      <span className="text-indigo-400 font-medium text-sm">
-                        Chargebacks
-                      </span>
-                    </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {features[0].tags?.map((tag) => (
+                      <div key={tag} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/20">
+                        <span className="text-rose-400 font-medium text-xs">
+                          {tag}
+                        </span>
+                      </div>
+                    ))}
                   </div>
 
                   <div className="text-right">
                     <div
-                      className={`text-5xl md:text-6xl font-black bg-linear-to-r ${features[0].gradient} bg-clip-text text-transparent`}
+                      className={`text-3xl md:text-4xl font-black bg-linear-to-r ${features[0].gradient} bg-clip-text text-transparent`}
                     >
                       {features[0].stat}
                     </div>
@@ -182,7 +187,7 @@ export default function Features() {
             </div>
           </motion.div>
 
-          {/* Feature 2 - Small */}
+          {/* Feature 2 - Setup - Small */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -226,7 +231,7 @@ export default function Features() {
             </div>
           </motion.div>
 
-          {/* Feature 3 - Full width */}
+          {/* Feature 3 - Visual Explanations - Full width */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -244,7 +249,7 @@ export default function Features() {
                   <div
                     className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[2].gradient} mb-6 shadow-lg shadow-purple-500/20`}
                   >
-                    <Brain className="w-7 h-7 text-white" />
+                    <Eye className="w-7 h-7 text-white" />
                   </div>
 
                   <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
@@ -259,9 +264,9 @@ export default function Features() {
                 <div className="shrink-0 md:max-w-sm">
                   <div className="rounded-2xl bg-black/50 border border-purple-500/10 p-6">
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                      <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
                       <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">
-                        Transaction blocked
+                        Card Testing Blocked
                       </span>
                     </div>
                     <p className="text-white font-mono text-sm leading-relaxed">
@@ -271,7 +276,7 @@ export default function Features() {
                       <div
                         className={`text-xs font-bold bg-linear-to-r ${features[2].gradient} bg-clip-text text-transparent`}
                       >
-                        Risk score: 94/100
+                        Score: 85/100 → Auto-refunded
                       </div>
                     </div>
                   </div>
@@ -280,7 +285,7 @@ export default function Features() {
             </div>
           </motion.div>
 
-          {/* Feature 4 - Medium */}
+          {/* Feature 4 - Auto Actions - Medium */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -288,7 +293,7 @@ export default function Features() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="lg:col-span-2 group"
           >
-            <div className="relative h-full min-h-[280px] rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-indigo-400/30 transition-all duration-500">
+            <div className="relative h-full min-h-[280px] rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-emerald-500/30 transition-all duration-500">
               <div
                 className={`absolute inset-0 bg-linear-to-br ${features[3].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
               />
@@ -296,9 +301,9 @@ export default function Features() {
               <div className="relative z-10 h-full flex flex-col justify-between">
                 <div>
                   <div
-                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[3].gradient} mb-6 shadow-lg shadow-indigo-400/20`}
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[3].gradient} mb-6 shadow-lg shadow-emerald-500/20`}
                   >
-                    <BarChart3 className="w-7 h-7 text-white" />
+                    <RefreshCw className="w-7 h-7 text-white" />
                   </div>
 
                   <h3 className="text-2xl font-bold text-white mb-3">
@@ -309,25 +314,20 @@ export default function Features() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-6 mt-6">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-indigo-500" />
-                    <span className="text-zinc-400 text-sm">Real-time</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-violet-500" />
-                    <span className="text-zinc-400 text-sm">Alerts</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-purple-500" />
-                    <span className="text-zinc-400 text-sm">Reports</span>
-                  </div>
+                <div className="flex flex-wrap items-center gap-2 mt-6">
+                  {features[3].tags?.map((tag) => (
+                    <div key={tag} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                      <span className="text-emerald-400 font-medium text-xs">
+                        {tag}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Feature 5 - Small */}
+          {/* Feature 5 - Custom Rules - Small */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -335,7 +335,7 @@ export default function Features() {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="group"
           >
-            <div className="relative h-full min-h-[280px] rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-violet-400/30 transition-all duration-500">
+            <div className="relative h-full min-h-[280px] rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-indigo-500/30 transition-all duration-500">
               <div
                 className={`absolute inset-0 bg-linear-to-br ${features[4].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
               />
@@ -343,7 +343,7 @@ export default function Features() {
               <div className="relative z-10 h-full flex flex-col justify-between">
                 <div>
                   <div
-                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[4].gradient} mb-6 shadow-lg shadow-violet-400/20`}
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[4].gradient} mb-6 shadow-lg shadow-indigo-500/20`}
                   >
                     <Target className="w-7 h-7 text-white" />
                   </div>
@@ -358,7 +358,7 @@ export default function Features() {
 
                 <div className="mt-6">
                   <div
-                    className={`text-4xl font-black bg-linear-to-r ${features[4].gradient} bg-clip-text text-transparent`}
+                    className={`text-3xl font-black bg-linear-to-r ${features[4].gradient} bg-clip-text text-transparent`}
                   >
                     {features[4].stat}
                   </div>

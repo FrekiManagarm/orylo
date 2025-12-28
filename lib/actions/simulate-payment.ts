@@ -13,6 +13,7 @@ export async function simulatePaymentIntent(options?: {
   email?: string;
   name?: string;
   riskLevel?: "low" | "medium" | "high";
+  stripeAccountId?: string;
 }) {
   try {
     const organization = await auth.api.getFullOrganization({
@@ -24,6 +25,9 @@ export async function simulatePaymentIntent(options?: {
     }
 
     const organizationId = organization?.id;
+
+    console.log("organization", organization);
+
     if (!organizationId) {
       return {
         success: false,
@@ -31,27 +35,18 @@ export async function simulatePaymentIntent(options?: {
       };
     }
 
-    const stripeClient = await getStripeClient(organizationId);
-    if (!stripeClient) {
-      return {
-        success: false,
-        error: "Stripe account not connected",
-      };
-    }
+    const stripe = await getStripeClient(organizationId, options?.stripeAccountId);
 
     // Generate test data based on risk level
     const riskLevel = options?.riskLevel || "medium";
     const testData = generateTestData(riskLevel);
 
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2025-12-15.clover",
-    });
-
     // Get base URL for redirect
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
     // Create checkout session
-    const session = await stripe.checkout.sessions.create({
+    // If stripeAccountId is provided, create on connected account
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ["card"],
       line_items: [
         {
@@ -79,14 +74,21 @@ export async function simulatePaymentIntent(options?: {
       shipping_address_collection: {
         allowed_countries: ["FR", "BE", "CH", "DE", "ES", "IT", "NG"],
       },
-    });
+    };
 
-    console.log(`✅ Simulated checkout session created: ${session.id}`);
+    // Create session with optional Stripe-Account header
+    const session = options?.stripeAccountId
+      ? await stripe?.checkout.sessions.create(sessionParams, {
+        stripeAccount: options.stripeAccountId,
+      })
+      : await stripe?.checkout.sessions.create(sessionParams);
+
+    console.log(`✅ Simulated checkout session created: ${session?.id}`);
 
     return {
       success: true,
-      sessionId: session.id,
-      sessionUrl: session.url,
+      sessionId: session?.id,
+      sessionUrl: session?.url,
       amount: options?.amount || testData.amount,
       riskLevel,
     };

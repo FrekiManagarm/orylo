@@ -6,6 +6,7 @@ import {
   Link as LinkIcon,
   Shield,
   AlertCircle,
+  ShieldAlert,
 } from "lucide-react";
 
 export type Submenu = {
@@ -44,8 +45,14 @@ export function proMenuList(pathname: string): Group[] {
       ],
     },
     {
-      groupLabel: "Services",
+      groupLabel: "Fraud Detection",
       menus: [
+        {
+          href: `/dashboard/card-testing`,
+          label: "Card Testing",
+          active: pathname === `/dashboard/card-testing`,
+          icon: ShieldAlert,
+        },
         {
           href: `/dashboard/transactions`,
           label: "Transactions",
@@ -53,25 +60,25 @@ export function proMenuList(pathname: string): Group[] {
           icon: FileText,
         },
         {
-          href: `/dashboard/rules`,
-          label: "Rules",
-          active: pathname === `/dashboard/rules`,
-          icon: Shield,
-        },
-        {
           href: `/dashboard/alerts`,
           label: "Alerts",
           active: pathname === `/dashboard/alerts`,
           icon: AlertCircle,
         },
+        {
+          href: `/dashboard/rules`,
+          label: "Rules",
+          active: pathname === `/dashboard/rules`,
+          icon: Shield,
+        },
       ],
     },
     {
-      groupLabel: "Autre",
+      groupLabel: "Settings",
       menus: [
         {
           href: `/dashboard/connect`,
-          label: "Connect",
+          label: "Stripe Connect",
           active: pathname === `/dashboard/connect`,
           icon: LinkIcon,
         },

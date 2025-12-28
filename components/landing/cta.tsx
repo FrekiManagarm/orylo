@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CreditCard, Eye, Zap } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -23,16 +23,33 @@ export default function Cta() {
           </div>
 
           <h2 className="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tight max-w-4xl mx-auto">
-            Ready to protect your <br />
+            Stop card testing <br />
             <span className="bg-clip-text text-transparent bg-linear-to-r from-indigo-400 to-purple-400">
-              business from fraud?
+              attacks today
             </span>
           </h2>
 
-          <p className="text-lg md:text-xl text-zinc-400 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Join hundreds of businesses already saving thousands on chargebacks with Orylo.
-            Start for free today.
+          <p className="text-lg md:text-xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Protect your Stripe account from card testing fraud. 
+            Visual explanations for every blocked transaction. 
+            Setup in 5 minutes.
           </p>
+
+          {/* Feature highlights */}
+          <div className="flex flex-wrap items-center justify-center gap-4 mb-12 max-w-3xl mx-auto">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10">
+              <CreditCard className="h-4 w-4 text-rose-400" />
+              <span className="text-zinc-300 text-sm">Card Testing Detection</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10">
+              <Eye className="h-4 w-4 text-purple-400" />
+              <span className="text-zinc-300 text-sm">Visual Explanations</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10">
+              <Zap className="h-4 w-4 text-emerald-400" />
+              <span className="text-zinc-300 text-sm">Auto-Refund & Blacklist</span>
+            </div>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button
@@ -40,7 +57,7 @@ export default function Cta() {
               size="lg"
               className="rounded-full px-8 py-6 text-lg bg-white text-black hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-xl shadow-white/10"
             >
-              <Link href="/signup">
+              <Link href="/sign-up">
                 Get Started Now
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>

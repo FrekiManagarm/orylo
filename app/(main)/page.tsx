@@ -10,22 +10,22 @@ import { Metadata } from "next";
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://orylo.app";
 
 export const metadata: Metadata = {
-  title: "Fraud Shield by Orylo - Stop Fraud. Understand Why.",
+  title: "Orylo - Stop Card Testing. Understand Why.",
   description:
-    "AI fraud detection that explains every decision. Enterprise protection for Stripe merchants in 5 minutes, not 5 months. From €99/month.",
+    "Detect and block card testing attacks with visual explanations. See exactly why each transaction was flagged. Setup in 5 minutes. From €99/month.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Fraud Shield by Orylo - Stop Fraud. Understand Why.",
+    title: "Orylo - Stop Card Testing. Understand Why.",
     description:
-      "AI fraud detection that explains every decision. Enterprise protection for Stripe merchants in 5 minutes, not 5 months. From €99/month.",
+      "Detect and block card testing attacks with visual explanations. See exactly why each transaction was flagged. Setup in 5 minutes. From €99/month.",
     url: baseUrl,
   },
   twitter: {
-    title: "Fraud Shield by Orylo - Stop Fraud. Understand Why.",
+    title: "Orylo - Stop Card Testing. Understand Why.",
     description:
-      "AI fraud detection that explains every decision. Enterprise protection for Stripe merchants in 5 minutes, not 5 months. From €99/month.",
+      "Detect and block card testing attacks with visual explanations. See exactly why each transaction was flagged. Setup in 5 minutes. From €99/month.",
   },
 };
 

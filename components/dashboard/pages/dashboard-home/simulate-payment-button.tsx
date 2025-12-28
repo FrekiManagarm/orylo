@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,8 +10,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Loader2, Zap } from "lucide-react";
+import { Loader2, Zap, Store } from "lucide-react";
 import { simulatePaymentIntent } from "@/lib/actions/simulate-payment";
+import { getStripeConnections } from "@/lib/actions/stripe-connections";
 import {
   Select,
   SelectContent,
@@ -20,18 +21,61 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+
+interface StripeConnection {
+  id: string;
+  stripeAccountId: string;
+  accountName: string | null;
+  isActive: boolean;
+}
 
 export function SimulatePaymentButton() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedAccountId, setSelectedAccountId] = useState<string>("");
   const [riskLevel, setRiskLevel] =
     useState<"low" | "medium" | "high">("medium");
   const { toast } = useToast();
 
+  // Load Stripe connections with useQuery
+  const {
+    data: connections = [],
+    isLoading: loadingConnections,
+    error,
+  } = useQuery<StripeConnection[]>({
+    queryKey: ["stripe-connections"],
+    queryFn: getStripeConnections,
+    enabled: isOpen, // Only fetch when dialog is open
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+  });
+
+  // Auto-select the first active connection when data loads
+  useEffect(() => {
+    if (connections.length > 0 && !selectedAccountId) {
+      const firstActive = connections.find((c) => c.isActive);
+      if (firstActive) {
+        setSelectedAccountId(firstActive.stripeAccountId);
+      }
+    }
+  }, [connections, selectedAccountId]);
+
   const handleSimulate = async () => {
+    if (!selectedAccountId) {
+      toast({
+        title: "⚠️ Compte requis",
+        description: "Veuillez sélectionner un compte Stripe",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const result = await simulatePaymentIntent({ riskLevel });
+      const result = await simulatePaymentIntent({
+        riskLevel,
+        stripeAccountId: selectedAccountId,
+      });
 
       if (result.success && result.sessionUrl) {
         toast({
@@ -58,6 +102,10 @@ export function SimulatePaymentButton() {
     }
   };
 
+  const selectedConnection = connections.find(
+    (c) => c.stripeAccountId === selectedAccountId
+  );
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -81,6 +129,80 @@ export function SimulatePaymentButton() {
         </DialogHeader>
 
         <div className="space-y-4 py-4">
+          {/* Stripe Account Selector */}
+          <div className="space-y-2">
+            <label
+              htmlFor="stripe-account"
+              className="text-sm font-medium text-zinc-300"
+            >
+              Compte Stripe
+            </label>
+            {loadingConnections ? (
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="h-5 w-5 animate-spin text-zinc-400" />
+                <span className="ml-2 text-sm text-zinc-400">
+                  Chargement des comptes...
+                </span>
+              </div>
+            ) : error ? (
+              <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3">
+                <p className="text-sm text-red-400">
+                  Erreur lors du chargement des comptes Stripe
+                </p>
+              </div>
+            ) : connections.length === 0 ? (
+              <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 p-3">
+                <p className="text-sm text-amber-400">
+                  Aucun compte Stripe connecté. Connectez d&apos;abord votre
+                  compte dans les paramètres.
+                </p>
+              </div>
+            ) : (
+              <Select
+                value={selectedAccountId}
+                onValueChange={setSelectedAccountId}
+              >
+                <SelectTrigger className="bg-zinc-800 border-white/10 text-white">
+                  <SelectValue placeholder="Sélectionner un compte">
+                    {selectedConnection && (
+                      <div className="flex items-center gap-2">
+                        <Store className="h-4 w-4 text-indigo-400" />
+                        <span>
+                          {selectedConnection.accountName ||
+                            `Account ${selectedConnection.stripeAccountId.slice(-8)}`}
+                        </span>
+                      </div>
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-800 border-white/10">
+                  {connections
+                    .filter((c) => c.isActive)
+                    .map((connection) => (
+                      <SelectItem
+                        key={connection.id}
+                        value={connection.stripeAccountId}
+                        className="text-white"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Store className="h-4 w-4 text-indigo-400" />
+                          <div className="flex flex-col">
+                            <span>
+                              {connection.accountName || "Unnamed Account"}
+                            </span>
+                            <span className="text-xs text-zinc-500">
+                              {connection.stripeAccountId.slice(0, 21)}...
+                            </span>
+                          </div>
+                        </div>
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+
+          {/* Risk Level Selector */}
           <div className="space-y-2">
             <label
               htmlFor="risk-level"
@@ -124,7 +246,8 @@ export function SimulatePaymentButton() {
                 • Utilisez une carte de test : 4242 4242 4242 4242
               </li>
               <li>
-                • Votre système d&apos;analyse de fraude traitera le payment intent
+                • Votre système d&apos;analyse de fraude traitera le payment
+                intent
               </li>
               <li>
                 • Les données sont générées selon le niveau de risque choisi
@@ -144,7 +267,7 @@ export function SimulatePaymentButton() {
           </Button>
           <Button
             onClick={handleSimulate}
-            disabled={isLoading}
+            disabled={isLoading || connections.length === 0 || !selectedAccountId}
             className="bg-indigo-600 hover:bg-indigo-700 text-white"
           >
             {isLoading ? (
