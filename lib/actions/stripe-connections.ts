@@ -31,7 +31,7 @@ export async function getStripeConnections() {
   return connections.map((conn) => ({
     id: conn.id,
     stripeAccountId: conn.stripeAccountId,
-    accountName: conn.accountName,
+    accountName: conn.scope,
     isActive: conn.isActive,
   }));
 }
