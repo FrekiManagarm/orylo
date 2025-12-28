@@ -296,12 +296,6 @@ function SessionCard({
                   {new Date(tracker.updatedAt).toLocaleDateString()}
                 </span>
               </div>
-
-              {tracker.aiAnalysis && (
-                <p className="text-sm text-zinc-400 mt-2 max-w-xl">
-                  {tracker.aiAnalysis}
-                </p>
-              )}
             </div>
           </div>
 
@@ -373,7 +367,7 @@ function AttemptRow({ attempt, index }: { attempt: CardTestingAttempt; index: nu
   return (
     <div className="flex items-center gap-4 p-3 rounded-lg bg-zinc-900/30 border border-white/5">
       <span className="text-xs text-zinc-600 w-6">#{index}</span>
-      
+
       <div className="flex items-center gap-2">
         <CreditCard className="w-4 h-4 text-zinc-500" />
         <span className="text-sm text-zinc-300 font-mono">
